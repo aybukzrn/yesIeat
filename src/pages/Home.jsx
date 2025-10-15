@@ -91,7 +91,7 @@ const Home = () => {
 
 
                     <Fade direction="down" triggerOnce>
-                        <h2 className="category-title">Mutfaklar</h2>
+                        <h2 className="category-title">MUTFAKLAR</h2>
                     </Fade>
 
                     <div className="category-list">
