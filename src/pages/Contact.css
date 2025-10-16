@@ -1,0 +1,50 @@
+.content-page-layout{
+    padding: 0 45px ;
+    margin: 20px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.sidebar{
+    flex-basis: 14%;
+    height: fit-content;
+    margin-top: 50px;
+    background: #f9f9f9;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 15px 20px; 
+    margin-left: 20px;
+    
+}
+
+.filter-btn{
+    display: flex;
+    align-items: center;
+
+    width: 100%;
+    text-align: left;
+    border-radius: 12px;
+    padding: 10px 15px;
+    margin-bottom: 10px;
+}
+
+.category-filter-bar{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+    margin-top: 10px;
+}
+
+
+.contact-section{
+    flex-basis: 80%;
+    padding: 20px;
+    background: #f9f9f9;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-top: 50px;
+    margin-left: 30px;
+}
+
+
