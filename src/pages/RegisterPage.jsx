@@ -22,7 +22,7 @@ const RegisterPage = () => {
 
     setPasswordError('');
 
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+    const passwordRegex = /^(?=.[a-z])(?=.[A-Z])(?=.*\d).{8,}$/;
     if (!passwordRegex.test(password)) {
         setPasswordError(
         'Şifre en az 8 karakter olmalı, büyük/küçük harf ve rakam içermelidir.'
@@ -46,9 +46,7 @@ const RegisterPage = () => {
       <h2>Kayıt Ol</h2>
 
       <form onSubmit={handleRegisterSubmit}>
-        {/* ...Kayıt sayfasının inputları... */}
-        {/* Buranın içini kendi kodunla doldurabilirsin, önemli olan dış yapı */}
-        {/* Veya bir önceki adımdaki tam RegisterPage kodunu kullanabilirsin */}
+        
         <div className="form-group">
             <label htmlFor="username">Kullanıcı Adı</label>
             <input type="text" id="username" value={username} onChange={(e) => setUsername(e.target.value)} placeholder='Bir kullanıcı adı belirleyin' required />
