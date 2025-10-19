@@ -8,6 +8,7 @@ import { GiFoodTruck } from "react-icons/gi";
 import { Fade } from "react-awesome-reveal";
 
 
+
 const Navbar = () => {
 
 
@@ -21,7 +22,7 @@ const Navbar = () => {
 
                 <Fade direction="left" triggerOnce>
 
-                    <Link to="/">
+                    <Link to="/home">
                         <span className="logo-text"><GiFoodTruck className='logo-icon' /> Hazır Yemek  </span>
                     </Link>
 
@@ -59,7 +60,7 @@ const Navbar = () => {
                 <ul className="navbar-links">
                     <li>
 
-                        <Link to="/homepage" className="nav-link">
+                        <Link to="/home" className="nav-link">
                             Anasayfa
                         </Link>
                     </li>

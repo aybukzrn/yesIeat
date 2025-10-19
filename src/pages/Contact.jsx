@@ -64,7 +64,7 @@ const Contact = () => {
 
                 <Fade direction="left" triggerOnce>
 
-                    <Link to="/">
+                    <Link to="/home">
                         <span className="logo-text"><GiFoodTruck className='logo-icon' /> Hazır Yemek  </span>
                     </Link>
 
