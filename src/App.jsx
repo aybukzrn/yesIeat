@@ -8,6 +8,7 @@ import Home from './pages/Home';
 import Menu from './pages/Menu';
 import Account from './pages/Account';
 import Contact from './pages/Contact';
+import Cart from './pages/Cart';
 
 function App() {
   return (
@@ -19,6 +20,8 @@ function App() {
       <Route path="/menu" element={<Menu />} />
       <Route path="/account" element={<Account />} />
       <Route path="/contact" element={<Contact />} />
+      <Route path="/cart" element={<Cart />} />
+
 
 
       

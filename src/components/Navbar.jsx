@@ -20,13 +20,13 @@ const Navbar = () => {
 
                 <div className="navbar-brand">
 
-                <Fade direction="left" triggerOnce>
+                    <Fade direction="left" triggerOnce>
 
-                    <Link to="/home">
-                        <span className="logo-text"><GiFoodTruck className='logo-icon' /> Hazır Yemek  </span>
-                    </Link>
+                        <Link to="/home">
+                            <span className="logo-text"><GiFoodTruck className='logo-icon' /> Hazır Yemek  </span>
+                        </Link>
 
-                </Fade>
+                    </Fade>
                 </div>
 
                 <div className="search-bar">
@@ -40,12 +40,14 @@ const Navbar = () => {
 
                     <div className="account">
                         <Link to="/account" >
-                            <RiAccountCircleFill className='acc-icon'/> Hesabım 
+                            <RiAccountCircleFill className='acc-icon' /> Hesabım
                         </Link>
                     </div>
 
                     <div className="navbar-actions">
-                        <button className="cart-button"><FaBasketShopping /></button>
+                        <Link to="/cart">
+                            <button className="cart-button"><FaBasketShopping /></button>
+                        </Link>
                     </div>
 
 
