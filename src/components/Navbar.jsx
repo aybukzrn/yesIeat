@@ -23,9 +23,8 @@ const Navbar = () => {
                     <Fade direction="left" triggerOnce>
 
                         <Link to="/home">
-                            <span className="logo-text"><GiFoodTruck className='logo-icon' /> Hazır Yemek  </span>
-                        </Link>
-
+                         <img src="assets/LoginPages/logo.png" alt="Hazır Yemek Logosu" className="navbar-logo" />                    
+                       </Link>
                     </Fade>
                 </div>
 
