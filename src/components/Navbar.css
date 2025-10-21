@@ -9,8 +9,7 @@ body {
     flex-direction: column;
     align-items: center;
     padding: 0rem 1rem;
-    /* background: linear-gradient(180deg, #f09410, #f0f0f0); */
-    background: linear-gradient(180deg, #f3a712, #f0f0f0);
+    background: linear-gradient(180deg, #f09410, #f0f0f0);
     color: white;
 }
 
@@ -128,7 +127,7 @@ body {
 .nav-link::after {
     content: "";
     position: absolute;
-    background-color:#f09410;
+    background-color:#ffffff;
     height: 1.5px;
     width: 0;
     left: 0;
@@ -138,4 +137,10 @@ body {
 .nav-link:hover::after {
     width: 100%;
     transition: width 0.3s;
+}
+
+.navbar-logo {
+    height: 130px;
+    width: 130px;
+    border-radius: 65px;
 }
