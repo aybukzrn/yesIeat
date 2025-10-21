@@ -101,7 +101,7 @@ const Home = () => {
                             <Zoom
                                 key={index}
                                 delay={index * 100}
-                                triggerOnce 
+                                triggerOnce
                             >
                                 <div className="category-item">
                                     <img src={category.src} alt={category.name} />
@@ -121,7 +121,7 @@ const Home = () => {
                     <div className="special-details">
                         <Fade direction="left" triggerOnce>
                             <h3 className="special-badge">
-                                <PiChefHatFill  className='chef-icon'/>
+                                <PiChefHatFill className='chef-icon' />
                                 ŞEFİN TAVSİYESİ</h3>
                             <h2>Izgara Somon Filosu</h2>
                             <p>Hafif, doyurucu ve protein deposu. Limitli sayıda, hemen deneyin!</p>
@@ -129,11 +129,26 @@ const Home = () => {
                         </Fade>
                     </div>
                     <div className="special-image-container">
-                    <Fade direction="right" triggerOnce>
-                        <img src="/assets/special.jpg" alt="Izgara Somon" className="special-image" />
-                    </Fade>
+                        <Fade direction="right" triggerOnce>
+                            <img src="/assets/special.jpg" alt="Izgara Somon" className="special-image" />
+                        </Fade>
                     </div>
                 </div>
+            </section>
+
+
+
+            <section className="delivery">
+                
+
+                    <div className="delivery-image-container">
+                        <img src="/assets/delivery.svg" alt="Teslimat" className="delivery-image" />
+                        
+                    </div>
+
+
+
+                
             </section>
 
 

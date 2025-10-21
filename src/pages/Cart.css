@@ -49,9 +49,9 @@
   gap: 1rem;
 }
 
-input[type="text"],
-input[type="email"],
-input[type="tel"],
+.form-grid input[type="text"],
+.form-grid input[type="email"],
+.form-grid input[type="tel"],
 .note-textarea {
   width: 100%;
   box-sizing: border-box;

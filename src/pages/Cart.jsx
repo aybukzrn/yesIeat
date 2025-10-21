@@ -37,7 +37,7 @@ const Cart = () => {
   };
 
   const useSavedInfo = () => {
-    setFormData(prev => ({...prev, ...savedUserInfo}));
+    setFormData(prev => ({ ...prev, ...savedUserInfo }));
   };
 
   const validateForm = (fields) => {
@@ -76,70 +76,70 @@ const Cart = () => {
       <div className="cart-page-container">
 
         <div className="checkout-details">
-            <h2 className="main-title">İncele ve siparişini ver</h2>
-            <div className="info-card">
-              <div className="card-header">
-                <h3>Teslimat Adresi</h3>
-              </div>
-              <button onClick={useSavedInfo} className="btn btn-secondary">Kayıtlı Adresimi Kullan</button>
-              <div className="form-grid">
-                <input name="sokak" value={formData.sokak} onChange={handleInputChange} type="text" placeholder="Cadde ve sokak" className={errors.sokak ? 'input-error' : ''} />
-                {errors.sokak && <span className="error-text">{errors.sokak}</span>}
-                <input name="apartman" value={formData.apartman} onChange={handleInputChange} type="text" placeholder="Apartman" className={errors.apartman ? 'input-error' : ''} />
-                {errors.apartman && <span className="error-text">{errors.apartman}</span>}
-                <input name="daire" value={formData.daire} onChange={handleInputChange} type="text" placeholder="Daire" className={errors.daire ? 'input-error' : ''} />
-                {errors.daire && <span className="error-text">{errors.daire}</span>}
-                <input name="telefon" value={formData.telefon} onChange={handleInputChange} type="tel" placeholder="+90 Telefon Numarası" className={`full-width ${errors.telefon ? 'input-error' : ''}`} />
-                {errors.telefon && <span className="error-text full-width">{errors.telefon}</span>}
-              </div>
-              <textarea name="not" value={formData.not} onChange={handleInputChange} className="note-textarea" placeholder="Kuryeye not..."></textarea>
-              <button className="btn btn-secondary" onClick={() => validateForm(['sokak', 'apartman', 'daire', 'telefon'])}>Kaydet ve Devam Et</button>
+          <h2 className="main-title">İncele ve siparişini ver</h2>
+          <div className="info-card">
+            <div className="card-header">
+              <h3>Teslimat Adresi</h3>
             </div>
+            <button onClick={useSavedInfo} className="btn btn-secondary">Kayıtlı Adresimi Kullan</button>
+            <div className="form-grid">
+              <input name="sokak" value={formData.sokak} onChange={handleInputChange} type="text" placeholder="Cadde ve sokak" className={errors.sokak ? 'input-error' : ''} />
+              {errors.sokak && <span className="error-text">{errors.sokak}</span>}
+              <input name="apartman" value={formData.apartman} onChange={handleInputChange} type="text" placeholder="Apartman" className={errors.apartman ? 'input-error' : ''} />
+              {errors.apartman && <span className="error-text">{errors.apartman}</span>}
+              <input name="daire" value={formData.daire} onChange={handleInputChange} type="text" placeholder="Daire" className={errors.daire ? 'input-error' : ''} />
+              {errors.daire && <span className="error-text">{errors.daire}</span>}
+              <input name="telefon" value={formData.telefon} onChange={handleInputChange} type="tel" placeholder="+90 Telefon Numarası" className={`full-width ${errors.telefon ? 'input-error' : ''}`} />
+              {errors.telefon && <span className="error-text full-width">{errors.telefon}</span>}
+            </div>
+            <textarea name="not" value={formData.not} onChange={handleInputChange} className="note-textarea" placeholder="Kuryeye not..."></textarea>
+            <button className="btn btn-secondary" onClick={() => validateForm(['sokak', 'apartman', 'daire', 'telefon'])}>Kaydet ve Devam Et</button>
+          </div>
 
-            <div className="info-card">
-              <h3>Teslimat seçenekleri</h3>
-              {errors.delivery && <span className="error-text">{errors.delivery}</span>}
-              <div className={`radio-option ${selectedDelivery === 'standart' ? 'active' : ''}`} onClick={() => setSelectedDelivery('standart')}>
-                <label><strong>Standart</strong> 20 - 35 dk.</label>
-              </div>
-              <div className={`radio-option ${selectedDelivery === 'oncelikli' ? 'active' : ''}`} onClick={() => setSelectedDelivery('oncelikli')}>
-                <label><strong>Öncelikli</strong> 15 - 30 dk. <span>+ 39,99 TL</span></label>
-              </div>
+          <div className="info-card">
+            <h3>Teslimat seçenekleri</h3>
+            {errors.delivery && <span className="error-text">{errors.delivery}</span>}
+            <div className={`radio-option ${selectedDelivery === 'standart' ? 'active' : ''}`} onClick={() => setSelectedDelivery('standart')}>
+              <label><strong>Standart</strong> 20 - 35 dk.</label>
             </div>
+            <div className={`radio-option ${selectedDelivery === 'oncelikli' ? 'active' : ''}`} onClick={() => setSelectedDelivery('oncelikli')}>
+              <label><strong>Öncelikli</strong> 15 - 30 dk. <span>+ 39,99 TL</span></label>
+            </div>
+          </div>
 
-            <div className="info-card">
-              <h3>Kişisel Bilgiler</h3>
-              <input name="cep" value={formData.cep} onChange={handleInputChange} type="tel" placeholder="Cep telefonu" className={errors.cep ? 'input-error' : ''}/>
-              {errors.cep && <span className="error-text">{errors.cep}</span>}
-              <button className="btn btn-secondary" onClick={() => validateForm(['cep'])}>Kaydet</button>
-            </div>
+          <div className="info-card">
+            <h3>Kişisel Bilgiler</h3>
+            <input name="cep" value={formData.cep} onChange={handleInputChange} type="tel" placeholder="Cep telefonu" className={errors.cep ? 'input-error' : ''} />
+            {errors.cep && <span className="error-text">{errors.cep}</span>}
+            <button className="btn btn-secondary" onClick={() => validateForm(['cep'])}>Kaydet</button>
+          </div>
 
-            <div className="info-card">
-              <h3>Bahşiş</h3>
-              {errors.tip && <span className="error-text">{errors.tip}</span>}
-              <div className="tip-options">
-                {['Şimdi değil', 15, 20, 30].map((tip, index) => (
-                    <button key={index} 
-                      className={`btn btn-tip ${selectedTip === tip ? 'active' : ''}`} 
-                      onClick={() => setSelectedTip(tip)}>
-                      {typeof tip === 'number' ? `${tip.toFixed(2)} TL` : tip}
-                    </button>
-                ))}
-              </div>
+          <div className="info-card">
+            <h3>Bahşiş</h3>
+            {errors.tip && <span className="error-text">{errors.tip}</span>}
+            <div className="tip-options">
+              {['Şimdi değil', 15, 20, 30].map((tip, index) => (
+                <button key={index}
+                  className={`btn btn-tip ${selectedTip === tip ? 'active' : ''}`}
+                  onClick={() => setSelectedTip(tip)}>
+                  {typeof tip === 'number' ? `${tip.toFixed(2)} TL` : tip}
+                </button>
+              ))}
             </div>
-            
-            <button className="btn btn-primary btn-complete-order" onClick={handleCompleteOrder}>Siparişi Tamamla</button>
+          </div>
+
+          <button className="btn btn-primary btn-complete-order" onClick={handleCompleteOrder}>Siparişi Tamamla</button>
         </div>
 
         <div className="order-summary-container">
           <div className="order-summary-card">
             <h3>Siparişiniz</h3>
-            
+
             {cartItems.length === 0 ? (
               <p className="empty-cart-message">Sepetinizde ürün bulunmamaktadır.</p>
             ) : (
               <>
-              <h4>Ustam Çiğ Köfte</h4>
+                <h4>Ustam Çiğ Köfte</h4>
                 {cartItems.map(item => (
                   <div className="summary-item" key={item.id}>
                     <div className="item-info">

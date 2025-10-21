@@ -9,8 +9,7 @@ body {
     flex-direction: column;
     align-items: center;
     padding: 0rem 1rem;
-    background: linear-gradient(180deg, #D5160C, #e8837e ,#ffffff);
-    
+    background: linear-gradient(180deg, #e2bb5e, #ebcb81 ,#f0f0f0);
     color: white;
 }
 
@@ -18,23 +17,35 @@ body {
 .up-section {
     width: 100%;
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
     align-items: center;
     margin-bottom: 1rem;
+    margin-top: .5rem;
 }
 
 .right-section {
     display: flex;
     align-items: center;
     gap: 1rem;
-    padding-bottom: 50px;
+    margin-bottom: 70px;
 }
 
 .account {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
     font-size: 16px;
     cursor: pointer;
     font-weight: 500;
+    border: 1px solid #fff;  
+    padding: 5px 10px;
+    border-radius: 22px;
+}
 
+.account:hover {
+    background-color: #fff;
+    color: #aa1f00;
+    transition: 0.3s;
 }
 
 .acc-icon {
@@ -42,19 +53,40 @@ body {
     cursor: pointer;
     margin-left: 0.3rem;
     margin-bottom: -5px;
+    color: #aa1f00;
 
 }
 
+.cart{
+    
+    font-size: 16px;
+    cursor: pointer;
+    font-weight: 500;
+    border: 1px solid #fff;  
+    padding: 5px 10px;
+    border-radius: 22px;
+    
+}
+
 .cart-button {
-    background: #f4f4f4ba;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    background: transparent;
     color: rgb(37, 2, 2);
     border: none;
-    padding: 0.5rem 1rem;
     cursor: pointer;
     border-radius: 22px;
     font-size: 16px;
-    margin-top: 2px;
-    margin-left: 10px;
+    padding: 5px 10px;
+    color: #aa1f00;
+}
+
+.cart:hover {
+    background-color: #fff;
+    color: #aa1f00;
+    transition: 0.3s;
 }
 
 
@@ -83,22 +115,15 @@ body {
     justify-content: center;
     align-items: center;
     margin-top: -10px;
-    border-top: 1px solid rgba(255, 255, 255, 0.3);
+    border-top: 1px solid rgba(255, 255, 255, 0.423);
     padding-top: 1rem;
 
 }
 
-.navbar-brand .logo-text {
-    font-size: 52px;
-    font-weight: bolder;
-    font-family: 'Cookie', cursive;
-    color: #ffffff;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+.navbar-brand{
+    margin-left: 60px;
 }
 
-.logo-icon{
-    margin-bottom: -5px;
-}
 
 
 .navbar a {
@@ -113,6 +138,7 @@ body {
     padding: 0;
     font-size: 18px;
     font-weight: 600;
+    margin-left: 340px;
     
     
 }
@@ -128,7 +154,7 @@ body {
 .nav-link::after {
     content: "";
     position: absolute;
-    background-color:#ffffff;
+    background-color:#aa1f00;
     height: 1.5px;
     width: 0;
     left: 0;
@@ -144,4 +170,26 @@ body {
     height: 130px;
     width: 130px;
     border-radius: 65px;
+}
+
+
+.call-button{
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    color: #aa1f00;
+    transition: all 0.3s ease;
+    font-weight: bolder;
+    font-family: 'DM Serif Text', sans-serif;
+    letter-spacing: 3px;
+    margin-left: 200px;
+}
+
+.call-button:hover{
+    color: #ff6200;
 }

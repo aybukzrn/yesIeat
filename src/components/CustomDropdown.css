@@ -1,0 +1,66 @@
+.custom-dropdown {
+    
+    position: relative; 
+    display: inline-block; 
+}
+
+
+.dropdown-toggle {
+    background:transparent; 
+    color: #aa1f00;
+    font-size: 1rem;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;   
+}
+
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%; 
+    left: -40px;
+    z-index: 1000; 
+    min-width: 160px; 
+    background-color: #f4f4f4;
+    border: 1px solid #ddd;
+    border-radius: 22px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); 
+    padding: 8px 0;
+    margin-top: 10px; 
+}
+
+.dropdown-toggle:hover {
+    color: #aa1f00; /* Buton hover rengi */
+}
+
+.dropdown-toggle.active {
+    color: #aa1f00; /* Hover'dakiyle aynı rengi veriyoruz */
+    /* İsteğe bağlı: Hafif bir underline veya border ekleyebilirsiniz */
+    /* border-bottom: 2px solid #aa1f00; */
+}
+
+.dropdown-menu a, 
+.dropdown-menu button {
+    display: block; 
+    width: 140px;
+    padding: 10px 15px;
+    clear: both;
+    font-size: 1rem;
+    color: #333;
+    text-align: inherit; 
+    white-space: nowrap; 
+    background: none; 
+    border: none;
+    text-decoration: none; 
+    transition: background-color 0.1s;
+    cursor: pointer;
+}
+
+.dropdown-menu a:hover,
+.dropdown-menu button:hover {
+    background-color: #e2ba5e90; 
+    color: #fff;
+    border-radius: 16px;
+}

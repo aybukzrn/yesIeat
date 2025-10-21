@@ -11,6 +11,7 @@ import Contact from './pages/Contact';
 import Cart from './pages/Cart';
 import IntroAnimation from './components/IntroAnimation';
 
+
 function App() {
   const [showIntro, setShowIntro] = useState(true);
 
