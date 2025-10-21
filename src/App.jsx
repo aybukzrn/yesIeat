@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 
 // Sayfaları içe aktarın
@@ -9,8 +9,22 @@ import Menu from './pages/Menu';
 import Account from './pages/Account';
 import Contact from './pages/Contact';
 import Cart from './pages/Cart';
+import IntroAnimation from './components/IntroAnimation';
 
 function App() {
+  const [showIntro, setShowIntro] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowIntro(false);
+    }, 3500); // Süreyi değiştir
+
+    return () => clearTimeout(timer);
+  }, []); 
+
+  if (showIntro) {
+    return <IntroAnimation />;
+  }
   return (
     
     <Routes>
@@ -22,10 +36,6 @@ function App() {
       <Route path="/contact" element={<Contact />} />
       <Route path="/cart" element={<Cart />} />
 
-
-
-      
-      
     </Routes>
   );
 }
