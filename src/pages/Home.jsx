@@ -87,7 +87,7 @@ const Home = () => {
                 <div className="category">
 
 
-                    <img src="/assets/sun-tornado.svg" alt="desen" className="bg-pattern" />
+                    {/* <img src="/assets/sun-tornado.jpg" alt="desen" className="bg-pattern" /> */}
 
 
                     <Fade direction="down" triggerOnce>

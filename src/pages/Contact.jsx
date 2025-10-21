@@ -1,13 +1,10 @@
 import React from 'react'
-import Navbar from '../components/Navbar';
+import Navbar2 from '../components/Navbar2';
 import Footer from '../components/Footer';
 import { Link } from 'react-router-dom';
 import './Contact.css';
 import { useState } from 'react';
-import { RiAccountCircleFill } from "react-icons/ri";
-import { FaBasketShopping } from "react-icons/fa6";
-import { GiFoodTruck } from "react-icons/gi";
-import { Fade } from "react-awesome-reveal";
+
 
 
 import IletisimContent from './Legal/IletisimContent';
@@ -57,41 +54,7 @@ const Contact = () => {
     return (
         <div>
             
-            <div className="navbar">
-            <div className="up-section">
-
-                <div className="navbar-brand">
-
-                <Fade direction="left" triggerOnce>
-
-                    <Link to="/home">
-                        <span className="logo-text"><GiFoodTruck className='logo-icon' /> Hazır Yemek  </span>
-                    </Link>
-
-                </Fade>
-                </div>
-
-                <div className="search-bar">
-                    <input type="text" placeholder="" />
-
-
-                </div>
-
-
-                <div className="right-section">
-
-                    <div className="account">
-                        <Link to="/account" >
-                            <RiAccountCircleFill className='acc-icon'/> Hesabım 
-                        </Link>
-                    </div>
-
-
-                </div>
-
-            </div>
-
-            </div>
+            <Navbar2 />
 
 
             <div className="content-page-layout">
