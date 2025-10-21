@@ -1,0 +1,116 @@
+
+
+.empty-orders-state img{
+    width: 400px;
+    margin-left: 300px;
+    margin-top: 50px;
+}
+
+.empty-orders-state h2{
+    text-align: center;
+    margin-top: 20px;
+    font-size: 22px;
+    color: #333;
+}
+
+.empty-orders-state p{
+    text-align: center;
+    margin-top: 10px;
+    font-size: 16px;
+    color: #666;
+}
+
+.btn-go-to-menu{
+    display: block;
+    padding: 10px 20px;
+    width: 100px;
+    margin: 20px auto;
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    background-color: #f09410;
+}
+
+.btn-go-to-menu:hover{
+    background-color: #e0820e;
+}
+
+.order-item-card{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 15px;
+    margin: 15px 0;
+    background-color: #f4f4f4;
+    gap: 10px;
+}
+
+.order-status{
+    font-weight:bolder;
+    padding: 5px 10px;
+    color: white;
+    width: fit-content;
+}
+
+.status-Teslim{
+    color: #4CAF50;
+}
+
+.status-Hazırlanıyor{
+    color: #067fa1;
+}
+
+.status-İptal{
+    color: #f44336;
+}
+
+.info-row{
+    display: flex;
+    flex-direction: column; 
+}
+
+.info-row p{
+    margin-bottom: 1px; 
+}
+
+.detail-btn button{
+    display: flex;
+    flex-direction: row;
+    align-self: flex-start;
+    padding: 8px 16px;
+    background-color: #f09410;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+.more-icon{
+    margin-left: 5px;
+    font-weight: bolder;
+}
+
+.order-extra-details{
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #ccc;
+}
+
+.order-extra-details p{
+    margin: 5px 0;
+}
+
+
+
+
+
+
+
+

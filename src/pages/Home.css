@@ -30,6 +30,12 @@
     max-width: 70%;
 }
 
+.overlay h2{
+    font-size: 3rem;
+    margin-bottom: 15px;
+    color: #f3a712;
+}
+
 .slide-content h2 {
     font-size: 2.5rem;
     margin-bottom: 10px;
@@ -72,11 +78,11 @@
 
 .bg-pattern {
     position: absolute;
-    top: 930px;
+    top: 730px;
     left: 0;
     width: 100%;
 
-    height: 400px;
+    height: 800px;
 
     z-index: -1;
 
@@ -84,11 +90,11 @@
 
 
 .category {
-
-
     text-align: center;
     margin-top: -50px;
     font-family: 'DM Serif Text', sans-serif;
+    border: 10px solid ;
+    border-color: #f09410;
 }
 
 .category h2 {

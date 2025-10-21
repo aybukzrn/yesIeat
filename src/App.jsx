@@ -20,12 +20,7 @@ function App() {
       <Route path="/menu" element={<Menu />} />
       <Route path="/account" element={<Account />} />
       <Route path="/contact" element={<Contact />} />
-      <Route path="/cart" element={<Cart />} />
-
-
-
-      
-      
+      <Route path="/cart" element={<Cart />} />      
     </Routes>
   );
 }
