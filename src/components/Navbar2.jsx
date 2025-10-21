@@ -40,7 +40,7 @@ const Navbar = () => {
 
                     <div className="account">
                         <Link to="/account" >
-                            <RiAccountCircleFill className='acc-icon' /> Hesabım
+                            <RiAccountCircleFill className='acc-icon' /> Hesabımmm
                         </Link>
                     </div>
 
