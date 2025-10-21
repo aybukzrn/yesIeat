@@ -39,7 +39,15 @@ const RegisterPage = () => {
     };
   return (
   <div className="login-page-container">
-    <div className="login-form-container">
+     <div className="chef-gorseli2">
+        <img
+          src={"/assets/LoginPages/chef1.png"}
+          alt="Restoran yemeği"
+          className="chef-gorseli"
+        />
+      </div>
+
+    <div className="login-form-container2">
 
       <img src="/assets/LoginPages/logo.png" alt="Uygulama Logosu" className="form-logo" />
 

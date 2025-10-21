@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import './LoginPage.css'; 
+import './LoginPage.css';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  
+
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const togglePasswordVisibility = () => {
     setIsPasswordVisible(!isPasswordVisible);
@@ -18,9 +18,11 @@ const LoginPage = () => {
     console.log('Şifre:', password);
   };
 
-  
+
   return (
+
     <div className="login-page-container">
+    
       <div className="login-form-container">
 
         <img src="/assets/LoginPages/logo.png" alt="Uygulama Logosu" className="form-logo" />
@@ -43,21 +45,21 @@ const LoginPage = () => {
           <div className="form-group">
             <label htmlFor="password">Şifre</label>
             <div className="password-input-container">
-                <input
-                  type={isPasswordVisible ? 'text' : 'password'}
-                  id="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Şifrenizi giriniz"
-                  required
+              <input
+                type={isPasswordVisible ? 'text' : 'password'}
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Şifrenizi giriniz"
+                required
+              />
+              <span onClick={togglePasswordVisibility} className="password-toggle-icon">
+                <img
+                  src={isPasswordVisible ? '/assets/LoginPages/closedeye.png' : '/assets/LoginPages/openeye.png'}
+                  alt="Toggle password visibility"
+                  className="password-toggle-img"
                 />
-                <span onClick={togglePasswordVisibility} className="password-toggle-icon">
-                  <img 
-                      src={isPasswordVisible ? '/assets/LoginPages/closedeye.png' : '/assets/LoginPages/openeye.png'} 
-                      alt="Toggle password visibility" 
-                      className="password-toggle-img"
-                  />
-                </span>
+              </span>
             </div>
           </div>
 
@@ -69,6 +71,13 @@ const LoginPage = () => {
           </Link>
         </form>
 
+      </div>
+      <div className="chef-gorseli">
+        <img
+          src={"/assets/LoginPages/chef1.png"}
+          alt="Restoran yemeği"
+          className="chef-gorseli"
+        />
       </div>
     </div>
   );
