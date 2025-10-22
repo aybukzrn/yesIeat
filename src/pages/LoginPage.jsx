@@ -22,7 +22,7 @@ const LoginPage = () => {
   return (
 
     <div className="login-page-container">
-    
+
       <div className="login-form-container">
 
         <img src="/assets/LoginPages/logo.png" alt="Uygulama Logosu" className="form-logo" />
@@ -55,7 +55,7 @@ const LoginPage = () => {
               />
               <span onClick={togglePasswordVisibility} className="password-toggle-icon">
                 <img
-                  src={isPasswordVisible ? '/assets/LoginPages/closedeye.png' : '/assets/LoginPages/openeye.png'}
+                  src={isPasswordVisible ? '/assets/LoginPages/openeye.png' : '/assets/LoginPages/closedeye.png'}
                   alt="Toggle password visibility"
                   className="password-toggle-img"
                 />
@@ -63,15 +63,21 @@ const LoginPage = () => {
             </div>
           </div>
 
-          <button type="submit" className="login-button">
-            Giriş Yap
-          </button>
-          <Link to="/register" className="signup-button">
-            Kayıt Ol
-          </Link>
+          <div className="button-group">
+            <button type="submit" className="login-button">
+              Giriş Yap
+            </button>
+          </div>
+
+          <div className="warning">
+            <Link to="/register" className="register-link">
+              Hesabınız yok mu? Kaydolun
+            </Link>
+          </div>
         </form>
 
       </div>
+
       <div className="chef-gorseli">
         <img
           src={"/assets/LoginPages/chef1.png"}
@@ -79,6 +85,7 @@ const LoginPage = () => {
           className="chef-gorseli"
         />
       </div>
+
     </div>
   );
 };

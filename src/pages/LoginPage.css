@@ -1,4 +1,5 @@
 .login-page-container {
+  
   background: radial-gradient(circle, #ebcb81, #e2bb5e);
   display: flex;
   justify-content: center;
@@ -9,12 +10,14 @@
   overflow: hidden; 
   padding: 20px; 
   box-sizing: border-box;
+
 }
 
 .login-form-container {
+  
   padding: 40px;
   background-color: #d5160c;
-  border-radius: 12px; 
+  border-radius: 22px; 
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
   width: 480px; 
   box-sizing: border-box;
@@ -27,23 +30,22 @@
   height: auto; 
 } 
 
-
 .form-logo {
   width: 80px; 
   height: 80px;
   display: block;
-  margin: 0 auto 10px; 
   border-radius: 50%;
 }
 
 h2 {
   text-align: center;
   color: rgb(255, 255, 255);
-  margin: 0; 
+  margin-top: 1px;
+  margin-bottom: 30px;
 }
 
 .form-group {
-  margin-bottom: 0; 
+  margin-bottom: 10px; 
 }
 
 .form-group label {
@@ -54,21 +56,26 @@ h2 {
 }
 
 .form-group input {
+  font-family: 'DM Serif Text', sans-serif;
   width: 100%;
   padding: 12px;
-  border: 1px solid rgb(167, 84, 1);
-  border-radius: 6px;
+  border: 1px solid rgb(255, 255, 255);
+  border-radius: 22px;
   box-sizing: border-box; 
+}
+
+.form-group input:focus{
+  outline: none;
+  border-color: #ffffff; 
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.5); 
 }
 
 .button-group {
   display: flex; 
-  gap: 80px; 
-  margin-top: 10px; 
+  margin-top: 30px; 
 }
 
-.login-button,
-.signup-button {
+.login-button{
   font-family: inherit;
   flex-grow: 1; 
   width: auto; 
@@ -76,7 +83,7 @@ h2 {
   background-color: #ffffff;
   color: #d5160c; 
   border: none;
-  border-radius: 6px;
+  border-radius: 22px;
   font-size: 16px;
   font-weight: bold;
   cursor: pointer;
@@ -84,10 +91,11 @@ h2 {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  transition: background-color 0.3s, color 0.3s;
 } 
 
-.login-button:hover, .signup-button:hover {
-  background-color: #f3a812;
+.login-button:hover{
+  background-color: #e2bb5e;
   color: #fff;
 }
 
@@ -111,4 +119,19 @@ h2 {
   width: 22px;   
   height: auto;  
   display: block; 
+}
+
+.warning{
+  margin-top: 30px;
+  text-align: center;
+}
+
+.register-link {
+  color: #ffffffae;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.register-link:hover {
+  color: #fff;
 }

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './RegisterPage.css';
+import { Link } from 'react-router-dom';
 
 const RegisterPage = () => {
   const [username, setUsername] = useState('');
@@ -37,6 +38,9 @@ const RegisterPage = () => {
 
     console.log('Kayıt başarılı! Bilgiler:', { username, email, password });
     };
+
+
+  
   return (
   <div className="login-page-container">
      <div className="chef-gorseli2">
@@ -68,7 +72,7 @@ const RegisterPage = () => {
             <div className="password-input-container">
                 <input type={isPasswordVisible ? 'text' : 'password'} id="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Şifrenizi giriniz" required />
                 <span onClick={togglePasswordVisibility} className="password-toggle-icon">
-                    <img src={isPasswordVisible ? '/assets/LoginPages/closedeye.png' : '/assets/LoginPages/openeye.png'} alt="Toggle password visibility" className="password-toggle-img" />
+                    <img src={isPasswordVisible ? '/assets/LoginPages/openeye.png' : '/assets/LoginPages/closedeye.png'} alt="Toggle password visibility" className="password-toggle-img" />
                 </span>
             </div>
         </div>
@@ -77,12 +81,18 @@ const RegisterPage = () => {
             <div className="password-input-container">
                 <input type={isConfirmPasswordVisible ? 'text' : 'password'} id="confirmPassword" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Şifrenizi tekrar giriniz" required />
                 <span onClick={toggleConfirmPasswordVisibility} className="password-toggle-icon">
-                    <img src={isConfirmPasswordVisible ? '/assets/LoginPages/closedeye.png' : '/assets/LoginPages/openeye.png'} alt="Toggle password visibility" className="password-toggle-img" />
+                    <img src={isConfirmPasswordVisible ? '/assets/LoginPages/openeye.png' : '/assets/LoginPages/closedeye.png'} alt="Toggle password visibility" className="password-toggle-img" />
                 </span>
             </div>
         </div>
         {passwordError && <div className="error-message">{passwordError}</div>}
         <button type="submit" className="register-button">Kayıt Ol</button>
+
+        <div className="warning">
+            <Link to="/" className="register-link">
+              Zaten hesabınız var mı? Giriş Yapın
+            </Link>
+          </div>
       </form>
 
     </div>

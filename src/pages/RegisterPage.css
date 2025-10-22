@@ -1,19 +1,27 @@
 .register-button {
   font-family: inherit;
+  flex-grow: 1; 
   width: 100%; 
   padding: 12px;
   background-color: #ffffff;
-  color: #d5160c;   border: none;
-  border-radius: 6px;
+  color: #d5160c; 
+  border: none;
+  border-radius: 22px;
   font-size: 16px;
   font-weight: bold;
   cursor: pointer;
-  margin-right: 20px;
+  text-decoration: none;       
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s, color 0.3s;
+  margin-top: 30px
 }
 
 .register-button:hover {
-  background-color: #f3a812;
+  background-color: #e2bb5e;
   color: #fff;
+  
 }
 
 .password-input-container {

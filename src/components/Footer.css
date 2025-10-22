@@ -1,68 +1,65 @@
 .main-footer {
-    background-color: #c7c7c7;
-    margin-top: 100px;
+    background: linear-gradient(0deg, #e2bb5e, #ebcb81 ,#f0f0f0);
+    margin-top: 20px;
     padding: 2rem 0;
+    
 }
 
 .footer-content {
     display: flex;
     flex-direction: row;
-    justify-content: space-around;
-    gap: 100px;
-    
-    margin: 0 auto;
+    margin-top: 50px;
     padding: 0 80px;
-   
 }
 
 .footer-section {
-    flex-basis: 30%; 
-    margin-bottom: 20px;
+    flex-basis: 60%; 
 }
 
-.left-section{
+.f-left-section{
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    margin-right: 30px;
 }
 
-.right-section{
-    margin-top: 70px;
+.f-right-section{
+    height: 200px;
 }
 
-.footer-section h4 {
-    color: #f09410; 
-    margin-bottom: 15px;
-    font-size: 1.4rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-    padding-bottom: 5px;
-}
-
-.about{
-    margin-bottom: 20px;
-    line-height: 1.6;
+.row{
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
     font-size: 1rem;
-    font-weight: 500;
+    cursor: pointer;
 }
 
 .links{
     display: flex;
     flex-direction: column;
-    padding: 0;
-    margin-bottom: 10px;
     font-size: 1rem;
     cursor: pointer;
-
+    margin-left: 20px;
 }
 
-.links a {
-    color: #000000;
+.links h4,
+.social-media h4{
+    border-bottom: 1px solid #fff;
+    color: #490e01;
+}
+
+.links a{
     margin-bottom: 10px;
+    color: #aa1f00;
 }
 
 .links a:hover {
-    color: #bb6d01;
-    text-decoration: underline;
+    color: #e22b01;
+}
+
+.social-media{
+    width: 300px;
 }
 
 .social-icons{
@@ -71,6 +68,9 @@
 }
 
 .social-icons a {
+    display: flex;
+    align-items: center;
+    gap: 5px;
     color: #000000;
     margin-bottom: 10px;
     font-size: 1rem;
@@ -79,27 +79,42 @@
 }
 
 .social-icons .insta:hover {
-    color: #bb0139;
+    color: #ee2e68;
 }
 
 .social-icons .x:hover {
-    color: #013d62;
+    color: #003878;
 }
 
 .social-icons .tiktok:hover {
-    color: #5f1b40;
+    color: #bc0067;
+} 
+
+.social-icons .face:hover {
+    color: #1259a0;
+} 
+
+
+.about{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-top: 10px;
 }
 
-
-
-
-.map-location {
-    flex-basis: 45%; 
+.f-navbar-logo{
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
 }
 
+.f-navbar-logo img{
+    width: 80px;
+    margin-right: 15px;
+    border-radius: 65px;
+}
 .map-embed-container {
-    width: 100%;
-    height: 500px;
+    height: 50px;
 }
 
 .map-embed-container iframe {
@@ -110,8 +125,7 @@
     text-align: center;
     padding: 1rem 0;
     border-top: 1px solid rgba(255, 255, 255, 0.3);
-    margin-top: 20px;
-    
+    margin-top: 30px;
 }
 
 

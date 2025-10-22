@@ -19,15 +19,14 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1rem;
-    margin-top: .5rem;
+    margin-bottom: 1.5rem;
+    margin-top: 1.5rem;
 }
 
 .right-section {
     display: flex;
     align-items: center;
     gap: 1rem;
-    margin-bottom: 70px;
 }
 
 .account {
@@ -44,7 +43,7 @@ body {
 
 .account:hover {
     background-color: #fff;
-    color: #aa1f00;
+    color: #d5160c;
     transition: 0.3s;
 }
 
@@ -191,5 +190,5 @@ body {
 }
 
 .call-button:hover{
-    color: #ff6200;
+    color: #e22b01;
 }
