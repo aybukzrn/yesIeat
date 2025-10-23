@@ -1,0 +1,67 @@
+.personal-information{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.user-information,
+.password{
+    flex-basis: 48%;
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.name{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.ui-form-group{
+    display: flex;
+    flex-basis: 48%;
+    flex-direction: column;
+    margin-bottom: 10px;
+}
+
+.ui-form-group input{
+    font-family: 'Dm Serif Text', serif;
+    letter-spacing: 1px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 22px;
+}
+
+.change-password-button,
+.save-button{
+    font-family: 'Dm Serif Text', serif;
+    font-size: 16px;
+    background-color: #f4f4f4;
+    color: #333;
+    font-weight: bolder;
+    border: none;
+    padding: 12px 8px;
+    border-radius: 22px;
+    margin-top: 10px;
+    cursor: pointer;
+    width: 100%;
+}
+
+.change-password-button:hover,
+.save-button:hover{
+    background-color: #e2bb5e;
+    color: white;
+    transition: 0.3s;
+}
+
+.password-toggle-icon img{
+    width: 20px;
+    height: 20px;
+    
+}
+
+
+
