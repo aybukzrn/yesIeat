@@ -3,14 +3,13 @@ import { Link } from 'react-router-dom';
 import './Navbar.css';
 import { RiAccountCircleFill } from "react-icons/ri";
 import { FaBasketShopping } from "react-icons/fa6";
-import { IoSearchCircle } from "react-icons/io5";
-import { GiFoodTruck } from "react-icons/gi";
+
 import { Fade } from "react-awesome-reveal";
 
+import CustomDropdown from '../components/CustomDropdown';
 
 
 const Navbar = () => {
-
 
     return (
 
@@ -23,30 +22,36 @@ const Navbar = () => {
                     <Fade direction="left" triggerOnce>
 
                         <Link to="/home">
-                            <span className="logo-text"><GiFoodTruck className='logo-icon' /> Hazır Yemek  </span>
+                            <img src="assets/LoginPages/logo.png" className="navbar-logo" />
                         </Link>
-
                     </Fade>
                 </div>
 
                 <div className="search-bar">
                     <input type="text" placeholder="Ne Yemek İstersin?" />
-
-
                 </div>
 
 
                 <div className="right-section">
 
                     <div className="account">
-                        <Link to="/account" >
-                            <RiAccountCircleFill className='acc-icon' /> Hesabımmm
-                        </Link>
+
+                    <div className="acc-icon"><RiAccountCircleFill /></div>
+                        <div className="acc-dropdown">
+                            <CustomDropdown title="Hesabım">
+                                <a href="/account">Siparişleirm</a>
+                                <a href="/account">Profilim</a>
+                                <a href="/">Çıkış Yap</a>
+                                
+                            </CustomDropdown>
+                        </div>
+
                     </div>
 
-                    <div className="navbar-actions">
+                    <div className="cart">
                         <Link to="/cart">
-                            <button className="cart-button"><FaBasketShopping /></button>
+                            <button className="cart-button"><FaBasketShopping /><div className="text">Sepetim</div></button>
+                            
                         </Link>
                     </div>
 

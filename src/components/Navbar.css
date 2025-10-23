@@ -27,6 +27,7 @@ body {
     display: flex;
     align-items: center;
     gap: 1rem;
+    margin-right: 50px;
 }
 
 .account {
@@ -120,7 +121,7 @@ body {
 }
 
 .navbar-brand{
-    margin-left: 60px;
+    margin-left: 80px;
 }
 
 

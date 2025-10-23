@@ -2,7 +2,7 @@ import React from 'react'
 
 const KullaniciBilgilerimContent = () => {
   return (
-    <div>
+    <div className="personal-information">
       
     </div>
   )

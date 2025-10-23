@@ -11,11 +11,9 @@ const demoOrders = [
     { id: 103, date: '16 Ekim 2025', time: '16.32', total: 120.75, status: 'İptal Edildi', items: ['Lazanya'] },
 ];
 
-
-
 const EmptyOrders = () => (
     <div className="empty-orders-state">
-        <img src={`/assets/AccountPage/order.svg`} />
+        <img src={`/assets/AccountPage/order2.png`} />
         <h2>Henüz Siparişiniz Bulunmamaktadır</h2>
         <p>Lezzetli ürünlerimizi keşfetmek için menüye göz atın!</p>
         <Link to="/menu" className="btn-go-to-menu">Menüye Git</Link>

@@ -17,6 +17,7 @@
 .menu-list-section{
     flex-basis: 80%;
     padding: 20px;
+    margin-top: 40px;
 }
 
 .category-filter-bar {
@@ -28,6 +29,7 @@
 }
 
 .filter-btn {
+    font-family: 'Dm Serif Text', serif;
     display: flex;
     align-items: center;
     background-color: #f0f0f0;
@@ -46,7 +48,7 @@
 }
 
 .filter-btn.active {
-    background-color: #f09404;
+    background-color: #e2bb5e;
     color: white;
     border-color: #ffffff;
     font-weight: 700;
@@ -75,7 +77,6 @@
 }
 
 .item-image-placeholder {
-    
     flex-basis: 55%;
     min-width: 120px;
     height: 200px;
@@ -125,11 +126,12 @@
 .item-price {
     font-size: 1.4rem;
     font-weight: 700;
-    color: #fa7c06;
+    color: #d5160c;
 }
 
 .add-to-cart-btn {
-    background-color: #f09404; /* Yeşil buton */
+    font-family: 'Dm Serif Text', serif;
+    background-color: #e2bb5e; 
     color: white;
     border: none;
     padding: 8px 15px;
@@ -137,11 +139,11 @@
     cursor: pointer;
     font-weight: 600;
     font-size: 16px;
-    transition: background-color 0.2s;
+    transition: background-color 0.4s;
 }
 
 .add-to-cart-btn:hover {
-    background-color: #9f6200;
+    background-color: #d5160c;
 }
 
 .item-tag {

@@ -103,18 +103,17 @@ const Home = () => {
                                 delay={index * 100}
                                 triggerOnce
                             >
-                                <div className="category-item">
-                                    <img src={category.src} alt={category.name} />
-
-                                    <h3>{category.name} </h3>
-
-                                </div>
+                                <Link to={`/menu`} className="category-link">
+                                    <div className="category-item">
+                                        <img src={category.src} alt={category.name} />
+                                        <h3>{category.name} </h3>
+                                    </div>
+                                </Link>
                             </Zoom>
                         ))}
                     </div>
                 </div>
             </section>
-
 
             <section className="chef-special py-5">
                 <div className="container d-flex align-items-center justify-content-between special-card">
@@ -139,16 +138,16 @@ const Home = () => {
 
 
             <section className="delivery">
-                
-
-                    <div className="delivery-image-container">
-                        <img src="/assets/delivery.svg" alt="Teslimat" className="delivery-image" />
-                        
-                    </div>
 
 
+                <div className="delivery-image-container">
+                    <img src="/assets/delivery.svg" alt="Teslimat" className="delivery-image" />
 
-                
+                </div>
+
+
+
+
             </section>
 
 

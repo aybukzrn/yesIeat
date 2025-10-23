@@ -1,9 +1,11 @@
 
 
 .empty-orders-state img{
-    width: 400px;
-    margin-left: 300px;
-    margin-top: 50px;
+    display: block;
+    margin-bottom: -40px;
+    margin-top: -80px;
+    width: 1000px;
+    
 }
 
 .empty-orders-state h2{
@@ -32,11 +34,12 @@
     border: none;
     border-radius: 10px;
     cursor: pointer;
-    background-color: #f09410;
+    background-color: #e2bb5e;
+    transition: all .4s;
 }
 
 .btn-go-to-menu:hover{
-    background-color: #e0820e;
+    background-color: #d5160c;
 }
 
 .order-item-card{
@@ -84,8 +87,9 @@
     flex-direction: row;
     align-self: flex-start;
     padding: 8px 16px;
-    background-color: #f09410;
+    background-color: #e2bb5e;
     color: white;
+    font-weight: bolder;
     border: none;
     border-radius: 5px;
     cursor: pointer;

@@ -98,9 +98,6 @@ const Menu = () => {
 
 
         <section className="menu-list-section">
-          <h2 className="section-title mb-4">{activeCategory} </h2>
-
-          
           
             <div className="menu-items-grid">
               {filteredMenu.length > 0 ? (
