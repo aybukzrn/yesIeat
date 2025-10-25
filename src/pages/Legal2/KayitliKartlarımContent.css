@@ -1,0 +1,99 @@
+.header{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    
+}
+
+.header h3{
+    font-size: 20px;
+}
+
+.head{
+    display: flex;
+    flex-direction: column;
+    
+}
+
+.name h2{
+    font-size: 15px;
+    color: black;
+    border-bottom: 1px solid #ccc;
+
+}
+
+.add-card button{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    font-family: 'DM Serif Text', sans-serif;
+    font-size: 14px;
+    font-weight: bolder;
+    padding: 8px 20px;
+    background: #f4f4f4;
+    border: none;
+    border-radius: 22px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.add-card button:hover{
+    background-color: #e2bb5e;
+    color: white;
+    transition: all 0.3s;
+}
+
+.card-form{
+    display: flex;
+    
+    align-items: center;
+    justify-content: space-between;
+    background-color: #f4f4f4;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    border-radius: 16px;
+    margin-bottom: 20px;
+}
+
+.card img{
+    width: 120px;
+}
+
+
+.card-brand img{
+    width: 40px;
+    margin-left: 20px;
+}
+
+.right-card{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.delete-card{
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.delete-card button {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-family: 'DM Serif Text', sans-serif;
+    background: #f9f9f9;
+    border: none;
+    border-radius: 22px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    padding: 8px 20px;
+    font-size: 15px;
+    font-weight: bold;
+    transition: all 0.3s;
+}
+
+.delete-card button:hover{
+    color: red;
+}
+
+

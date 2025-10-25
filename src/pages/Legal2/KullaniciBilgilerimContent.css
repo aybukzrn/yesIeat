@@ -1,4 +1,4 @@
-.personal-information{
+.personal-information {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -6,7 +6,8 @@
 }
 
 .user-information,
-.password{
+.password,
+.delete-account {
     flex-basis: 48%;
     background: #f9f9f9;
     padding: 20px;
@@ -14,20 +15,20 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.name{
+.name {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
 }
 
-.ui-form-group{
+.ui-form-group {
     display: flex;
     flex-basis: 48%;
     flex-direction: column;
     margin-bottom: 10px;
 }
 
-.ui-form-group input{
+.ui-form-group input {
     font-family: 'Dm Serif Text', serif;
     letter-spacing: 1px;
     padding: 10px;
@@ -36,7 +37,7 @@
 }
 
 .change-password-button,
-.save-button{
+.save-button {
     font-family: 'Dm Serif Text', serif;
     font-size: 16px;
     background-color: #f4f4f4;
@@ -51,17 +52,55 @@
 }
 
 .change-password-button:hover,
-.save-button:hover{
+.save-button:hover {
     background-color: #e2bb5e;
     color: white;
     transition: 0.3s;
 }
 
-.password-toggle-icon img{
+.password-toggle-icon img {
     width: 20px;
     height: 20px;
-    
+
 }
 
+.password-input-container input {
+    font-family: 'Dm Serif Text', serif;
+    letter-spacing: 1px;
+    padding-top: 8px;
+}
 
+.password-input-container.active {
+    letter-spacing: 3px;
+}
 
+.delete-account {
+    margin-top: 20px;
+}
+
+.delete-account h3{
+    font-size: 16px;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 5px;
+    color: #e22b01;
+}
+
+.delete-account p{
+    font-size: 14px;
+    color: #666;
+}
+
+.delete-account-button{
+    font-family: 'DM Serif Text', serif;
+    font-size: 16px;
+    background-color: #f4f4f4;
+    border: none;
+    border-radius: 22px;
+    padding: 8px 20px;
+    cursor: pointer;
+}
+
+.delete-account-button:hover{
+    color: #e22b01;
+    transition: all .3s;
+}

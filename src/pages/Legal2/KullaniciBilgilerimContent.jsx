@@ -106,6 +106,12 @@ const KullaniciBilgilerimContent = () => {
         </div>
 
       </div>
+
+      <div className="delete-account">
+        <h3>Hesap Kaldırma</h3>
+        <p>Hesabınızı silerseniz, tüm kişisel verileriniz kalıcı olarak silinecektir. Bu işlemi geri alamazsınız.</p>
+        <button type="submit" className="delete-account-button">Hesabı Sil</button>
+      </div>
     </form>
 
 
