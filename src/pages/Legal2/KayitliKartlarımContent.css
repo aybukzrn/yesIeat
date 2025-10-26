@@ -17,7 +17,7 @@
 
 .name h2{
     font-size: 15px;
-    color: black;
+    color: #333;
     border-bottom: 1px solid #ccc;
 
 }
@@ -32,6 +32,7 @@
     font-weight: bolder;
     padding: 8px 20px;
     background: #f4f4f4;
+    color: #333;
     border: none;
     border-radius: 22px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
@@ -82,7 +83,7 @@
     align-items: center;
     gap: 7px;
     font-family: 'DM Serif Text', sans-serif;
-    background: #f9f9f9;
+    background-color: #f4f4f4;
     border: none;
     border-radius: 22px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
@@ -90,6 +91,7 @@
     font-size: 15px;
     font-weight: bold;
     transition: all 0.3s;
+    color: #333;
 }
 
 .delete-card button:hover{

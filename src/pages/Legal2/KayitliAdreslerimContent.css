@@ -1,0 +1,38 @@
+.addresses h2{
+    font-size: 20px;
+    color: #333;
+    justify-content: left;
+}
+
+.address-form{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    background: #f4f4f4;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.title input,
+.addess input,
+.phone input{
+    border: none;
+    border-radius: 22px;
+    padding: 12px 20px;
+    width: 57%;
+    font-size: 14px;
+}
+
+.triple{
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.triple input{
+    border: none;
+    border-radius: 22px;
+    padding: 12px 20px;
+    font-size: 14px;
+}
