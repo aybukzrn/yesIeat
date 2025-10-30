@@ -9,8 +9,7 @@ const Footer = () => {
 
     const mapIframe = `<iframe 
     src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2246.0119355104907!2d32.802685972702115!3d39.7872984322932!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14d341813f339057%3A0x1b7a31a2228ed33!2zR2F6aW9zbWFucGHFn2EsIFNhaGlsIENkLiwgMDY4MzAgR8O2bGJhxZ_EsS9BbmthcmE!5e0!3m2!1str!2str!4v1760191854707!5m2!1str!2str" 
-    width="800" 
-    height="300" 
+    
     style="border:0;" 
     allowfullscreen="" 
     loading="lazy"
@@ -23,7 +22,7 @@ const Footer = () => {
 
                 <div className="f-left-section">
 
-                    
+
 
                     <div className="row">
 
@@ -47,9 +46,15 @@ const Footer = () => {
 
                     </div>
 
+
+
+                </div>
+
+                <div className="f-right-section">
+
                     <div className="footer-section about">
                         <div className="f-navbar-logo">
-                            <img src="assets/LoginPages/logo.png"/>
+                            <img src="assets/LoginPages/logo.png" />
                         </div>
 
                         <div className="text">
@@ -57,10 +62,6 @@ const Footer = () => {
                             <p>(0312) 318 05 83</p>
                         </div>
                     </div>
-
-                </div>
-
-                <div className="f-right-section">
 
 
 

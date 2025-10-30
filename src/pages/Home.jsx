@@ -124,7 +124,7 @@ const Home = () => {
                                 ŞEFİN TAVSİYESİ</h3>
                             <h2>Izgara Somon Filosu</h2>
                             <p>Hafif, doyurucu ve protein deposu. Limitli sayıda, hemen deneyin!</p>
-                            <Link to="/menu/somon" className="order-now-button">Şimdi Sipariş Ver</Link>
+                            <Link to="/" className="order-now-button">Şimdi Sipariş Ver</Link>
                         </Fade>
                     </div>
                     <div className="special-image-container">
@@ -132,6 +132,8 @@ const Home = () => {
                             <img src="/assets/special.jpg" alt="Izgara Somon" className="special-image" />
                         </Fade>
                     </div>
+
+                    <Link to="/" className="order-now-button-mobile">Şimdi Sipariş Ver</Link>
                 </div>
             </section>
 
@@ -158,7 +160,7 @@ const Home = () => {
                 <div className="container text-center">
 
                     <Fade direction="down" triggerOnce>
-                        <h2 className="mb-5">Neden <br /> HAZIR YEMEK?</h2>
+                        <h2 className="mb-5">Neden <br /> YES I EAT?</h2>
                     </Fade>
 
                     <div className="row features-grid">

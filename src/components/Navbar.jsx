@@ -54,6 +54,7 @@ const Navbar = () => {
                 <button className="hamburger-menu" onClick={toggleMenu}>
                     {isMenuOpen ? <MdMenu size={28} /> : <MdClose size={28} />}
                 </button>
+                
 
 
 
@@ -135,6 +136,11 @@ const Navbar = () => {
                     <li>
                         <Link to="/account" className="nav-link" onClick={() => setIsMenuOpen(false)}>
                             <MdAccountCircle size={18} /> Hesabım
+                        </Link>
+                    </li>
+                    <li>
+                        <Link to="/cart" className="nav-link" onClick={() => setIsMenuOpen(false)}>
+                            <MdShoppingBasket size={18} /> Sepetim
                         </Link>
                     </li>
                     <li>

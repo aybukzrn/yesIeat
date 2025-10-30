@@ -71,9 +71,6 @@
   background-color: #d82800 !important;
 }
 
-
-
-
 .category {
   text-align: center;
   margin-top: -50px;
@@ -145,10 +142,6 @@
 
 
 
-
-
-
-
 .chef-special {
   padding: 55px 20px;
   background-color: #e2bb5e;
@@ -201,6 +194,10 @@
   color: #333;
 }
 
+.order-now-button-mobile {
+  display: none;
+}
+
 .order-now-button {
   padding: 12px 30px;
   background-color: #d82800;
@@ -231,39 +228,6 @@
   margin-top: 30px;
   margin-bottom: 50px;
 }
-
-
-
-
-
-
-
-@media (max-width: 992px) {
-  .special-card {
-    /* Küçük ekranlarda alt alta dizilme */
-    flex-direction: column;
-    text-align: center;
-    padding: 30px 20px;
-  }
-
-  .special-details {
-    padding-right: 0;
-    margin-bottom: 25px;
-  }
-
-  .special-image {
-    max-width: 80%;
-    /* Mobil cihazlarda daha büyük görünsün */
-  }
-
-  .special-details h2 {
-    font-size: 2rem;
-  }
-}
-
-
-
-
 
 
 .container.text-center {
@@ -307,4 +271,116 @@
   padding: 30px;
   width: 250px;
   transition: background-color 0.3s ease;
+}
+
+
+/* Responsive Design */
+
+
+@media (max-width: 768px) {
+
+  .slide-content .overlay {
+    padding: 50px 20px;
+    max-width: 90%;
+  }
+
+  .category-list {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 40px;
+    padding-top: 60px;
+  }
+
+  .category-item img{
+    width: 70px;
+    height: 80px;
+  }
+
+  .category-item{
+    height: 180px;
+  }
+
+  .category h3 {
+    font-size: 14px;
+    
+  }
+
+  .special-card {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .special-badge {
+    margin-top: -30px;
+    margin-bottom: 10px;
+    font-size: 35px;
+    margin-left: 0;
+    
+  }
+
+  .special-details {
+    padding-right: 0;
+    margin-bottom: 25px;
+  }
+
+  .special-image {
+    max-width: 80%;
+  }
+
+  .special-details h2 {
+    font-size: 1.5rem;
+    margin-right: 0;
+  }
+
+  .special-details p {
+    margin-left: 0;
+    margin-bottom: 10px;
+  }
+
+  .order-now-button-mobile {
+    display: inline-block;
+    padding: 10px 20px;
+    margin-top: 10px;
+    background-color: #d82800;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    font-size: 1rem;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.3s;
+  }
+
+  .order-now-button-mobile:hover {
+    background-color: #f33005;
+  }
+
+  .order-now-button {
+    display: none;
+}
+
+.row-features-grid{
+  flex-direction: row;
+  
+}
+
+.info-item{
+  width: 70px;
+  
+  font-size: 12px;
+}
+
+.feature-icon{
+  width: 30px;
+  
+  
+}
+
+.container.text-center h2{
+  font-size: 28px;
+}
+
+
 }
