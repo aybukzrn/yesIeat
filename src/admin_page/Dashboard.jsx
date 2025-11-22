@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import Sidebar from '../components/Sidebar'; 
-import './Dashboard.css'; 
+import Sidebar from '../components/Sidebar';
+import './Dashboard.css';
 
+import LiveClock from '../components/LiveClock';
 
 // içerik bileşeneleri
 import AnalyticsContent from './Legal3/AnalyticsContent';
@@ -34,14 +35,22 @@ const Dashboard = () => {
 
     return (
         <div className="admin-dashboard-layout">
-            
-            <Sidebar 
-                activeCategory={activeCategory} 
-                setActiveCategory={setActiveCategory} 
+
+            <Sidebar
+                activeCategory={activeCategory}
+                setActiveCategory={setActiveCategory}
             />
-            
+
             <main className="admin-content-area">
-                <h1>{activeCategory} Yönetimi</h1>
+                <div className="admin-content-area headers">
+                    <h1>{activeCategory} <LiveClock /> </h1>
+                </div>
+
+
+
+
+
+
                 <div className="content-container">
                     {renderContent()}
                 </div>
