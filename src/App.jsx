@@ -10,6 +10,7 @@ import Account from './pages/Account';
 import Contact from './pages/Contact';
 import Cart from './pages/Cart';
 import IntroAnimation from './components/IntroAnimation';
+import Dashboard from './admin_page/Dashboard';
 
 
 function App() {
@@ -36,6 +37,9 @@ function App() {
       <Route path="/account" element={<Account />} />
       <Route path="/contact" element={<Contact />} />
       <Route path="/cart" element={<Cart />} />
+      <Route path="/dashboard" element={<Dashboard />} />
+      
+
 
     </Routes>
   );

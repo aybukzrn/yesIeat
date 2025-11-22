@@ -6,6 +6,8 @@
 
 
 .dropdown-toggle {
+    font-family: 'Dm Serif Text', serif;
+    
     background:transparent; 
     color: #aa1f00;
     font-size: 1rem;
@@ -18,6 +20,7 @@
 
 
 .dropdown-menu {
+    letter-spacing: .7px;
     position: absolute;
     top: 100%; 
     left: -40px;
@@ -32,13 +35,11 @@
 }
 
 .dropdown-toggle:hover {
-    color: #aa1f00; /* Buton hover rengi */
+    color: #aa1f00; 
 }
 
 .dropdown-toggle.active {
-    color: #aa1f00; /* Hover'dakiyle aynı rengi veriyoruz */
-    /* İsteğe bağlı: Hafif bir underline veya border ekleyebilirsiniz */
-    /* border-bottom: 2px solid #aa1f00; */
+    color: #aa1f00; 
 }
 
 .dropdown-menu a, 

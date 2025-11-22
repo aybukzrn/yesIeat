@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Navbar from '../components/Navbar';
+import Navbar2 from '../components/Navbar2';
 import Footer from '../components/Footer';
 import { FaTimes } from 'react-icons/fa';
 import './Cart.css';
@@ -72,7 +72,7 @@ const Cart = () => {
 
   return (
     <>
-      <Navbar />
+      <Navbar2 />
       <div className="cart-page-container">
 
         <div className="checkout-details">

@@ -1,0 +1,37 @@
+.boxs{
+    display: flex;
+    flex-wrap:wrap;
+    gap: 20px;
+    padding: 20px;    
+}
+
+.box{
+    background: #f9f9f9;
+    padding: 20px;
+}
+
+.analytics-content {
+    display: flex; /* Yan yana getirmek için şart */
+    gap: 20px;     /* İki panel arası boşluk */
+    padding: 20px;
+}
+
+.left-panel {
+    flex: 1;       /* Sol taraf esnek olsun */
+}
+
+.right-panel {
+    flex: 1;       /* Sağ taraf esnek olsun (Yarı yarıya paylaşırlar) */
+    /* Grafiğin kutusu için stiller */
+    background-color: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+/* Boxs ızgarası artık sol panelin içinde */
+.boxs {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* 2 sütunlu ızgara */
+    gap: 20px;
+}

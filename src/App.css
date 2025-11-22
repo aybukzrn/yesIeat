@@ -42,42 +42,34 @@
 }
 
 
-/* src/App.css */
-
-/* Daha önce oluşturduğumuz .slide-content stiline ekleme yapıyoruz */
 .slide-content {
-  /* ... diğer stiller ... */
-  position: relative; /* Gölge katmanını (.fade-overlay) konumlandırmak için */
+ 
+  position: relative; 
+
 }
 
-/* YENİ STİL: Gölgeleme Katmanı (Fade Overlay) */
+
 .fade-overlay {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 1; /* Metnin ve düğmelerin altında, fotoğrafın üstünde olmalı */
-  pointer-events: none; /* Üzerine tıklanabilirliği engeller */
+  z-index: 1; 
+  pointer-events: none; 
 
-  /* Dikeyde (yukarıdan aşağıya) siyah, yumuşak bir geçiş oluşturur */
+  
   background: linear-gradient(
     to bottom,
-    rgba(0, 0, 0, 0.4) 0%,   /* Üstte hafif koyuluk */
-    rgba(0, 0, 0, 0) 30%,    /* Orta kısım tamamen şeffaf */
+    rgba(0, 0, 0, 0.4) 0%,   
+    rgba(0, 0, 0, 0) 30%,    
     rgba(0, 0, 0, 0) 70%,
-    rgba(0, 0, 0, 0.4) 100%  /* Altta hafif koyuluk */
+    rgba(0, 0, 0, 0.4) 100%  
   );
 
-  /* Eğer arka planınız koyu renkli ise ve sadece ışığı azaltmak istiyorsanız,
-     yukarıdaki kodu kullanın. Eğer sadece fotoğrafı blur yapmak istiyorsanız:
-     backdrop-filter: blur(5px);
-     (Ancak bu tüm fotoğrafı blur yapar, sadece kenarları değil)
-  */
+ 
 }
 
-/* Metin kutusunun z-index'ini artırın ki gölgenin üzerinde görünsün */
 .slide-content .overlay {
-    z-index: 2; /* Gölgeden daha yüksek */
-    /* ... diğer stil kuralları ... */
+    z-index: 2; 
 }

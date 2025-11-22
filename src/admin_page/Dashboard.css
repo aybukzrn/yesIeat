@@ -1,0 +1,70 @@
+.admin-dashboard-layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar-container {
+    width: 250px; 
+    background:  #e2bb5e;
+    color: white;
+    padding: 20px 0;
+}
+
+.admin-logo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 1px solid #f4f4f4;
+    margin-bottom: 20px;
+}
+
+.admin-logo img{
+    width: 80px;
+    border-radius: 50%;
+}
+
+.logo-text{
+    margin-top: 5px;
+    font-size: 15px;
+    font-weight: bold;
+    color: white;
+}
+
+
+.admin-content-area {
+    flex-grow: 1; 
+    padding: 30px;
+    background-color: #ecf0f1; 
+}
+
+
+.category-filter-bar {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.filter-btn {
+    display: flex;
+    align-items: center;
+    background: none;
+    border: none;
+    color: #fff; 
+    padding: 10px 20px;
+    cursor: pointer;
+    text-align: left;
+    transition: background-color 0.2s, color 0.2s;
+    font-size: 1rem;
+}
+
+.filter-btn:hover {
+    background-color: rgba(255, 255, 255, 0.544);
+    color: rgb(33, 14, 0);
+}
+
+.filter-btn.active {
+    background-color: #ffffffcc; /* Aktif renk */
+    color: rgb(33, 14, 0);
+    font-weight: bold;
+}

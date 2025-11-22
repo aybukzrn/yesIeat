@@ -32,6 +32,7 @@ body {
 }
 
 .account {
+    
     display: flex;
     align-items: center;
     flex-direction: row;
@@ -59,7 +60,7 @@ body {
 }
 
 .cart {
-
+    
     font-size: 16px;
     cursor: pointer;
     font-weight: 500;
@@ -70,6 +71,7 @@ body {
 }
 
 .cart-button {
+    font-family: 'Dm Serif Text', serif;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -98,6 +100,8 @@ body {
 }
 
 .search-bar input {
+    font-family: 'Dm Serif Text', serif;
+    letter-spacing: 1px;
     border: none;
     outline: none;
     padding: .75rem 1.2rem;
