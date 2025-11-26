@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import './OrdersContent.css';
 import { Link } from 'react-router-dom';
-import Modal from '../../components/Modal'; 
+import Modal from '../../components/Modal';
+import { IoIosAddCircleOutline } from 'react-icons/io';
+import { CgDetailsMore } from "react-icons/cg";
 
 
 const DATA = {
@@ -17,7 +19,7 @@ const generateDeterministicOrders = () => {
         const customer = DATA.names[i % DATA.names.length];
         const itemContent = DATA.items[i % DATA.items.length];
         const total = 100 + (i * 15) + (i % 10 * 0.5);
-        
+
         return {
             id: String(100 + i),
             customer: customer,
@@ -30,18 +32,18 @@ const generateDeterministicOrders = () => {
 };
 
 const OrdersContent = () => {
-   
+
     const [orders, setOrders] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 10; 
-    
- 
+    const itemsPerPage = 10;
+
+
     const [isApprovalModalOpen, setIsApprovalModalOpen] = useState(false);
     const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
     const [selectedOrder, setSelectedOrder] = useState(null); // Detay gösterilecek sipariş
 
-   
+
     useEffect(() => {
         setIsLoading(true);
         setTimeout(() => {
@@ -52,10 +54,10 @@ const OrdersContent = () => {
 
 
     const handleApproveOrder = (orderId) => {
-        setOrders(prevOrders => prevOrders.map(order => 
+        setOrders(prevOrders => prevOrders.map(order =>
             order.id === orderId ? { ...order, status: 'Yeni Sipariş' } : order
         ));
-        
+
     };
 
     const handleViewDetails = (order) => {
@@ -64,7 +66,7 @@ const OrdersContent = () => {
     };
 
 
-    
+
     const getStatusCount = (status) => orders.filter(o => o.status === status).length;
     const summaryData = [
         { label: 'Bekleyen Siparişler', statusKey: 'Beklemede', count: getStatusCount('Beklemede'), action: true },
@@ -72,7 +74,7 @@ const OrdersContent = () => {
         { label: 'Yolda Olan Siparişler', statusKey: 'Yolda', count: getStatusCount('Yolda') },
         { label: 'Teslim Edilen Siparişler', statusKey: 'Teslim Edildi', count: getStatusCount('Teslim Edildi') },
     ];
-    
+
     const ordersToDisplay = orders.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
     const totalPages = Math.ceil(orders.length / itemsPerPage);
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
@@ -85,29 +87,30 @@ const OrdersContent = () => {
     return (
         <>
             <div className="OrdersContent">
-                
-                
+
+
                 <div className="up-content">
                     {summaryData.map(item => (
                         <div className={`box status-${item.statusKey.split(' ')[0].toLowerCase()}`} key={item.label}>
-                            <h2>{item.label}</h2>
-                            <p>{item.count}</p>
-                            {item.action && (
+                            <h2>{item.label}{item.action && (
                                 <div className="detail-button">
-                                  
+
                                     <button onClick={() => setIsApprovalModalOpen(true)}>
-                                        Detayları Görüntüle
+                                        <CgDetailsMore />
                                     </button>
                                 </div>
                             )}
+                            </h2>
+                            <p>{item.count}</p>
+
                         </div>
                     ))}
                 </div>
 
-              
+
                 <div className="down-content">
                     <div className="add-order">
-                        <Link to="/menu" className="btn-add-order">Yeni Sipariş Ekle</Link>
+                        <Link to="/dashboard" className="btn-add-order"><IoIosAddCircleOutline />Yeni Sipariş Ekle</Link>
                     </div>
 
                     <div className="orders-table-wrapper">
@@ -137,7 +140,7 @@ const OrdersContent = () => {
                                             </span>
                                         </td>
                                         <td>
-                                            
+
                                             <button className="action-btn" onClick={() => handleViewDetails(order)}>...</button>
                                         </td>
                                     </tr>
@@ -146,7 +149,7 @@ const OrdersContent = () => {
                         </table>
                     </div>
 
-                    
+
                     <div className="pagination">
                         {Array.from({ length: totalPages }, (_, i) => (
                             <button key={i + 1} onClick={() => paginate(i + 1)} className={currentPage === i + 1 ? 'active-page' : ''}>{i + 1}</button>
@@ -161,8 +164,8 @@ const OrdersContent = () => {
                     {orders.filter(o => o.status === 'Beklemede').map(order => (
                         <li key={order.id}>
                             Sipariş #{order.id} - {order.customer}
-                            <button 
-                                onClick={() => handleApproveOrder(order.id)} 
+                            <button
+                                onClick={() => handleApproveOrder(order.id)}
                                 className="approve-btn"
                                 disabled={order.status !== 'Beklemede'} // Onaylanmışsa pasif
                                 style={{ backgroundColor: order.status === 'Yeni Sipariş' ? '#ccc' : '#2ecc71', color: 'white', border: 'none', padding: '5px 10px', borderRadius: '5px' }}
@@ -174,6 +177,7 @@ const OrdersContent = () => {
                 </ul>
             </Modal>
 
+
             {/* MODAL 2: TABLO DETAY GÖRÜNTÜLEME */}
             <Modal isOpen={isDetailModalOpen} onClose={() => setIsDetailModalOpen(false)} title="Sipariş Detayları">
                 {selectedOrder && (
@@ -183,7 +187,7 @@ const OrdersContent = () => {
                         <p><strong>İçerik:</strong> {selectedOrder.content}</p>
                         <p><strong>Tutar:</strong> {selectedOrder.total} ₺</p>
                         <p><strong>Tarih:</strong> {selectedOrder.date}</p>
-                        <p><strong>Durum:</strong> 
+                        <p><strong>Durum:</strong>
                             <span className={`status-badge badge-${selectedOrder.status.split(' ')[0].toLowerCase()}`}>
                                 {selectedOrder.status}
                             </span>

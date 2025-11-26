@@ -77,7 +77,7 @@ const ProductsContent = () => {
 
           {/* Üst kontrol bölümü */}
           <div className="controls-container">
-            <div className="search-bar">
+            <div className="search-bar-product">
               <input type="text" placeholder="Ürün Ara..." />
             </div>
 

@@ -118,7 +118,7 @@ const Cart = () => {
             <h3>Bahşiş</h3>
             {errors.tip && <span className="error-text">{errors.tip}</span>}
             <div className="tip-options">
-              {['Şimdi değil', 15, 20, 30].map((tip, index) => (
+              {['Şimdi değil', 10, 20, 30].map((tip, index) => (
                 <button key={index}
                   className={`btn btn-tip ${selectedTip === tip ? 'active' : ''}`}
                   onClick={() => setSelectedTip(tip)}>
