@@ -19,14 +19,14 @@ function App() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowIntro(false);
-    }, 3500); // Süreyi değiştir
+    }, 500); // Süreyi değiştir
 
     return () => clearTimeout(timer);
   }, []); 
 
-  if (showIntro) {
-    return <IntroAnimation />;
-  }
+  // if (showIntro) {
+  //   return <IntroAnimation />;
+  // }
   return (
     
     <Routes>

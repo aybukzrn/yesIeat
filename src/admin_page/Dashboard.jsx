@@ -8,6 +8,7 @@ import LiveClock from '../components/LiveClock';
 import AnalyticsContent from './Legal3/AnalyticsContent';
 import ProductsContent from './Legal3/ProductsContent';
 import OrdersContent from './Legal3/OrdersContent';
+import SettingsContent from './Legal3/SettingsContent';
 
 
 const Dashboard = () => {
@@ -21,10 +22,9 @@ const Dashboard = () => {
                 return <ProductsContent />;
             case 'Siparişler':
                 return <OrdersContent />;
-            case 'Müşteriler':
-                return <div>Müşteriler Listesi İçeriği</div>; // Yer Tutucu
+            
             case 'Ayarlar':
-                return <div>Ayarlar İçeriği</div>; // Yer Tutucu
+                return <SettingsContent /> 
             case 'Çıkış':
                 // Çıkış yapma mantığı buraya gelir (Örn: auth.logout())
                 return <div>Çıkış İşlemi Başarılı</div>;
@@ -36,10 +36,13 @@ const Dashboard = () => {
     return (
         <div className="admin-dashboard-layout">
 
-            <Sidebar
-                activeCategory={activeCategory}
-                setActiveCategory={setActiveCategory}
-            />
+            <div className="d-sidebar">
+                <Sidebar
+                    activeCategory={activeCategory}
+                    setActiveCategory={setActiveCategory}
+                />
+
+            </div>
 
             <main className="admin-content-area">
                 <div className="admin-content-area headers">

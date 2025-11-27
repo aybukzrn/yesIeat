@@ -14,7 +14,7 @@ const categories = [
     { name: 'Analiz', icon: TbReportAnalytics },
     { name: 'Ürünler', icon: AiFillProduct },
     { name: 'Siparişler', icon: MdShoppingCartCheckout },
-    { name: 'Müşteriler', icon: BsPeopleFill },
+    // { name: 'Müşteriler', icon: BsPeopleFill },
     { name: 'Ayarlar', icon: IoIosSettings },
     { name: 'Çıkış', icon: LiaSignOutAltSolid },
 ];
@@ -24,22 +24,22 @@ const Sidebar = ({ activeCategory, setActiveCategory }) => {
 
     return (
 
-        <div className="sidebar-container">
+        <div className="m-sidebar-container">
             <div className="admin-logo">
                 <div className="logo-content">
                     <img src="assets/LoginPages/logo.png" />
                 </div>
-                <div className="logo-text">
+                <div className="m-logo-text">
                     <h2>Yönetici Paneli</h2>
                 </div>
             </div>
 
-            <div className="category-filter-bar">
+            <div className="m-category-filter-bar">
                 {categories.map((cat) => (
                     <button
                         key={cat.name}
 
-                        className={`filter-btn ${activeCategory === cat.name ? 'active' : ''}`}
+                        className={`m-filter-btn ${activeCategory === cat.name ? 'active' : ''}`}
 
                         onClick={() => setActiveCategory(cat.name)}
                     >

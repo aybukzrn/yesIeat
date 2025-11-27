@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './ProductsContent.css';
+import { IoIosAddCircleOutline } from 'react-icons/io';
 
 const ProductsContent = () => {
 
@@ -81,12 +82,21 @@ const ProductsContent = () => {
               <input type="text" placeholder="Ürün Ara..." />
             </div>
 
-            <div className="category-dropdown">
-              <select value={activeCategory} onChange={handleCategoryChange}>
-                <option value="Ürünler">Ürünler</option>
-                <option value="Menüler">Menüler</option>
-              </select>
+            <div className="r-controls">
+              <div className="category-dropdown">
+                <select value={activeCategory} onChange={handleCategoryChange}>
+                  <option value="Ürünler">Ürünler</option>
+                  <option value="Menüler">Menüler</option>
+                </select>
+              </div>
+
+
+              <div className="add-product">
+                <button className="btn-add-product"><IoIosAddCircleOutline /> Yeni Ürün / Menü Ekle</button>
+              </div>
+
             </div>
+
           </div>
 
 

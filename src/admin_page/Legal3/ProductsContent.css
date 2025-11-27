@@ -17,6 +17,7 @@
     justify-content: space-between;
     gap: 15px;
     margin-bottom: 20px;
+    
 }
 
 .search-bar-product input{
@@ -25,12 +26,14 @@
     border-radius: 18px;
     font-size: 1rem;
     width: 250px;
+    font-family: 'Dm Serif Text', serif;
 }
 
 .category-dropdown select{
     border-radius: 18px;
     border: 1px solid #ddd;
     padding: 10px 10px 10px 10px;
+    font-family: 'Dm Serif Text', serif;
 }
 
 
@@ -147,4 +150,30 @@
     font-size: 12px;
     font-weight: bold;
     margin-right: 10px;
+}
+
+
+.r-controls{
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.add-product button{
+    font-family: 'Dm Serif Text', serif;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 10px 15px;
+    background-color: #205d3a;
+    border: none;
+    border-radius: 14px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.add-product button:hover {
+    background-color: #163d26;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }

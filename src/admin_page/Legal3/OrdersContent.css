@@ -20,17 +20,34 @@
     border-bottom: 1px solid #ccc;
     margin-bottom: 0;
     padding-bottom: 5px;
-
-
+    display: flex;
+    align-items: center;
+    gap: 7px;
 }
 
 .up-content .box p {
-    font-size: 18px;
+    font-size: 28px;
+    font-weight: bold;
+    color: red;
+}
+
+.box.status-teslim p{
+    color: #32780e;
+}
+
+.box.status-yolda p{
+    color: #4277ac;
+}
+
+.box.status-yeni p{
+    color: hsl(278, 83%, 42%);
 }
 
 .detail-button button {
+    display: flex;
+    align-items: center;
     padding: 5px 10px 5px 5px;
-    background-color: #e2bb5e;
+    background-color: #980000;
     border: none;
     border-radius: 18px;
     color: white;
@@ -39,7 +56,7 @@
 }
 
 .detail-button button:hover {
-    background-color: #d4a83e;
+    background-color: #ca0000;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
@@ -56,7 +73,7 @@
     align-items: center;
     gap: 5px;
     padding: 10px 10px 10px 10px;
-    background-color: #e2bb5e;
+    background-color: #980000;
     border: none;
     border-radius: 18px;
     color: white;
@@ -70,12 +87,12 @@
 }
 
 .btn-add-order:hover {
-    background-color: #d4a83e;
+    background-color: #ca0000;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
 .orders-table-wrapper th{
-    background-color: #514934;
+    background-color: #006e56;
 }
 
 .orders-table-wrapper td {
@@ -86,6 +103,21 @@
     background-color: #ebebeb;
 }
 
+.action-btn {
+    background-color: #006e56af;
+    border: none;
+    border-radius: 12px;
+    color: white;
+    padding: 5px 10px;
+    cursor: pointer;
+    transition: all .3s;
+}
+
+.action-btn:hover {
+    background-color: #006e56;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
 .pagination button {
     background-color: #ffffff;
     color: rgb(0, 0, 0);
@@ -93,12 +125,12 @@
 }
 
 .pagination button:hover:not(:disabled) {
-    background-color: #e2bb5e;
+    background-color: #006e56a8;
     color: white;
 }
 
 .pagination button.active-page{
-    background-color: #e2bb5e;
+    background-color: #006e56;
     color: #ffffff;
     cursor: not-allowed;
 }

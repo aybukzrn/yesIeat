@@ -92,7 +92,8 @@ const OrdersContent = () => {
                 <div className="up-content">
                     {summaryData.map(item => (
                         <div className={`box status-${item.statusKey.split(' ')[0].toLowerCase()}`} key={item.label}>
-                            <h2>{item.label}{item.action && (
+                            <h2>
+                                {item.label}{item.action && (
                                 <div className="detail-button">
 
                                     <button onClick={() => setIsApprovalModalOpen(true)}>

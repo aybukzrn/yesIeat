@@ -1,13 +1,15 @@
 .admin-dashboard-layout {
     display: flex;
     min-height: 100vh;
+    
 }
 
-.sidebar-container {
+.m-sidebar-container {
     width: 250px; 
     background:  #e2bb5e;
     color: white;
     padding: 20px 0;
+    height:95vh;  
 }
 
 .admin-logo {
@@ -24,7 +26,7 @@
     border-radius: 50%;
 }
 
-.logo-text{
+.m-logo-text{
     margin-top: 5px;
     font-size: 15px;
     font-weight: bold;
@@ -46,13 +48,14 @@
 }
 
 
-.category-filter-bar {
+.m-category-filter-bar {
     display: flex;
     flex-direction: column;
     gap: 5px;
+   
 }
 
-.filter-btn {
+.m-filter-btn {
     display: flex;
     align-items: center;
     background: none;
@@ -61,16 +64,19 @@
     padding: 10px 20px;
     cursor: pointer;
     text-align: left;
-    transition: background-color 0.2s, color 0.2s;
-    font-size: 1rem;
+    transition: background-color 0.2s, color 0.2s, all 0.2s;
+    font-size: 1.1rem;
+    font-family: 'DM Serif Text', sans-serif;
+    margin-bottom: 10px;
 }
 
-.filter-btn:hover {
+.m-filter-btn:hover {
     background-color: rgba(255, 255, 255, 0.544);
     color: rgb(33, 14, 0);
+    border-radius: 18px;
 }
 
-.filter-btn.active {
+.m-filter-btn.active {
     background-color: #ffffffcc; /* Aktif renk */
     color: rgb(33, 14, 0);
     font-weight: bold;
