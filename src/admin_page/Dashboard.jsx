@@ -26,7 +26,7 @@ const Dashboard = () => {
             case 'Ayarlar':
                 return <SettingsContent /> 
             case 'Çıkış':
-                // Çıkış yapma mantığı buraya gelir (Örn: auth.logout())
+                
                 return <div>Çıkış İşlemi Başarılı</div>;
             default:
                 return <AnalyticsContent />;

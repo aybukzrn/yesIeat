@@ -94,13 +94,13 @@ const OrdersContent = () => {
                         <div className={`box status-${item.statusKey.split(' ')[0].toLowerCase()}`} key={item.label}>
                             <h2>
                                 {item.label}{item.action && (
-                                <div className="detail-button">
+                                    <div className="detail-button">
 
-                                    <button onClick={() => setIsApprovalModalOpen(true)}>
-                                        <CgDetailsMore />
-                                    </button>
-                                </div>
-                            )}
+                                        <button onClick={() => setIsApprovalModalOpen(true)}>
+                                            <CgDetailsMore />
+                                        </button>
+                                    </div>
+                                )}
                             </h2>
                             <p>{item.count}</p>
 

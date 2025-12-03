@@ -72,7 +72,7 @@ const MonthlySalesChart = () => {
                 type="monotone" 
                 dataKey="satis" 
                 name="Gerçekleşen Satış" 
-                stroke="#00C49F" 
+                stroke="#D34E4E" 
                 strokeWidth={3}  
                 activeDot={{ r: 8 }} 
               />

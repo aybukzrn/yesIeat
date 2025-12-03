@@ -1,8 +1,10 @@
 /* src/SettingsContent.css */
 
 .SettingsContent {
-    padding: 30px;
-    background-color: #f4f7f9;
+    padding: 20px;
+    overflow-y: auto; 
+    height: 550px;
+    font-family: 'DM Serif Text', serif;
 }
 
 /* Tab Navigasyonu */
@@ -13,20 +15,22 @@
 }
 
 .tab-btn {
+    font-family: 'DM Serif Text', serif;
     background: none;
     border: none;
     padding: 10px 20px;
     margin-right: 10px;
     font-size: 1.1rem;
+    font-weight: bolder;
     cursor: pointer;
-    color: #555;
+    color: #3E0703;
     transition: color 0.2s, border-bottom 0.2s;
     border-bottom: 2px solid transparent;
 }
 
 .tab-btn:hover, .tab-btn.active {
-    color: #3498db;
-    border-bottom: 2px solid #3498db;
+    color: #CE7E5A;
+    border-bottom: 2px solid #CE7E5A;
 }
 
 /* Ayar Form Alanı */
@@ -45,7 +49,7 @@
 }
 
 .setting-group h3 {
-    color: #34495e;
+    color: #3E0703;
     margin-bottom: 15px;
     font-size: 1.2rem;
 }
@@ -55,16 +59,18 @@ label {
     margin-top: 15px;
     margin-bottom: 5px;
     font-weight: 500;
-    color: #555;
+    color: #232323;
 }
 
-input[type="text"], input[type="number"] {
+.setting-group input[type="text"], input[type="number"], input[type="password"] {
     width: 100%;
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
     box-sizing: border-box;
 }
+
+
 
 /* Checkbox Alanı */
 .checkbox-setting {
@@ -80,17 +86,18 @@ input[type="text"], input[type="number"] {
 }
 
 .checkbox-setting input[type="checkbox"] {
-    width: 20px;
-    height: 20px;
+    width: 15px;
+    height: 15px;
 }
 
 /* Kaydet Butonu */
 .save-button {
-    background-color: #2ecc71;
+    background-color: #9A3F3F;
     color: white;
-    padding: 12px 20px;
+    padding: 12px;
+    width: 250px;
     border: none;
-    border-radius: 5px;
+    border-radius: 16px;
     font-size: 1rem;
     cursor: pointer;
     transition: background-color 0.2s;
@@ -102,6 +109,7 @@ input[type="text"], input[type="number"] {
     cursor: not-allowed;
 }
 
-/* Durum Etiketleri */
-.status-active { color: #2ecc71; font-weight: bold; margin-left: 10px; }
-.status-passive { color: #e74c3c; font-weight: bold; margin-left: 10px; }
+.save-button:hover:enabled {
+    background-color: #833535;
+}
+

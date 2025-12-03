@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
 
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
+const COLORS = ['#D34E4E', '#662222', '#DDC57A', '#CE7E5A'];
 
 const UserStatsChart = () => {
   const [data, setData] = useState([]);
