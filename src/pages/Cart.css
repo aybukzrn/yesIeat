@@ -49,9 +49,10 @@
   gap: 1rem;
 }
 
-.form-grid input[type="text"],
-.form-grid input[type="email"],
-.form-grid input[type="tel"],
+
+.info-card input[type="text"],
+.info-card input[type="email"],
+.info-card input[type="tel"],
 .note-textarea {
   width: 100%;
   box-sizing: border-box;
@@ -71,35 +72,42 @@
 }
 
 .btn {
-  padding: 0.8rem 1.5rem;
+  width: 100%;              
+  padding: 15px;            
   border: none;
-  border-radius: 8px;
-  font-size: 1rem;
+  border-radius: 22px;      
+  font-size: 16px;
   font-weight: bold;
   cursor: pointer;
+  transition: background-color 0.3s; 
 }
 
 .btn-secondary {
-  background-color: #e0e0e0;
-  color: #ff9800;
-  width: 100%;
-  padding-top: 1rem;
-  padding-bottom: 1rem;
+  background-color: #e2bb52; 
+  color: #ffffff;            
+  margin-bottom: 10px;
+}
+
+.btn-secondary:hover {
+  background-color: #d68100; 
 }
 
 .btn-primary.btn-complete-order {
-  padding: 1rem;
-  font-size: 1.1rem;
-  background-color: #e0e0e0;
-  color: #ff9800;
+  background-color: #e2bb52; 
+  color: #ffffff;            
+  margin-top: 10px;
+}
+
+.btn-primary.btn-complete-order:hover {
+  background-color: #d68100; 
 }
 
 .order-summary-card {
-  background-color: #ff9800;
+  background-color: #d68100;
   border-radius: 8px;
   padding: 1.5rem;
   position: sticky;
-  top: 100px;
+  top: 300px;
   border: 1px solid #e0e0e0;
 }
 
@@ -157,6 +165,12 @@ hr {
   font-weight: bold;
 }
 
+.btn-tip.active {
+  background-color: #d68100;
+  border-color: #d68100;     
+  font-weight: bold;
+}
+
 .radio-option {
   border: 1px solid #ccc;
   padding: 1rem;
@@ -164,7 +178,7 @@ hr {
 }
 
 .radio-option.active {
-  border-color: #ff9800;
+  border-color: #e2bb52;
   background-color: #f8f9fa;
 }
 
@@ -174,63 +188,26 @@ hr {
   width: 100%;
 }
 
-
 @media (max-width: 992px) {
   .cart-page-container {
     flex-direction: column;
   }
 }
 
-
-input[type="text"],
-input[type="email"],
-input[type="tel"],
-.note-textarea {
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-input[type="text"]:hover,
-input[type="email"]:hover,
-input[type="tel"]:hover,
+.info-card input[type="text"]:hover,
+.info-card input[type="email"]:hover,
+.info-card input[type="tel"]:hover,
 .note-textarea:hover {
-  border-color: #ff9800;
+  border-color: #e2bb52;
 }
 
-input[type="text"]:focus,
-input[type="email"]:focus,
-input[type="tel"]:focus,
+.info-card input[type="text"]:focus,
+.info-card input[type="email"]:focus,
+.info-card input[type="tel"]:focus,
 .note-textarea:focus {
   outline: none; 
-  border-color: #ff9800; 
-  
+  border-color: #e2bb52; 
 }
-
-
-.btn {
-  transition: all 0.2s ease-in-out; 
-}
-
-.btn:hover {
-  cursor: pointer;
-  transform: translateY(-2px); 
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  filter: brightness(95%); 
-}
-
-.btn:active {
-  transform: scale(0.98) translateY(0); 
-  box-shadow: none; 
-  filter: brightness(90%); 
-}
-
-.btn-tip.active {
-  background-color: #ff9800;
-  color: white;
-  border-color: #ff9800;
-  font-weight: bold;
-  filter: none;
-}
-
 
 .error-text {
   color: #dc3545;
@@ -239,7 +216,6 @@ input[type="tel"]:focus,
   margin-top: -0.5rem; 
   grid-column: 1 / -1; 
 }
-
 
 .card-header {
   display: flex;
@@ -270,11 +246,9 @@ input[type="tel"]:focus,
   transform: scale(0.98);
 }
 
-
 .summary-item {
   align-items: flex-start; 
 }
-
 
 .item-actions {
   display: flex;
@@ -283,11 +257,10 @@ input[type="tel"]:focus,
   margin-left: auto; 
 }
 
-
 .btn-remove-item {
   background: none;
   border: none;
-  color: #888; 
+  color: #e2bb52; 
   cursor: pointer;
   padding: 0.3rem;
   display: flex;
@@ -296,7 +269,6 @@ input[type="tel"]:focus,
   border-radius: 50%;
   transition: all 0.2s ease;
 }
-
 
 .btn-remove-item:hover {
   background-color: #f0f0f0; 
