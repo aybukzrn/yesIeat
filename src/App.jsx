@@ -9,6 +9,7 @@ import Menu from './pages/Menu';
 import Account from './pages/Account';
 import Contact from './pages/Contact';
 import Cart from './pages/Cart';
+import Payment from './pages/Payment';
 import IntroAnimation from './components/IntroAnimation';
 import Dashboard from './admin_page/Dashboard';
 
@@ -37,7 +38,9 @@ function App() {
       <Route path="/account" element={<Account />} />
       <Route path="/contact" element={<Contact />} />
       <Route path="/cart" element={<Cart />} />
+      <Route path="/odeme" element={<Payment />} />
       <Route path="/dashboard" element={<Dashboard />} />
+      
       
 
 

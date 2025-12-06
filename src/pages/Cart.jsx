@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Navbar2 from '../components/Navbar2';
 import Footer from '../components/Footer';
 import { FaTimes } from 'react-icons/fa';
@@ -17,6 +18,7 @@ const savedUserInfo = {
 };
 
 const Cart = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     sokak: '', apartman: '', daire: '', kat: '', sirket: '', telefon: '', not: '',
     email: 'selinayturksal@gmail.com', ad: 'Selinay', soyad: 'Türksal', cep: ''
@@ -43,6 +45,8 @@ const Cart = () => {
   const validateForm = (fields) => {
     const newErrors = {};
     fields.forEach(field => {
+      if (field === 'delivery' || field === 'tip') return;
+
       if (!formData[field] || formData[field].trim() === '') {
         newErrors[field] = 'Bu alan zorunludur.';
       }
@@ -56,9 +60,11 @@ const Cart = () => {
   const handleCompleteOrder = () => {
     const allFields = ['sokak', 'apartman', 'daire', 'telefon', 'cep', 'delivery', 'tip'];
     if (validateForm(allFields)) {
-      alert('Siparişiniz başarıyla alındı!');
+      navigate('/odeme', { state: { totalAmount: total } });
     } else {
       console.log("Doğrulama başarısız. Hatalar:", errors);
+      alert("Lütfen tüm alanları (Bahşiş dahil) doldurunuz.");
+      window.scrollTo(0, 0);
     }
   };
 
@@ -109,6 +115,8 @@ const Cart = () => {
 
           <div className="info-card">
             <h3>Kişisel Bilgiler</h3>
+            <input name="adSoyad" value={formData.adSoyad} onChange={handleInputChange} type="text" placeholder="İsim Soyisim" className={errors.adSoyad ? 'input-error' : ''} />
+            {errors.adSoyad && <span className="error-text">{errors.adSoyad}</span>}
             <input name="cep" value={formData.cep} onChange={handleInputChange} type="tel" placeholder="Cep telefonu" className={errors.cep ? 'input-error' : ''} />
             {errors.cep && <span className="error-text">{errors.cep}</span>}
             <button className="btn btn-secondary" onClick={() => validateForm(['cep'])}>Kaydet</button>
