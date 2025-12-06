@@ -1,5 +1,3 @@
-/* src/SettingsContent.css */
-
 .SettingsContent {
     padding: 20px;
     overflow-y: auto; 
@@ -7,7 +5,7 @@
     font-family: 'DM Serif Text', serif;
 }
 
-/* Tab Navigasyonu */
+
 .settings-tabs {
     display: flex;
     margin-bottom: 25px;
@@ -33,7 +31,7 @@
     border-bottom: 2px solid #CE7E5A;
 }
 
-/* Ayar Form Alanı */
+
 .settings-form-area {
     background-color: white;
     padding: 25px;
@@ -41,7 +39,7 @@
     box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
-/* Ayar Grubu */
+
 .setting-group {
     margin-bottom: 30px;
     padding-bottom: 15px;
@@ -66,13 +64,14 @@ label {
     width: 100%;
     padding: 10px;
     border: 1px solid #ccc;
-    border-radius: 4px;
+    border-radius: 16px;
     box-sizing: border-box;
+    font-family: 'Dm Serif Text', serif;
 }
 
 
 
-/* Checkbox Alanı */
+
 .checkbox-setting {
     display: flex;
     align-items: center;
@@ -90,8 +89,8 @@ label {
     height: 15px;
 }
 
-/* Kaydet Butonu */
-.save-button {
+
+.setting-save-button {
     background-color: #9A3F3F;
     color: white;
     padding: 12px;
@@ -104,12 +103,17 @@ label {
     margin-top: 20px;
 }
 
-.save-button:disabled {
+.setting-save-button:disabled {
     background-color: #ccc;
     cursor: not-allowed;
 }
 
-.save-button:hover:enabled {
+.setting-save-button:hover:enabled {
     background-color: #833535;
+}
+
+.setting-group input:focus{
+    border-color: #CE7E5A;
+    outline: none;
 }
 

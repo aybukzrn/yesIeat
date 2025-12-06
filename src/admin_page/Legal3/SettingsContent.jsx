@@ -1,10 +1,9 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import './SettingsContent.css';
 
 // Varsayılan Uygulama Ayarları
 const initialAppSettings = {
     siteName: 'YES I EAT',
-    
     currency: '₺ TRY',
     deliveryTime: 45,
     minOrderValue: 150,
@@ -18,74 +17,77 @@ const initialNotificationSettings = {
 };
 
 // Varsayılan Güvenlik Ayarları
-const initalSecuritySettings = {
+const initialSecuritySettings = {
     currentPassword: '',
     newPassword: '',
     confirmNewPassword: '',
 };
 
-const SettingsContent = () => {
-    // 1. Durum (State) Yönetimi
-    const [activeTab, setActiveTab] = useState('Genel');
-    const [appSettings, setAppSettings] = useState(initialAppSettings);
-    const [notificationSettings, setNotificationSettings] = useState(initialNotificationSettings);
-    const [securitySettings, setSecuritySettings] = useState(initalSecuritySettings);
-    const [isSaving, setIsSaving] = useState(false);
 
-    // 3. AYAR FORMLARI
-
-    // 3.1. Genel Ayarlar Formu
-    const GeneralSettingsForm = () => (
-        <form onSubmit={(e) => {
-            e.preventDefault();
-        }}>
+const GeneralSettingsForm = ({ appSettings, setAppSettings, isSaving }) => {
+    return (
+        <form onSubmit={(e) => e.preventDefault()}>
             <div className="setting-group">
                 <h3>Uygulama Bilgileri</h3>
+
                 <label>Site Adı:</label>
                 <input
                     type="text"
                     value={appSettings.siteName}
-                    onChange={(e) => setAppSettings({ ...appSettings, siteName: e.target.value })}
+                    onChange={(e) =>
+                        setAppSettings(prev => ({ ...prev, siteName: e.target.value }))
+                    }
                 />
-
 
                 <label>Para Birimi:</label>
                 <input
                     type="text"
                     value={appSettings.currency}
-                    onChange={(e) => setAppSettings({ ...appSettings, currency: e.target.value })}
+                    onChange={(e) =>
+                        setAppSettings(prev => ({ ...prev, currency: e.target.value }))
+                    }
                 />
             </div>
 
             <div className="setting-group">
                 <h3>Sipariş Ayarları</h3>
+
                 <label>Ortalama Teslimat Süresi (dk):</label>
                 <input
                     type="number"
                     value={appSettings.deliveryTime}
-                    onChange={(e) => setAppSettings({ ...appSettings, deliveryTime: parseInt(e.target.value) || 0 })}
+                    onChange={(e) =>
+                        setAppSettings(prev => ({
+                            ...prev,
+                            deliveryTime: parseInt(e.target.value) || 0
+                        }))
+                    }
                 />
 
                 <label>Minimum Sipariş Tutarı (₺):</label>
                 <input
                     type="number"
                     value={appSettings.minOrderValue}
-                    onChange={(e) => setAppSettings({ ...appSettings, minOrderValue: parseFloat(e.target.value) || 0 })}
+                    onChange={(e) =>
+                        setAppSettings(prev => ({
+                            ...prev,
+                            minOrderValue: parseFloat(e.target.value) || 0
+                        }))
+                    }
                 />
             </div>
 
-            <button type="submit" className="save-button" disabled={isSaving}>
+            <button type="submit" className="setting-save-button" disabled={isSaving}>
                 {isSaving ? 'Kaydediliyor...' : 'Genel Ayarları Kaydet'}
             </button>
         </form>
     );
+};
 
-    // 3.2. Bildirim Ayarları Formu
-    const NotificationSettingsForm = () => (
-        <form onSubmit={(e) => {
-            e.preventDefault();
-            
-        }}>
+
+const NotificationSettingsForm = ({ notificationSettings, setNotificationSettings, isSaving }) => {
+    return (
+        <form onSubmit={(e) => e.preventDefault()}>
             <div className="setting-group">
                 <h3>E-posta ve SMS Bildirimleri</h3>
 
@@ -94,7 +96,12 @@ const SettingsContent = () => {
                     <input
                         type="checkbox"
                         checked={notificationSettings.emailAlerts}
-                        onChange={(e) => setNotificationSettings({ ...notificationSettings, emailAlerts: e.target.checked })}
+                        onChange={(e) =>
+                            setNotificationSettings(prev => ({
+                                ...prev,
+                                emailAlerts: e.target.checked
+                            }))
+                        }
                     />
                 </div>
 
@@ -103,85 +110,135 @@ const SettingsContent = () => {
                     <input
                         type="checkbox"
                         checked={notificationSettings.smsAlerts}
-                        onChange={(e) => setNotificationSettings({ ...notificationSettings, smsAlerts: e.target.checked })}
+                        onChange={(e) =>
+                            setNotificationSettings(prev => ({
+                                ...prev,
+                                smsAlerts: e.target.checked
+                            }))
+                        }
                     />
                 </div>
             </div>
 
             <div className="setting-group">
                 <h3>Stok Uyarısı</h3>
-                <label>Stok Adedi Şunun Altına Düşünce Uyar:</label>
+                <label>Stok Adedi Şunun Altına Düştüğünde Uyar:</label>
                 <input
                     type="number"
                     value={notificationSettings.lowStockAlert}
-                    onChange={(e) => setNotificationSettings({ ...notificationSettings, lowStockAlert: parseInt(e.target.value) || 0 })}
+                    onChange={(e) =>
+                        setNotificationSettings(prev => ({
+                            ...prev,
+                            lowStockAlert: parseInt(e.target.value) || 0
+                        }))
+                    }
                 />
             </div>
 
-            <button type="submit" className="save-button" disabled={isSaving}>
+            <button type="submit" className="setting-save-button" disabled={isSaving}>
                 {isSaving ? 'Kaydediliyor...' : 'Bildirim Ayarlarını Kaydet'}
             </button>
         </form>
     );
+};
 
-    //3.3 Güvenlik Ayarları Formu
 
-const SecuritySettingsForm = () => (
-    <form onSubmit={(e) => {
-        e.preventDefault();
-        
-    }}>
-        <div className="setting-group">
-            <h3>Şifre Değiştir</h3>
-            <label>Mevcut Şifre:</label>
-            <input
-                type="password"
-                value={securitySettings.currentPassword}
-                onChange={(e) => setSecuritySettings({ ...securitySettings, currentPassword: e.target.value })}
-            />
+const SecuritySettingsForm = ({ securitySettings, setSecuritySettings, isSaving }) => {
+    return (
+        <form onSubmit={(e) => e.preventDefault()}>
+            <div className="setting-group">
+                <h3>Şifre Değiştir</h3>
 
-            <label>Yeni Şifre:</label>
-            <input
-                type="password"
-                value={securitySettings.newPassword}
-                onChange={(e) => setSecuritySettings({ ...securitySettings, newPassword: e.target.value })}
-            />
+                <label>Mevcut Şifre:</label>
+                <input
+                    type="password"
+                    value={securitySettings.currentPassword}
+                    onChange={(e) =>
+                        setSecuritySettings(prev => ({
+                            ...prev,
+                            currentPassword: e.target.value
+                        }))
+                    }
+                />
 
-            <label>Yeni Şifreyi Onayla:</label>
-            <input
-                type="password"
-                value={securitySettings.confirmNewPassword}
-                onChange={(e) => setSecuritySettings({ ...securitySettings, confirmNewPassword: e.target.value })}
-            />
-        </div>
+                <label>Yeni Şifre:</label>
+                <input
+                    type="password"
+                    value={securitySettings.newPassword}
+                    onChange={(e) =>
+                        setSecuritySettings(prev => ({
+                            ...prev,
+                            newPassword: e.target.value
+                        }))
+                    }
+                />
 
-        <button type="submit" className="save-button" disabled={isSaving}>
-            {isSaving ? 'Kaydediliyor...' : 'Güvenlik Ayarlarını Kaydet'}
-        </button>
-    </form>
-);
+                <label>Yeni Şifreyi Onayla:</label>
+                <input
+                    type="password"
+                    value={securitySettings.confirmNewPassword}
+                    onChange={(e) =>
+                        setSecuritySettings(prev => ({
+                            ...prev,
+                            confirmNewPassword: e.target.value
+                        }))
+                    }
+                />
+            </div>
 
-    // 4. İÇERİK SEÇİMİ
+            <button type="submit" className="setting-save-button" disabled={isSaving}>
+                {isSaving ? 'Kaydediliyor...' : 'Güvenlik Ayarlarını Kaydet'}
+            </button>
+        </form>
+    );
+};
+
+
+
+const SettingsContent = () => {
+    const [activeTab, setActiveTab] = useState('Genel');
+    const [appSettings, setAppSettings] = useState(initialAppSettings);
+    const [notificationSettings, setNotificationSettings] = useState(initialNotificationSettings);
+    const [securitySettings, setSecuritySettings] = useState(initialSecuritySettings);
+    const [isSaving, setIsSaving] = useState(false);
+
     const renderContent = () => {
         switch (activeTab) {
             case 'Genel':
-                return <GeneralSettingsForm />;
+                return (
+                    <GeneralSettingsForm
+                        appSettings={appSettings}
+                        setAppSettings={setAppSettings}
+                        isSaving={isSaving}
+                    />
+                );
+
             case 'Bildirim':
-                return <NotificationSettingsForm />;
+                return (
+                    <NotificationSettingsForm
+                        notificationSettings={notificationSettings}
+                        setNotificationSettings={setNotificationSettings}
+                        isSaving={isSaving}
+                    />
+                );
+
             case 'Güvenlik':
-                return <SecuritySettingsForm />;
+                return (
+                    <SecuritySettingsForm
+                        securitySettings={securitySettings}
+                        setSecuritySettings={setSecuritySettings}
+                        isSaving={isSaving}
+                    />
+                );
+
             default:
-                return <GeneralSettingsForm />;
+                return null;
         }
     };
 
-
-    // 5. ANA RENDER
     return (
         <div className="SettingsContent">
-            
 
-            {/* TAB NAVİGASYONU */}
             <div className="settings-tabs">
                 {['Genel', 'Bildirim', 'Güvenlik'].map(tab => (
                     <button
@@ -194,10 +251,10 @@ const SecuritySettingsForm = () => (
                 ))}
             </div>
 
-            {/* AYAR FORMLARI */}
             <div className="settings-form-area">
                 {renderContent()}
             </div>
+
         </div>
     );
 };
