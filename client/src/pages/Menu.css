@@ -15,9 +15,7 @@
 }
 
 .menu-list-section{
-    flex-basis: 80%;
     padding: 20px;
-    margin-top: 40px;
 }
 
 .category-filter-bar {
@@ -163,6 +161,72 @@
 .tag-Diyet { background-color: #e6bf22; }
 .tag-Soğuk { background-color: #3978a2; }
 
+.tag-menu{
+    display: flex;
+    flex-basis: 80%;
+    flex-direction: column;
+    margin-top: 30px;
+}
+
+.tag-filter-bar {
+    display: flex;
+    
+    padding: 5px 10px;
+    gap: 10px;
+    overflow-x: auto;
+    white-space: nowrap;
+    scrollbar-width:thin;
+    scrollbar-color: #0000003c transparent;
+  }
+  
+  .tag-filter-bar::-webkit-scrollbar {
+    height: 6px;
+  }
+  
+  .tag-filter-bar::-webkit-scrollbar-thumb {
+    background: #b0b0b0;
+    border-radius: 20px;
+  }
+  
+
+  .tag-btn {
+    position: relative;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 50px;
+    font-size: 14px;
+    cursor: pointer;
+    color: #000000;
+    background-color: #f4f4f4;
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+    transition: 0.25s ease;
+    font-weight: 500;
+    user-select: none;
+  }
+
+  .tag-btn.active {
+    padding-right: 32px; 
+    color: #d5160c;
+  }
+  
+  .tag-btn.active::after {
+    content: "×";
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 16px;
+    font-weight: bold;
+    color: #d5160c;
+    opacity: 0.9;
+    transition: 0.2s ease;
+  }
+  
+  .tag-btn.active:hover::after {
+    opacity: 1;
+    transform: translateY(-50%) rotate(180deg);
+  }
+  
 
 
 /* Mobil Uyum */
@@ -180,3 +244,15 @@
         flex-shrink: 0;
     }
 }
+
+@media (max-width: 600px) {
+    .tag-filter-bar {
+      padding: 10px;
+      gap: 8px;
+    }
+  
+    .tag-btn {
+      font-size: 13px;
+      padding: 8px 14px;
+    }
+  }
