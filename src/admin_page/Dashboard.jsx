@@ -11,6 +11,7 @@ import OrdersContent from './Legal3/OrdersContent';
 import SettingsContent from './Legal3/SettingsContent';
 
 
+
 const Dashboard = () => {
     const [activeCategory, setActiveCategory] = useState('Analiz');
 
@@ -25,9 +26,7 @@ const Dashboard = () => {
             
             case 'Ayarlar':
                 return <SettingsContent /> 
-            case 'Çıkış':
-                
-                return <div>Çıkış İşlemi Başarılı</div>;
+            
             default:
                 return <AnalyticsContent />;
         }
@@ -50,13 +49,10 @@ const Dashboard = () => {
                 </div>
 
 
-
-
-
-
                 <div className="content-container">
                     {renderContent()}
                 </div>
+                
             </main>
         </div>
     );

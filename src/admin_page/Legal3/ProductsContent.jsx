@@ -119,6 +119,8 @@ const ProductsContent = () => {
                       <th>Ürün Adı</th>
                       <th>Kategori</th>
                       <th>Fiyat</th>
+                      <th>Etiket</th>
+                      <th>Fotoğraf</th>
                       <th>Stok Durumu</th>
                     </tr>
                   </thead>
@@ -129,6 +131,8 @@ const ProductsContent = () => {
                         <td>{item.name}</td>
                         <td>{item.category}</td>
                         <td>{item.price} ₺</td>
+                        <td>{item.label}</td>
+                        <td>{/* Placeholder for product image */}</td>
                         <td className={item.stockStatus === 'Stokta Yok' ? 'status-out' : 'status-in'}>
                           {item.stockStatus}
                         </td>
@@ -143,6 +147,7 @@ const ProductsContent = () => {
                       <th>Menü ID</th>
                       <th>Menü Adı</th>
                       <th>İçerik</th>
+                      <th>Fotoğraf</th>
                       <th>Fiyat</th>
                     </tr>
                   </thead>
@@ -152,6 +157,7 @@ const ProductsContent = () => {
                         <td>{item.id}</td>
                         <td>{item.name}</td>
                         <td>{item.content}</td>
+                        <td>{/* Placeholder for menu image */}</td>
                         <td>{item.price} ₺</td>
                       </tr>
                     ))}
@@ -225,6 +231,26 @@ const ProductsContent = () => {
                 <label>Kategori:</label>
                 <input type="text" id='pro-category' placeholder="Kategori girin" />
               </div>
+              <div className="pro-tag">
+                <label>Etiket:</label>
+                <select>
+                  <option value="hizli">Hızlı</option>
+                  <option value="sef">Şef</option>
+                  <option value="populer">Popüler</option>
+                  <option value="yeni">Yeni</option>
+                  <option value="ekonomik">Ekonomik</option>
+                  <option value="vejetaryen">Vejetaryen</option>
+                  <option value="diyet">Diyet</option>
+                  <option value="soguk">Soğuk</option>
+                </select>
+
+              </div>
+
+              <div className="pro-photo">
+                <label>Ürün Fotoğrafı:</label>
+                <input type="file" id='pro-photo' />
+              </div>
+
               <div className="pro-fee">
                 <label>Fiyat:</label>
                 <input type="number" id='pro-fee' placeholder="Fiyat girin" />
@@ -276,6 +302,12 @@ const ProductsContent = () => {
                 <label>Menü İçeriği:</label>
                 <input type="text" id='menu-content' placeholder="Menü içeriğini girin" />
               </div>
+
+              <div className="menu-photo">
+                <label>Menü Fotoğrafı:</label>
+                <input type="file" id='menu-photo' />
+              </div>
+
 
               <div className="menu-fee">
                 <label>Fiyat:</label>
