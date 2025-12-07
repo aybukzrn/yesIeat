@@ -5,6 +5,15 @@
     gap: 20px;
 }
 
+.personal-information input{
+    outline: none;
+    border: 1px solid #ccc;
+}
+.personal-information input:focus{
+    border-color: #e2bb5e;
+}
+
+
 .user-information,
 .password,
 .delete-account {
@@ -34,6 +43,7 @@
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 22px;
+    outline: none;
 }
 
 .change-password-button,

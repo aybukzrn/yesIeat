@@ -12,7 +12,7 @@ const DATA = {
     names: ['Zeynep Özdemir', 'Selinay Türksal', 'Miray Tokel', 'Ahmet Yılmaz', 'Ayşe Kaya'],
 };
 
-// SABİT (DETERMİNİSTİK) MOCK DATA ÜRETİCİ
+// SABİT MOCK DATA ÜRETİCİ
 const generateDeterministicOrders = () => {
     return Array.from({ length: 35 }, (_, i) => {
         const status = DATA.statuses[i % DATA.statuses.length];
@@ -42,6 +42,8 @@ const OrdersContent = () => {
     const [isApprovalModalOpen, setIsApprovalModalOpen] = useState(false);
     const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
     const [selectedOrder, setSelectedOrder] = useState(null); // Detay gösterilecek sipariş
+    const [isAddOrderModalOpen, setIsAddOrderModalOpen] = useState(false);
+
 
 
     useEffect(() => {
@@ -63,6 +65,10 @@ const OrdersContent = () => {
     const handleViewDetails = (order) => {
         setSelectedOrder(order);
         setIsDetailModalOpen(true);
+    };
+
+    const handleAddOrder = (newOrder) => {
+        setOrders(prevOrders => [newOrder, ...prevOrders]);
     };
 
 
@@ -111,7 +117,7 @@ const OrdersContent = () => {
 
                 <div className="down-content">
                     <div className="add-order">
-                        <Link to="/dashboard" className="btn-add-order"><IoIosAddCircleOutline />Yeni Sipariş Ekle</Link>
+                        <button onClick={() => setIsAddOrderModalOpen(true)} className="btn-add-order"><IoIosAddCircleOutline />Yeni Sipariş Ekle</button>
                     </div>
 
                     <div className="orders-table-wrapper">
@@ -196,6 +202,42 @@ const OrdersContent = () => {
                     </div>
                 )}
             </Modal>
+
+            {/* MODAL 3: YENİ SİPARİŞ EKLEME */}
+            <Modal isOpen={isAddOrderModalOpen} onClose={() => setIsAddOrderModalOpen(false)} title="Yeni Sipariş Ekle">
+                <form className="add-order-form">
+
+                    <label>Müşteri Adı</label>
+                    <input type="text" id="customerName" placeholder="Ad Soyad" />
+
+                    <label>Sipariş İçeriği</label>
+                    <input type="text" id="orderContent" placeholder="" />
+
+                    <label>Tutar</label>
+                    <input type="number" id="orderTotal" placeholder="₺" />
+
+                    <button
+                        type="button"
+                        onClick={() => {
+                            const newOrder = {
+                                id: String(Date.now()),
+                                customer: document.getElementById("customerName").value,
+                                content: document.getElementById("orderContent").value,
+                                total: Number(document.getElementById("orderTotal").value),
+                                date: new Date().toLocaleDateString(),
+                                status: 'Beklemede'
+                            };
+
+                            handleAddOrder(newOrder);
+                            setIsAddOrderModalOpen(false);
+                        }}
+                        className="approve-btn"
+                    >
+                        Siparişi Ekle
+                    </button>
+                </form>
+            </Modal>
+
         </>
     );
 };

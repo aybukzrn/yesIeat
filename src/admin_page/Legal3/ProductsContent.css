@@ -27,6 +27,7 @@
     font-size: 1rem;
     width: 250px;
     font-family: 'Dm Serif Text', serif;
+    outline: none;
 }
 
 .category-dropdown select{
@@ -34,6 +35,7 @@
     border: 1px solid #ddd;
     padding: 10px 10px 10px 10px;
     font-family: 'Dm Serif Text', serif;
+    outline: none;
 }
 
 
@@ -158,6 +160,47 @@
 }
 
 .add-product button:hover {
+    background-color: #9A3F3F;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+
+.add-product-form,
+.add-menu-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.add-product-form input, .add-product-form select,
+.add-menu-form input{
+    display: block;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 16px;
+    font-family: 'Dm Serif Text', serif;
+    outline: none;
+    letter-spacing: 1px;
+    width: 580px;
+}
+
+.add-product-form button,
+.add-menu-form button {
+    font-family: 'Dm Serif Text', serif;
+    letter-spacing: .7px;
+    align-self: flex-end;
+    padding: 10px 20px;
+    background-color: #D34E4E;
+    border: none;
+    border-radius: 18px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.add-product-form button:hover,
+.add-menu-form button:hover {
     background-color: #9A3F3F;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }

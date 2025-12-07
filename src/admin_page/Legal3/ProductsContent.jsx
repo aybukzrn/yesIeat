@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './ProductsContent.css';
 import { IoIosAddCircleOutline } from 'react-icons/io';
+import Modal from '../../components/Modal';
 
 const ProductsContent = () => {
 
@@ -12,6 +13,10 @@ const ProductsContent = () => {
 
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 10
+
+  const [isApprovalModalOpen, setIsApprovalModalOpen] = useState(false);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState(null); // Detay gösterilecek sipariş
 
 
   useEffect(() => {
@@ -70,7 +75,7 @@ const ProductsContent = () => {
   const outOfStockItems = products.filter(p => p.stockStatus === 'Stokta Yok');
 
   return (
-    <div className='ProductsContent'>
+    <><div className='ProductsContent'>
 
       <div className="row">
 
@@ -92,7 +97,8 @@ const ProductsContent = () => {
 
 
               <div className="add-product">
-                <button className="btn-add-product"><IoIosAddCircleOutline /> Yeni Ürün / Menü Ekle</button>
+                <button onClick={() => setIsApprovalModalOpen(true)}
+                  className="btn-add-product"><IoIosAddCircleOutline /> Yeni Ürün / Menü Ekle</button>
               </div>
 
             </div>
@@ -200,7 +206,110 @@ const ProductsContent = () => {
         </div>
       </div>
     </div>
-  )
-}
+
+      <Modal isOpen={isApprovalModalOpen}
+        onClose={() => setIsApprovalModalOpen(false)}
+        title="Yeni Ürün / Menü Ekle"
+      >
+        {activeCategory === 'Ürünler' ? (
+          <div>
+            <h3>Yeni Ürün Ekleme Formu</h3>
+            <div className="add-product-form">
+            
+  
+              <div className="pro-name">
+                <label>Ürün Adı:</label>
+                <input type="text" id='pro-name' placeholder="Ürün adı girin" />
+              </div>
+              <div className="pro-category">
+                <label>Kategori:</label>
+                <input type="text" id='pro-category' placeholder="Kategori girin" />
+              </div>
+              <div className="pro-fee">
+                <label>Fiyat:</label>
+                <input type="number" id='pro-fee' placeholder="Fiyat girin" />
+              </div>
+              
+              <div className="pro-stock">
+                <label>Stok Durumu:</label>
+                <select>
+                  <option value="in">Stokta Var</option>
+                  <option value="out">Stokta Yok</option>
+                </select>
+              
+              </div>
+
+              <button
+                        type="button"
+                        onClick={() => {
+                            const newProduct = {
+                                id: String(Date.now()),
+                                customer: document.getElementById("pro-name").value,
+                                content: document.getElementById("pro-category").value,
+                                total: Number(document.getElementById("pro-fee").value),
+                                stockStatus: document.querySelector(".pro-stock select").value === "in" ? "Stokta Var" : "Stokta Yok"
+                                
+                            };
+
+                            handleAddOrder(newProduct);
+                            setIsAddOrderModalOpen(false);
+                        }}
+                        className="btn-submit-product"
+                    >
+                        Ürün Ekle
+                    </button>
+
+            </div>
+          </div>
+        ) : (
+          <div>
+            <h3>Yeni Menü Ekleme Formu</h3>
+            <div className="add-menu-form">
+              
+              
+              <div className="menu-name">
+                <label>Menü Adı:</label>
+                <input type="text" id='menu-name' placeholder="Menü adı girin" />
+              </div>
+
+              <div className="menu-content">
+                <label>Menü İçeriği:</label>
+                <input type="text" id='menu-content' placeholder="Menü içeriğini girin" />
+              </div>
+
+              <div className="menu-fee">
+                <label>Fiyat:</label>
+                <input type="number" id='menu-fee' placeholder="Fiyat girin" />
+              </div>
+              
+
+              <button
+                        type="button"
+                        onClick={() => {
+                            const newMenu = {
+                                id: String(Date.now()),
+                                customer: document.getElementById("menu-name").value,
+                                content: document.getElementById("menu-content").value,
+                                total: Number(document.getElementById("menu-fee").value),
+                                
+                          
+                            };
+
+                            handleAddOrder(newMenu);
+                            setIsAddOrderModalOpen(false);
+                        }}
+                        className="btn-submit-menu"
+                    >
+                        Menü Ekle
+                    </button>
+
+            </div>
+          </div>
+
+        )}
+      </Modal></>
+  );
+};
+
 
 export default ProductsContent
