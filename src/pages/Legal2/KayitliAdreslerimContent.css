@@ -4,33 +4,30 @@
     justify-content: left;
 }
 
-.addresses input{
-    border: 1px solid #ccc;
-    outline: none;
-}
-
-.addesses input:focus{
-    border-color: #e2bb5e;
-}
 
 .address-form{
     display: flex;
     flex-direction: column;
     gap: 20px;
-    background: #f4f4f4;
+    
     padding: 20px;
     border-radius: 16px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    
 }
 
-.title input,
-.addess input,
-.phone input{
-    
-    border-radius: 22px;
+.address-form input, select{
+    font-family: 'Dm Serif Text', serif;
+    border: 1px solid #ccc;
+    outline: none;
+    border-radius: 16px;
     padding: 12px 20px;
-    width: 57%;
+    width: 93%;
     font-size: 14px;
+}
+
+.address-form input:focus,
+.address-form select:focus{
+    border-color: #e2bb5e;
 }
 
 .triple{
@@ -39,9 +36,81 @@
     gap: 10px;
 }
 
-.triple input{
-    
-    border-radius: 22px;
-    padding: 12px 20px;
+.address-list p{
     font-size: 14px;
+    color: #555;
+}
+
+.address-form .save-btn {
+    align-self: flex-end;
+    font-family: 'Dm Serif Text', serif;
+    background-color: #e2bb5e;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 22px;
+    cursor: pointer;
+    width: 150px;
+    margin-top: 10px;
+    transition: background-color 0.2s;
+}
+
+.address-form .save-btn:hover {
+    background-color: #c99f4a;
+}
+
+.address-list{
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 15px;
+    
+}
+
+.address-cards{
+    border-radius: 16px;
+    padding: 15px;
+    margin: 10px;
+    width: 250px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    background-color: #f4f4f4;
+}
+
+.address-list .actions{
+    margin-top: 30px;
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
+
+}
+
+.actions button{
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-family: 'Dm Serif Text', serif;
+    background: #f4f4f4;
+    color: #333;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border: none;
+    padding: 5px 10px;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.address-list .actions button:hover{
+    background-color: #e2bb5e;
+    color: white;
+}
+
+.location-selects{
+    display: flex;
+    gap: 10px;
+    width: 100%;
+}
+
+.location-selects select{
+    width: 100%;
+    padding: 8px 12px;
 }
