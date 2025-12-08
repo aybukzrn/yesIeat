@@ -1,0 +1,148 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model ADDRESS {
+  addressID    Int      @id @default(autoincrement())
+  uID          Int
+  addressTitle String   @db.VarChar(255)
+  fullAddress  String   @db.VarChar(255)
+  flatNum      Int?
+  floorNum     Int?
+  aptNum       Int?
+  USERS        USERS    @relation(fields: [uID], references: [uID], onDelete: Cascade, map: "fk_address_user")
+  ORDERS       ORDERS[]
+
+  @@index([uID], map: "fk_address_user")
+}
+
+model CARD_DETAIL {
+  cardID      Int    @id @default(autoincrement())
+  cardNum     String @db.VarChar(30)
+  cardExpDate String @db.VarChar(10)
+  cardHolder  String @db.VarChar(255)
+  cardType    String @db.VarChar(50)
+  uID         Int
+  USERS       USERS  @relation(fields: [uID], references: [uID], onDelete: Cascade, map: "fk_card_user")
+
+  @@index([uID], map: "fk_card_user")
+}
+
+model CATEGORY {
+  categoryID   Int       @id @default(autoincrement())
+  categoryName String    @db.VarChar(255)
+  PRODUCT      PRODUCT[]
+}
+
+model MENU {
+  menuID      Int           @id @default(autoincrement())
+  menuName    String        @db.VarChar(255)
+  menuPrice   Float         @db.Float
+  MENU_DETAIL MENU_DETAIL[]
+}
+
+model MENU_DETAIL {
+  menuID  Int
+  prodID  Int
+  MENU    MENU    @relation(fields: [menuID], references: [menuID], onDelete: Cascade, map: "fk_menudetail_menu")
+  PRODUCT PRODUCT @relation(fields: [prodID], references: [prodID], onDelete: Cascade, map: "fk_menudetail_product")
+
+  @@id([menuID, prodID])
+  @@index([prodID], map: "fk_menudetail_product")
+}
+
+model ORDERS {
+  orderID      Int                @id @default(autoincrement())
+  uID          Int
+  orderDate    DateTime           @db.DateTime(0)
+  orderTime    DateTime           @db.Time(0)
+  orderStatus  ORDERS_orderStatus
+  addressID    Int
+  subTotal     Float              @db.Float
+  ADDRESS      ADDRESS            @relation(fields: [addressID], references: [addressID], map: "fk_order_address")
+  USERS        USERS              @relation(fields: [uID], references: [uID], onDelete: Cascade, map: "fk_order_user")
+  ORDER_DETAIL ORDER_DETAIL[]
+  PAYMENT      PAYMENT[]
+
+  @@index([addressID], map: "fk_order_address")
+  @@index([uID], map: "fk_order_user")
+}
+
+model ORDER_DETAIL {
+  oDetailID     Int     @id @default(autoincrement())
+  oQuantity     Int
+  oPriority     String  @db.VarChar(255)
+  deliveryNote  String? @db.VarChar(255)
+  prodID        Int
+  orderID       Int
+  prodUnitPrice Float   @db.Float
+  ORDERS        ORDERS  @relation(fields: [orderID], references: [orderID], onDelete: Cascade, map: "fk_odetail_order")
+  PRODUCT       PRODUCT @relation(fields: [prodID], references: [prodID], map: "fk_odetail_product")
+
+  @@index([orderID], map: "fk_odetail_order")
+  @@index([prodID], map: "fk_odetail_product")
+}
+
+model OWNER {
+  oName     String    @id @db.VarChar(255)
+  oPassword String    @db.VarChar(255)
+  PRODUCT   PRODUCT[]
+}
+
+model PAYMENT {
+  paymentID     Int      @id @default(autoincrement())
+  paymentMethod String   @db.VarChar(50)
+  paymentDate   DateTime @db.DateTime(0)
+  amount        Float    @db.Float
+  uID           Int
+  orderID       Int
+  ORDERS        ORDERS   @relation(fields: [orderID], references: [orderID], onDelete: Cascade, map: "fk_payment_order")
+  USERS         USERS    @relation(fields: [uID], references: [uID], onDelete: Cascade, map: "fk_payment_user")
+
+  @@index([orderID], map: "fk_payment_order")
+  @@index([uID], map: "fk_payment_user")
+}
+
+model PRODUCT {
+  prodID        Int            @id @default(autoincrement())
+  prodName      String         @db.VarChar(255)
+  prodUnitPrice Float          @db.Float
+  prodStock     Int
+  prodPhoto     String         @db.VarChar(255)
+  prodLabel     String?        @db.VarChar(255)
+  prodDesc      String         @db.VarChar(255)
+  categoryID    Int
+  oName         String         @db.VarChar(255)
+  MENU_DETAIL   MENU_DETAIL[]
+  ORDER_DETAIL  ORDER_DETAIL[]
+  CATEGORY      CATEGORY       @relation(fields: [categoryID], references: [categoryID], map: "fk_product_category")
+  OWNER         OWNER          @relation(fields: [oName], references: [oName], map: "fk_product_owner")
+
+  @@index([categoryID], map: "fk_product_category")
+  @@index([oName], map: "fk_product_owner")
+}
+
+model USERS {
+  uID         Int           @id @default(autoincrement())
+  uMail       String        @unique(map: "uMail") @db.VarChar(255)
+  uPassword   String        @db.VarChar(255)
+  uName       String        @db.VarChar(100)
+  uSurname    String        @db.VarChar(100)
+  uPhnNum     String?       @db.VarChar(12)
+  ADDRESS     ADDRESS[]
+  CARD_DETAIL CARD_DETAIL[]
+  ORDERS      ORDERS[]
+  PAYMENT     PAYMENT[]
+}
+
+enum ORDERS_orderStatus {
+  pending
+  confirmed
+  delivered
+  canceled
+}

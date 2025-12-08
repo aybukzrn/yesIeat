@@ -1,33 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { MdOutlineFastfood, MdLocalCafe, MdOutlineWater, MdBakeryDining, MdDinnerDining, MdKebabDining, MdLocalPizza, MdRamenDining, MdVerified } from 'react-icons/md';
 import './Menu.css';
 
 import { Fade, Zoom } from 'react-awesome-reveal';
-
-
-const menuData = [
-
-  { id: 1, category: 'Çorbalar', name: 'Ezogelin Çorbası', price: 45, desc: 'Nane ve pul biber eşliğinde, doyurucu.', tag: 'Hızlı Teslim' },
-
-  { id: 2, category: 'Ana Yemekler', name: 'Hünkar Beğendi', price: 180, desc: 'Közlenmiş patlıcan püresi üzerinde kuzu etli güveç.', tag: 'Şef Tavsiyesi' },
-
-  { id: 3, category: 'Kebaplar', name: 'Adana Kebap', price: 160, desc: 'Acılı, zırh kıymasıyla hazırlanmış. Porsiyon.', tag: 'Yeni' },
-
-  { id: 4, category: 'Fast Food', name: 'Cheeseburger Menü', price: 140, desc: 'Patates kızartması ve içecekle.', tag: 'Popüler' },
-  { id: 5, category: 'Fast Food', name: 'Tavuk Dürüm', price: 95, desc: 'Lavaş içinde marine edilmiş tavuk, taze yeşilliklerle.', tag: 'Ekonomik' },
-
-  { id: 6, category: 'İtalyan', name: 'Pepperoni Pizza (Orta)', price: 175, desc: 'Bol pepperoni ve mozzarella peyniri.', tag: 'Yeni' },
-  { id: 7, category: 'İtalyan', name: 'Pesto Soslu Makarna', price: 120, desc: 'El yapımı pesto sos ve çam fıstığı.', tag: 'Vejetaryen' },
-
-  { id: 8, category: 'Hafif Lezzetler', name: 'Izgara Tavuklu Salata', price: 110, desc: 'Akdeniz yeşillikleri ve özel sos.', tag: 'Diyet' },
-
-  { id: 9, category: 'Tatlılar', name: 'Sufle', price: 70, desc: 'Sıcak servis, erimiş Belçika çikolatası.', tag: 'Popüler' },
-
-  { id: 10, category: 'İçecekler', name: 'Ev Yapımı Limonata', price: 40, desc: 'Taze nane yapraklarıyla.', tag: 'Soğuk' },
-];
-
 const categories = [
   { name: 'Hepsi', icon: MdOutlineFastfood },
   { name: 'Çorbalar', icon: MdRamenDining },
@@ -42,30 +19,63 @@ const categories = [
 ];
 
 
-const MenuItemCard = ({ item }) => (
-  <div className="menu-item-card">
-    <div className="item-image-placeholder">
+const MenuItemCard = ({ item }) => {
+  const handleAddToCart = () => {
+    const existingCart = JSON.parse(localStorage.getItem('cart')) || [];
+    const existingItem = existingCart.find(cartItem => cartItem.id === item.id);
+
+    let updatedCart;
+    if (existingItem) {
+      updatedCart = existingCart.map(cartItem => cartItem.id === item.id ? { ...cartItem, quantity: cartItem.quantity + 1} : cartItem);
+    } else {
+      updatedCart = [...existingCart, {
+        id: item.id,
+        name: item.name,
+        price: parseFloat(item.price),
+        quantity: 1,
+      }];
+    }
+
+    localStorage.setItem('cart', JSON.stringify(updatedCart));
+    window.dispatchEvent(new Event('cartUpdated'));
+  };
+
+  return (
+    <div className="menu-item-card">
+      <div className="item-image-placeholder">
       <img src={`/assets/menu/${item.id}.jpg`} alt={item.name} />
     </div>
-    <div className="item-details">
-      <div className="item-header">
-        <h3>{item.name}</h3>
-        <span className={`item-tag tag-${item.tag.split(' ')[0]}`}>{item.tag}</span>
-      </div>
-      <p className="item-desc">{item.desc}</p>
-      <div className="item-footer">
-        <span className="item-price">{item.price} ₺</span>
-        <button className="add-to-cart-btn">Sepete Ekle</button>
-      </div>
+    <div className="item-header">
+      <h3>{item.name}</h3>
+      <span className={`item-tag tag-${item.tag.split(' ')[0]}`}>{item.tag}</span>
     </div>
-  </div>
-);
-
+    <p className="item-desc">{item.desc}</p>
+    <div className="item-footer">
+      <span className="item-price">{item.price} ₺</span>
+      <button className="add-to-cart-btn" onClick={handleAddToCart}>Sepete Ekle</button>
+    </div>
+    </div>
+  );
+};
 
 const Menu = () => {
+  const [menuItems, setMenuItems] = useState([]);
   const [activeCategory, setActiveCategory] = useState('Hepsi');
 
-  const filteredMenu = menuData.filter(item =>
+  useEffect(() => {
+    const fetchMenu = async () => {
+      try {
+        const res = await fetch('/api/menu');
+        const data = await res.json();
+        setMenuItems(data);
+      } catch (err) {
+        console.error('Error fetching menu items:', err);
+      }
+    };
+    fetchMenu();
+  }, []);
+
+  const filteredMenu = menuItems.filter((item) =>
     activeCategory === 'Hepsi' || item.category === activeCategory
   );
 
@@ -101,15 +111,13 @@ const Menu = () => {
           
             <div className="menu-items-grid">
               {filteredMenu.length > 0 ? (
-               
-                filteredMenu.map(item => (
+                filteredMenu.map((item) => (
                   <MenuItemCard key={item.id} item={item} />
-                  
                 ))
-               
               ) : (
-                <p className="no-items-message">Seçili kategoride henüz ürün bulunmamaktadır.</p>
-                
+                <p className="no-items-message">
+                  Seçili kategoride henüz ürün bulunmamaktadır.
+                </p>
               )}
             </div>
 
