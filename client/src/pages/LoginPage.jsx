@@ -11,11 +11,30 @@ const LoginPage = () => {
     setIsPasswordVisible(!isPasswordVisible);
   };
 
-  const handleLoginSubmit = (event) => {
+  const handleLoginSubmit = async (event) => {
     event.preventDefault();
-    console.log('Giriş bilgileri gönderildi:');
-    console.log('Email:', email);
-    console.log('Şifre:', password);
+
+    try{
+      const res = await fetch('/api/login', {
+        method: "POST",
+        headers: { 'Content-Type': 'application/json'},
+        body: JSON.stringify({ email, password}),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        alert(data.message || 'Giriş başarısız.');
+        return;
+      }
+
+      localStorage.setItem('user', JSON.stringify(data.user));
+      alert(`Hoş geldin ${data.user.name} !`);
+      window.location.href = '/home';
+    } catch (err) {
+      console.error('Giriş hatası:', err);
+      alert('Sunucu hatası. Lütfen daha sonra tekrar deneyin.');
+    }
   };
 
 

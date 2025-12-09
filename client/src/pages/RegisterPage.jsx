@@ -3,7 +3,8 @@ import './RegisterPage.css';
 import { Link } from 'react-router-dom';
 
 const RegisterPage = () => {
-  const [username, setUsername] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -18,27 +19,44 @@ const RegisterPage = () => {
     setIsConfirmPasswordVisible(!isConfirmPasswordVisible);
   };
   const [passwordError, setPasswordError] = useState(''); 
-    const handleRegisterSubmit = (event) => {
-    event.preventDefault();
 
-    setPasswordError('');
-
-    const passwordRegex = /^(?=.[a-z])(?=.[A-Z])(?=.*\d).{8,}$/;
-    if (!passwordRegex.test(password)) {
-        setPasswordError(
-        'Şifre en az 8 karakter olmalı, büyük/küçük harf ve rakam içermelidir.'
-        );
+    const handleRegisterSubmit = async (e) => {
+      e.preventDefault();
+    
+      // Şifre kontrolü
+      if (password !== confirmPassword) {
+        setPasswordError('Şifreler eşleşmiyor!');
         return;
-    }
-
-    if (password !== confirmPassword) {
-        setPasswordError('Girdiğiniz şifreler uyuşmuyor!');
-        return;
-    }
-
-    console.log('Kayıt başarılı! Bilgiler:', { username, email, password });
+      }
+      setPasswordError('');
+    
+      try {
+        const res = await fetch('/api/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email,
+            password,
+            name: firstName,
+            surname: lastName,
+            phone: null, // telefon alanı yoksa null gönder
+          }),
+        });
+    
+        const data = await res.json();
+    
+        if (!res.ok || !data.success) {
+          alert(data.message || 'Kayıt başarısız.');
+          return;
+        }
+    
+        alert('Kayıt başarılı, giriş yapabilirsiniz.');
+        window.location.href = '/login';
+      } catch (err) {
+        console.error('Register hatası:', err);
+        alert('Sunucu hatası. Lütfen tekrar deneyin.');
+      }
     };
-
 
   
   return (
@@ -59,13 +77,20 @@ const RegisterPage = () => {
 
       <form onSubmit={handleRegisterSubmit}>
         
+        <div className="name-input-container" style={{display: 'flex', justifyContent: 'space-between'}} >
         <div className="form-group">
-            <label htmlFor="username">Kullanıcı Adı</label>
-            <input type="text" id="username" value={username} onChange={(e) => setUsername(e.target.value)} placeholder='Bir kullanıcı adı belirleyin' required />
+            <label htmlFor="firstName">İsim</label>
+            <input type="text" id="firstName" value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder='İsiminizi giriniz' required />
+        </div>
+
+        <div className="form-group">
+            <label htmlFor="lastName">Soyisim</label>
+            <input type="text" id="lastName" value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder='Soyisminizi giriniz' required />
+        </div>
         </div>
         <div className="form-group">
             <label htmlFor="email">E-posta Adresi</label>
-            <input type="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder='Geçerli bir E-posta adresi giriniz' required />
+            <input type="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder='Geçerli bir E-Posta adresi giriniz' required />
         </div>
         <div className="form-group">
             <label htmlFor="password">Şifre</label>
