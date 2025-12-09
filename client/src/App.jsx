@@ -14,6 +14,7 @@ import IntroAnimation from './components/IntroAnimation';
 import Dashboard from './admin_page/Dashboard';
 
 
+
 function App() {
   const [showIntro, setShowIntro] = useState(true);
 
@@ -23,13 +24,13 @@ function App() {
     }, 500); // Süreyi değiştir
 
     return () => clearTimeout(timer);
-  }, []); 
+  }, []);
 
   // if (showIntro) {
   //   return <IntroAnimation />;
   // }
   return (
-    
+
     <Routes>
       <Route path="/" element={<Login />} />
       <Route path="/register" element={<Register />} />
@@ -40,10 +41,6 @@ function App() {
       <Route path="/cart" element={<Cart />} />
       <Route path="/odeme" element={<Payment />} />
       <Route path="/dashboard" element={<Dashboard />} />
-      
-      
-
-
     </Routes>
   );
 }

@@ -76,8 +76,9 @@ const Navbar = () => {
                         <div className="acc-icon"><RiAccountCircleFill /></div>
                         <div className="acc-dropdown">
                             <CustomDropdown title="Hesabım">
-                                <a href="/account">Siparişleirm</a>
+                            <a href="/account">Siparişlerim</a>
                                 <a href="/account">Profilim</a>
+                                
                                 <a href="/">Çıkış Yap</a>
 
                             </CustomDropdown>

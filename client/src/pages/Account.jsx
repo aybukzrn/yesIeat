@@ -28,10 +28,10 @@ const Account = () => {
 
     const getContentComponent = (categoryName) => {
         switch (categoryName) {
-            case 'Siparişlerim':
-                return <SiparisContent />;
             case 'Kullanıcı Bilgilerim':
                 return <KullaniciBilgilerimContent />;
+            case 'Siparişlerim':
+                return <SiparisContent />;
             case 'Kayıtlı Kartlarım':
                 return <KayitliKartlarımContent />;
             case 'Kayıtlı Adreslerim':
