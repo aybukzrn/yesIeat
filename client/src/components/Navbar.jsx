@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import './Navbar.css';
 import { RiAccountCircleFill } from "react-icons/ri";
@@ -6,9 +6,6 @@ import { FaBasketShopping } from "react-icons/fa6";
 import { Fade } from "react-awesome-reveal";
 import { TbPhoneCall } from "react-icons/tb";
 import CustomDropdown from '../components/CustomDropdown';
-
-
-import { useState } from 'react';
 import { MdMenu, MdClose, MdHome, MdMenuBook, MdAccountCircle } from 'react-icons/md';
 import { MdShoppingBasket } from "react-icons/md";
 import { MdContactSupport } from "react-icons/md";
@@ -20,10 +17,24 @@ import { MdContactSupport } from "react-icons/md";
 
 
 const Navbar = () => {
-
+    const getCartCount = () => {
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        return cart.reduce((sum, item) => sum + (item.quantity || 0), 0);
+    };
 
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [cartCount, setCartCount] = useState(getCartCount());
 
+    useEffect(() => {
+        const syncCartCount = () => setCartCount(getCartCount());
+        syncCartCount();
+        window.addEventListener('cartUpdated', syncCartCount);
+        window.addEventListener('storage', syncCartCount);
+        return () => {
+            window.removeEventListener('cartUpdated', syncCartCount);
+            window.removeEventListener('storage', syncCartCount);
+        };
+    }, []);
 
     const toggleMenu = () => {
         setIsMenuOpen(!isMenuOpen);
@@ -76,8 +87,11 @@ const Navbar = () => {
 
                     <div className="cart">
                         <Link to="/cart">
-                            <button className="cart-button"><FaBasketShopping /><div className="text">Sepetim</div></button>
-
+                            <button className="cart-button">
+                                <FaBasketShopping />
+                                <div className="text">Sepetim</div>
+                                {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
+                            </button>
                         </Link>
                     </div>
 
@@ -140,7 +154,7 @@ const Navbar = () => {
                     </li>
                     <li>
                         <Link to="/cart" className="nav-link" onClick={() => setIsMenuOpen(false)}>
-                            <MdShoppingBasket size={18} /> Sepetim
+                            <MdShoppingBasket size={18} /> Sepetim {cartCount > 0 && <span className="cart-badge inline-badge">{cartCount}</span>}
                         </Link>
                     </li>
                     <li>

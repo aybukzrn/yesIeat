@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar2 from '../components/Navbar2';
 import Footer from '../components/Footer';
@@ -26,9 +26,7 @@ const Cart = () => {
   const [errors, setErrors] = useState({});
   const [selectedDelivery, setSelectedDelivery] = useState('standart');
   const [selectedTip, setSelectedTip] = useState(null);
-  const [cartItems, setCartItems] = useState([
-    { id: 1, name: "2'li Doritoslu Mega Çiğ Köfte Menü", price: 349.99, quantity: 1 }
-  ]);
+  const [cartItems, setCartItems] = useState(() => JSON.parse(localStorage.getItem('cart')) || []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -69,9 +67,25 @@ const Cart = () => {
   };
 
 
+  useEffect(() => {
+    const syncCart = () => {
+      const stored = JSON.parse(localStorage.getItem('cart')) || [];
+      setCartItems(stored);
+    };
+    syncCart();
+    window.addEventListener('cartUpdated', syncCart);
+    window.addEventListener('storage', syncCart);
+    return () => {
+      window.removeEventListener('cartUpdated', syncCart);
+      window.removeEventListener('storage', syncCart);
+    };
+  }, []);
+
   const handleRemoveItem = (itemId) => {
     const updatedCart = cartItems.filter(item => item.id !== itemId);
     setCartItems(updatedCart);
+    localStorage.setItem('cart', JSON.stringify(updatedCart));
+    window.dispatchEvent(new Event('cartUpdated'));
   };
 
   const total = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
