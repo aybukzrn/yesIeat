@@ -189,3 +189,11 @@
     margin-top: -5px;
     margin-bottom: 5px;
 }
+
+.modal-actions .btn-reject{
+    background-color: #D34E4E;
+}
+
+.modal-actions .btn-reject:hover{
+    background-color: #993838;
+}

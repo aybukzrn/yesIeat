@@ -15,9 +15,17 @@ const ProductsContent = () => {
   const itemsPerPage = 10
 
   const [isApprovalModalOpen, setIsApprovalModalOpen] = useState(false);
-  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
-  const [selectedOrder, setSelectedOrder] = useState(null); // Detay gösterilecek sipariş
 
+  const [formData, setFormData] = useState({
+    name: '',
+    category: '',
+    price: '',
+    taxRate: '10', 
+    proPhoto: '',
+    tag: 'yeni',
+    stockStatus: 'Stokta Var',
+    content: '' // Sadece menüler için
+  });
 
   useEffect(() => {
     const fetchData = () => {
@@ -57,6 +65,40 @@ const ProductsContent = () => {
     setCurrentPage(1)
   };
 
+  // Form verilerini güncelleyen fonksiyon
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  // YENİ ÜRÜN / MENÜ EKLEME FONKSİYONU
+  const handleAddItem = () => {
+    // Basit validasyon
+    if (!formData.name || !formData.price) {
+      alert("Lütfen isim ve fiyat alanlarını doldurun.");
+      return;
+    }
+
+    const newItem = {
+      id: Date.now(), // Geçici ID
+      ...formData,
+      price: Number(formData.price),
+      taxRate: Number(formData.taxRate)
+    };
+
+    if (activeCategory === 'Ürünler') {
+      setProducts([newItem, ...products]);
+    } else {
+      setMenus([newItem, ...menus]);
+    }
+
+    // Formu temizle ve modalı kapat
+    setFormData({ name: '', category: '', price: '', taxRate: '10', stockStatus: 'Stokta Var', tag: 'yeni', content: '' });
+    setIsAddModalOpen(false);
+  };
 
   const currentDataList = activeCategory === 'Ürünler' ? products : menus;
 
@@ -119,6 +161,7 @@ const ProductsContent = () => {
                       <th>Ürün Adı</th>
                       <th>Kategori</th>
                       <th>Fiyat</th>
+                      <th>KDV Oranı</th>
                       <th>Etiket</th>
                       <th>Fotoğraf</th>
                       <th>Stok Durumu</th>
@@ -130,7 +173,9 @@ const ProductsContent = () => {
                         <td>{item.id}</td>
                         <td>{item.name}</td>
                         <td>{item.category}</td>
-                        <td>{item.price} ₺</td>
+                        <td>{item.price} ₺
+                        <span className="net-price-info"> (Net: {(item.price / (1 + item.taxRate/100)).toFixed(2)})</span></td>
+                        <td>{item.taxRate || 10} %</td>
                         <td>{item.label}</td>
                         <td>{/* Placeholder for product image */}</td>
                         <td className={item.stockStatus === 'Stokta Yok' ? 'status-out' : 'status-in'}>
@@ -148,6 +193,7 @@ const ProductsContent = () => {
                       <th>Menü Adı</th>
                       <th>İçerik</th>
                       <th>Fotoğraf</th>
+                      <th>KDV Oranı</th>
                       <th>Fiyat</th>
                     </tr>
                   </thead>
@@ -158,7 +204,9 @@ const ProductsContent = () => {
                         <td>{item.name}</td>
                         <td>{item.content}</td>
                         <td>{/* Placeholder for menu image */}</td>
-                        <td>{item.price} ₺</td>
+                        <td>{item.taxRate || 10} %</td>
+                        <td>{item.price} ₺
+                        <span className="net-price-info"> (Net: {(item.price / (1 + item.taxRate/100)).toFixed(2)})</span></td>
                       </tr>
                     ))}
                   </tbody>
@@ -231,6 +279,27 @@ const ProductsContent = () => {
                 <label>Kategori:</label>
                 <input type="text" id='pro-category' placeholder="Kategori girin" />
               </div>
+
+              <div className="form-row">
+                <div className="kdv-group">
+                    <label>Satış Fiyatı (TL):</label>
+                    <input 
+                        type="number" 
+                        name="price" 
+                        value={formData.price} 
+                        onChange={handleInputChange} 
+                    />
+                </div>
+                <div className="kdv-group">
+                    <label>KDV Oranı (%):</label>
+                    <select name="taxRate" value={formData.taxRate} onChange={handleInputChange}>
+                        <option value="1">%1 (Hizmet)</option>
+                        <option value="10">%10 (İçecek)</option>
+                        <option value="20">%20 (Yemek)</option>
+                    </select>
+                </div>
+            </div>
+
               <div className="pro-tag">
                 <label>Etiket:</label>
                 <select>
@@ -307,6 +376,24 @@ const ProductsContent = () => {
                 <label>Menü Fotoğrafı:</label>
                 <input type="file" id='menu-photo' />
               </div>
+
+              <div className="kdv-group">
+                    <label>Satış Fiyatı (TL):</label>
+                    <input 
+                        type="number" 
+                        name="price" 
+                        value={formData.price} 
+                        onChange={handleInputChange} 
+                    />
+                </div>
+                <div className="kdv-group">
+                    <label>KDV Oranı (%):</label>
+                    <select name="taxRate" value={formData.taxRate} onChange={handleInputChange}>
+                        <option value="1">%1 (Hizmet)</option>
+                        <option value="10">%10 (İçecek)</option>
+                        <option value="20">%20 (Yemek)</option>
+                    </select>
+                </div>
 
 
               <div className="menu-fee">

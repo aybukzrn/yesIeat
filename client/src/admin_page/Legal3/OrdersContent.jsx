@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './OrdersContent.css';
-import Modal from '../../components/Modal'; // Senin Modal bileşenin
+import Modal from '../../components/Modal';
 import { IoIosAddCircleOutline } from 'react-icons/io';
 import { CgDetailsMore } from "react-icons/cg";
 
@@ -18,7 +18,7 @@ const DATA = {
     names: ['Zeynep Özdemir', 'Selinay Türksal', 'Miray Tokel', 'Ahmet Yılmaz', 'Ayşe Kaya'],
 };
 
-// Mock data üretici (Seninkinin aynısı, sadece status yapısını güncelledim)
+// Mock data üretici 
 const generateDeterministicOrders = () => {
     const statuses = Object.values(ORDER_STAGES);
     return Array.from({ length: 35 }, (_, i) => {
@@ -29,7 +29,7 @@ const generateDeterministicOrders = () => {
             date: `15.${(i % 12) + 1}.2025`,
             total: parseFloat((100 + (i * 15)).toFixed(2)),
             status: statuses[i % statuses.length], // Rastgele durum
-            address: "Atatürk Mah. Lale Sok. No:5" // Detayda göstermek için ekledim
+            address: "Atatürk Mah. Lale Sok. No:5" 
         };
     });
 };
@@ -40,7 +40,7 @@ const OrdersContent = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
     
-    // Tek bir 'Yönetim Modalı' kullanacağız
+    
     const [manageModalOpen, setManageModalOpen] = useState(false);
     const [selectedOrder, setSelectedOrder] = useState(null);
     
@@ -60,7 +60,7 @@ const OrdersContent = () => {
         setOrders(prev => prev.map(order => 
             order.id === orderId ? { ...order, status: newStatus } : order
         ));
-        // İşlemden sonra modalı kapatabilirsin veya güncel haliyle açık tutabilirsin
+        
         setManageModalOpen(false); 
     };
 
@@ -69,10 +69,10 @@ const OrdersContent = () => {
         setManageModalOpen(true);
     };
 
-    // İstatistikler
+    
     const getStatusCount = (status) => orders.filter(o => o.status === status).length;
     
-    // Pagination
+    
     const ordersToDisplay = orders.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
     const totalPages = Math.ceil(orders.length / itemsPerPage);
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
@@ -115,7 +115,7 @@ const OrdersContent = () => {
 
     return (
         <div className="OrdersContent">
-            {/* Özet Kartları */}
+            
             <div className="up-content">
                 {[ORDER_STAGES.PENDING, ORDER_STAGES.PREPARING, ORDER_STAGES.ON_WAY, ORDER_STAGES.DELIVERED].map(status => (
                     <div className={`box status-${status.toLowerCase().split(' ')[0]}`} key={status}>
@@ -132,7 +132,7 @@ const OrdersContent = () => {
                     </button>
                 </div>
 
-                {/* Tablo */}
+                
                 <div className="orders-table-wrapper">
                     <table className="content-table">
                         <thead>
@@ -177,7 +177,7 @@ const OrdersContent = () => {
                     </div>
             </div>
 
-            {/* --- AKILLI YÖNETİM MODALI --- */}
+            
             <Modal 
                 isOpen={manageModalOpen} 
                 onClose={() => setManageModalOpen(false)} 
@@ -211,7 +211,7 @@ const OrdersContent = () => {
 
                         <hr />
 
-                        {/* 2. Bölüm: Aksiyon Butonları (Duruma göre değişir) */}
+                        {/* 2. Bölüm: Aksiyon Butonları */}
                         <div className="action-area">
                             <h3>İşlemler</h3>
                             {renderModalActions(selectedOrder)}
@@ -220,7 +220,7 @@ const OrdersContent = () => {
                 )}
             </Modal>
 
-            {/* Yeni Sipariş Ekleme Modalı (Senin kodunla aynı kalabilir) */}
+            {/* Yeni Sipariş Ekleme Modalı */}
             <Modal isOpen={isAddOrderModalOpen} onClose={() => setIsAddOrderModalOpen(false)} title="Yeni Sipariş Ekle">
                 <form className="add-order-form">
 
