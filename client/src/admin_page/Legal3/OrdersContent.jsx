@@ -1,50 +1,51 @@
 import React, { useState, useEffect } from 'react';
 import './OrdersContent.css';
-import { Link } from 'react-router-dom';
-import Modal from '../../components/Modal';
+import Modal from '../../components/Modal'; // Senin Modal bileşenin
 import { IoIosAddCircleOutline } from 'react-icons/io';
 import { CgDetailsMore } from "react-icons/cg";
 
+// 1. ADIM: Durumları bir akış sırasına koyduk
+const ORDER_STAGES = {
+    PENDING: 'Beklemede',
+    PREPARING: 'Hazırlanıyor',
+    ON_WAY: 'Yolda',
+    DELIVERED: 'Teslim Edildi',
+    CANCELLED: 'İptal Edildi'
+};
 
 const DATA = {
-    statuses: ['Beklemede', 'Yeni Sipariş', 'Yolda', 'Teslim Edildi', 'İptal Edildi'],
-    items: ['Cheeseburger Menü', 'Pesto Makarna', 'Adana Kebap', 'Salata', 'Sufle', 'Ev Yapımı Limonata', 'Tiramisu', 'Margarita Pizza', 'Çıtır Tavuk', 'Közlenmiş Sebzeler', 'Fırınlanmış Patates', 'Izgara Somon'],
+    items: ['Cheeseburger Menü', 'Pesto Makarna', 'Adana Kebap', 'Salata', 'Sufle', 'Ev Yapımı Limonata', 'Tiramisu', 'Margarita Pizza'],
     names: ['Zeynep Özdemir', 'Selinay Türksal', 'Miray Tokel', 'Ahmet Yılmaz', 'Ayşe Kaya'],
 };
 
-// SABİT MOCK DATA ÜRETİCİ
+// Mock data üretici (Seninkinin aynısı, sadece status yapısını güncelledim)
 const generateDeterministicOrders = () => {
+    const statuses = Object.values(ORDER_STAGES);
     return Array.from({ length: 35 }, (_, i) => {
-        const status = DATA.statuses[i % DATA.statuses.length];
-        const customer = DATA.names[i % DATA.names.length];
-        const itemContent = DATA.items[i % DATA.items.length];
-        const total = 100 + (i * 15) + (i % 10 * 0.5);
-
         return {
             id: String(100 + i),
-            customer: customer,
-            content: itemContent,
-            date: `15.${(i % 12) + 1}.${2025 - (i % 2)}`,
-            total: parseFloat(total.toFixed(2)),
-            status: status,
+            customer: DATA.names[i % DATA.names.length],
+            content: DATA.items[i % DATA.items.length],
+            date: `15.${(i % 12) + 1}.2025`,
+            total: parseFloat((100 + (i * 15)).toFixed(2)),
+            status: statuses[i % statuses.length], // Rastgele durum
+            address: "Atatürk Mah. Lale Sok. No:5" // Detayda göstermek için ekledim
         };
     });
 };
 
 const OrdersContent = () => {
-
     const [orders, setOrders] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
-
-
-    const [isApprovalModalOpen, setIsApprovalModalOpen] = useState(false);
-    const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
-    const [selectedOrder, setSelectedOrder] = useState(null); // Detay gösterilecek sipariş
+    
+    // Tek bir 'Yönetim Modalı' kullanacağız
+    const [manageModalOpen, setManageModalOpen] = useState(false);
+    const [selectedOrder, setSelectedOrder] = useState(null);
+    
     const [isAddOrderModalOpen, setIsAddOrderModalOpen] = useState(false);
-
-
+    
 
     useEffect(() => {
         setIsLoading(true);
@@ -54,156 +55,172 @@ const OrdersContent = () => {
         }, 800);
     }, []);
 
-
-    const handleApproveOrder = (orderId) => {
-        setOrders(prevOrders => prevOrders.map(order =>
-            order.id === orderId ? { ...order, status: 'Yeni Sipariş' } : order
+    // 2. ADIM: Durum Değiştirme Fonksiyonu
+    const handleStatusChange = (orderId, newStatus) => {
+        setOrders(prev => prev.map(order => 
+            order.id === orderId ? { ...order, status: newStatus } : order
         ));
-
+        // İşlemden sonra modalı kapatabilirsin veya güncel haliyle açık tutabilirsin
+        setManageModalOpen(false); 
     };
 
-    const handleViewDetails = (order) => {
+    const openManagementModal = (order) => {
         setSelectedOrder(order);
-        setIsDetailModalOpen(true);
+        setManageModalOpen(true);
     };
 
-    const handleAddOrder = (newOrder) => {
-        setOrders(prevOrders => [newOrder, ...prevOrders]);
-    };
-
-
-
+    // İstatistikler
     const getStatusCount = (status) => orders.filter(o => o.status === status).length;
-    const summaryData = [
-        { label: 'Bekleyen Siparişler', statusKey: 'Beklemede', count: getStatusCount('Beklemede'), action: true },
-        { label: 'Yeni Siparişler', statusKey: 'Yeni Sipariş', count: getStatusCount('Yeni Sipariş') },
-        { label: 'Yolda Olan Siparişler', statusKey: 'Yolda', count: getStatusCount('Yolda') },
-        { label: 'Teslim Edilen Siparişler', statusKey: 'Teslim Edildi', count: getStatusCount('Teslim Edildi') },
-    ];
-
+    
+    // Pagination
     const ordersToDisplay = orders.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
     const totalPages = Math.ceil(orders.length / itemsPerPage);
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
 
-    if (isLoading) {
-        return <div className="loading-state text-center py-5">Veriler yükleniyor...</div>;
-    }
+    // 3. ADIM: Modalin içinde hangi butonların görüneceğine karar veren mantık
+    const renderModalActions = (order) => {
+        if (!order) return null;
+
+        switch (order.status) {
+            case ORDER_STAGES.PENDING:
+                return (
+                    <div className="modal-actions">
+                        <button className="btn-reject" onClick={() => handleStatusChange(order.id, ORDER_STAGES.CANCELLED)}>Reddet</button>
+                        <button className="btn-approve" onClick={() => handleStatusChange(order.id, ORDER_STAGES.PREPARING)}>Siparişi Onayla ve Mutfağa İlet</button>
+                    </div>
+                );
+            case ORDER_STAGES.PREPARING:
+                return (
+                    <div className="modal-actions">
+                         <button className="btn-next-stage" onClick={() => handleStatusChange(order.id, ORDER_STAGES.ON_WAY)}>Hazır - Kuryeye Ver</button>
+                    </div>
+                );
+            case ORDER_STAGES.ON_WAY:
+                return (
+                    <div className="modal-actions">
+                        <button className="btn-complete" onClick={() => handleStatusChange(order.id, ORDER_STAGES.DELIVERED)}>Teslimat Başarılı</button>
+                    </div>
+                );
+            case ORDER_STAGES.DELIVERED:
+                return <div className="info-text">Bu sipariş tamamlanmıştır.</div>;
+            case ORDER_STAGES.CANCELLED:
+                return <div className="error-text">Bu sipariş iptal edilmiştir.</div>;
+            default:
+                return null;
+        }
+    };
+
+    if (isLoading) return <div className="loading">Yükleniyor...</div>;
 
     return (
-        <>
-            <div className="OrdersContent">
+        <div className="OrdersContent">
+            {/* Özet Kartları */}
+            <div className="up-content">
+                {[ORDER_STAGES.PENDING, ORDER_STAGES.PREPARING, ORDER_STAGES.ON_WAY, ORDER_STAGES.DELIVERED].map(status => (
+                    <div className={`box status-${status.toLowerCase().split(' ')[0]}`} key={status}>
+                        <h2>{status}</h2>
+                        <p>{getStatusCount(status)}</p>
+                    </div>
+                ))}
+            </div>
 
-
-                <div className="up-content">
-                    {summaryData.map(item => (
-                        <div className={`box status-${item.statusKey.split(' ')[0].toLowerCase()}`} key={item.label}>
-                            <h2>
-                                {item.label}{item.action && (
-                                    <div className="detail-button">
-
-                                        <button onClick={() => setIsApprovalModalOpen(true)}>
-                                            <CgDetailsMore />
-                                        </button>
-                                    </div>
-                                )}
-                            </h2>
-                            <p>{item.count}</p>
-
-                        </div>
-                    ))}
+            <div className="down-content">
+                <div className="add-order">
+                    <button onClick={() => setIsAddOrderModalOpen(true)} className="btn-add-order">
+                        <IoIosAddCircleOutline /> Yeni Sipariş Ekle
+                    </button>
                 </div>
 
-
-                <div className="down-content">
-                    <div className="add-order">
-                        <button onClick={() => setIsAddOrderModalOpen(true)} className="btn-add-order"><IoIosAddCircleOutline />Yeni Sipariş Ekle</button>
-                    </div>
-
-                    <div className="orders-table-wrapper">
-                        <table className="content-table">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
+                {/* Tablo */}
+                <div className="orders-table-wrapper">
+                    <table className="content-table">
+                        <thead>
+                            <tr>
+                            <th>ID</th>
                                     <th>Müşteri Adı</th>
                                     <th>Sipariş İçeriği</th>
                                     <th>Tarih</th>
                                     <th>Tutar</th>
                                     <th>Durum</th>
-                                    <th>İşlemler</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {ordersToDisplay.map(order => (
-                                    <tr key={order.id} className={`row-status-${order.status.split(' ')[0].toLowerCase()}`}>
-                                        <td>{order.id}</td>
+                                <th>Yönet</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {ordersToDisplay.map(order => (
+                                <tr key={order.id}>
+                                    <td>{order.id}</td>
                                         <td>{order.customer}</td>
                                         <td className="content-details">{order.content}</td>
                                         <td>{order.date}</td>
                                         <td className="price-tag">{order.total} ₺</td>
-                                        <td>
-                                            <span className={`status-badge badge-${order.status.split(' ')[0].toLowerCase()}`}>
-                                                {order.status}
-                                            </span>
-                                        </td>
-                                        <td>
-
-                                            <button className="action-btn" onClick={() => handleViewDetails(order)}>...</button>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-
-
-                    <div className="pagination">
+                                    <td>
+                                        <span className={`status-badge badge-${order.status.toLowerCase().split(' ')[0]}`}>
+                                            {order.status}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <button className="action-btn" onClick={() => openManagementModal(order)}>
+                                            <CgDetailsMore /> Detay & İşlem
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div className="pagination">
                         {Array.from({ length: totalPages }, (_, i) => (
                             <button key={i + 1} onClick={() => paginate(i + 1)} className={currentPage === i + 1 ? 'active-page' : ''}>{i + 1}</button>
                         ))}
                     </div>
-                </div>
             </div>
 
-            {/* MODAL 1: BEKLEYEN SİPARİŞLERİ ONAYLAMA */}
-            <Modal isOpen={isApprovalModalOpen} onClose={() => setIsApprovalModalOpen(false)} title={`Bekleyen Siparişler (${getStatusCount('Beklemede')})`}>
-                <ul className="modal-order-list">
-                    {orders.filter(o => o.status === 'Beklemede').map(order => (
-                        <li key={order.id}>
-                            Sipariş #{order.id} - {order.customer}
-                            <button
-                                onClick={() => handleApproveOrder(order.id)}
-                                className="approve-btn"
-                                disabled={order.status !== 'Beklemede'} // Onaylanmışsa pasif
-                                style={{ backgroundColor: order.status === 'Yeni Sipariş' ? '#ccc' : '#2ecc71', color: 'white', border: 'none', padding: '5px 10px', borderRadius: '5px' }}
-                            >
-                                {order.status === 'Yeni Sipariş' ? 'Onaylandı' : 'Onayla'}
-                            </button>
-                        </li>
-                    ))}
-                </ul>
-            </Modal>
-
-
-            {/* MODAL 2: TABLO DETAY GÖRÜNTÜLEME */}
-            <Modal isOpen={isDetailModalOpen} onClose={() => setIsDetailModalOpen(false)} title="Sipariş Detayları">
+            {/* --- AKILLI YÖNETİM MODALI --- */}
+            <Modal 
+                isOpen={manageModalOpen} 
+                onClose={() => setManageModalOpen(false)} 
+                title={`Sipariş Yönetimi #${selectedOrder?.id || ''}`}
+            >
                 {selectedOrder && (
-                    <div className="order-detail-content">
-                        <p><strong>ID:</strong> {selectedOrder.id}</p>
-                        <p><strong>Müşteri:</strong> {selectedOrder.customer}</p>
-                        <p><strong>İçerik:</strong> {selectedOrder.content}</p>
-                        <p><strong>Tutar:</strong> {selectedOrder.total} ₺</p>
-                        <p><strong>Tarih:</strong> {selectedOrder.date}</p>
-                        <p><strong>Durum:</strong>
-                            <span className={`status-badge badge-${selectedOrder.status.split(' ')[0].toLowerCase()}`}>
-                                {selectedOrder.status}
-                            </span>
-                        </p>
+                    <div className="order-management-modal">
+                        {/* 1. Bölüm: Sipariş Detayları */}
+                        <div className="order-info-grid">
+                            <div className="info-group">
+                                <label>Müşteri:</label>
+                                <span>{selectedOrder.customer}</span>
+                            </div>
+                            <div className="info-group">
+                                <label>Adres:</label>
+                                <span>{selectedOrder.address}</span>
+                            </div>
+                            <div className="info-group full-width">
+                                <label>Sipariş İçeriği:</label>
+                                <div className="content-box">{selectedOrder.content}</div>
+                            </div>
+                            <div className="info-group">
+                                <label>Tutar:</label>
+                                <span className="price">{selectedOrder.total} ₺</span>
+                            </div>
+                             <div className="info-group">
+                                <label>Mevcut Durum:</label>
+                                <span className={`status-text ${selectedOrder.status}`}>{selectedOrder.status}</span>
+                            </div>
+                        </div>
+
+                        <hr />
+
+                        {/* 2. Bölüm: Aksiyon Butonları (Duruma göre değişir) */}
+                        <div className="action-area">
+                            <h3>İşlemler</h3>
+                            {renderModalActions(selectedOrder)}
+                        </div>
                     </div>
                 )}
             </Modal>
 
-            {/* MODAL 3: YENİ SİPARİŞ EKLEME */}
+            {/* Yeni Sipariş Ekleme Modalı (Senin kodunla aynı kalabilir) */}
             <Modal isOpen={isAddOrderModalOpen} onClose={() => setIsAddOrderModalOpen(false)} title="Yeni Sipariş Ekle">
                 <form className="add-order-form">
 
@@ -237,8 +254,7 @@ const OrdersContent = () => {
                     </button>
                 </form>
             </Modal>
-
-        </>
+        </div>
     );
 };
 

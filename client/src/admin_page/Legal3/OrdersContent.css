@@ -13,6 +13,8 @@
 
 .up-content .box {
     align-items: center;
+    width: 20%;
+
 }
 
 .up-content .box h2 {
@@ -153,7 +155,8 @@
     width: 580px;
 }
 
-.add-order-form button {
+.add-order-form button,
+.action-area button {
     background-color: #9BC09C;
     font-family: 'Dm Serif Text', serif;
     letter-spacing: .7px;
@@ -167,7 +170,22 @@
     margin-top: 10px;
 }
 
-.add-order-form button:hover {
+.add-order-form button:hover,
+.action-area button:hover {
     background-color: #6fa86f;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.error-text {
+    color: red;
+    font-size: 15px;
+    margin-top: -5px;
+    margin-bottom: 5px;
 }

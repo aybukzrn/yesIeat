@@ -36,6 +36,7 @@
     padding: 10px 10px 10px 10px;
     font-family: 'Dm Serif Text', serif;
     outline: none;
+    width:min-content;
 }
 
 

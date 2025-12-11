@@ -13,9 +13,9 @@ import KayitliAdreslerimContent from './Legal2/KayitliAdreslerimContent';
 
 const categories = [
     { name: 'Siparişlerim', link: '/siparislerim' },
-    { name: 'Kullanıcı Bilgilerim', link: '/kullanici-bilgilerim' },
     { name: 'Kayıtlı Kartlarım', link: '/kayitli-kartlarim' },
     { name: 'Kayıtlı Adreslerim', link: '/kayitli-adreslerim' },
+    { name: 'Kullanıcı Bilgilerim', link: '/kullanici-bilgilerim' },
 
 ];
 
