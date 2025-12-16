@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import {
@@ -8,19 +8,6 @@ import {
 } from 'react-icons/md';
 import './Menu.css';
 import { Fade } from 'react-awesome-reveal';
-
-const menuData = [
-  { id: 1, category: 'Çorbalar', name: 'Ezogelin Çorbası', price: 45, desc: 'Nane ve pul biber eşliğinde, doyurucu.', tag: 'Hızlı Teslim' },
-  { id: 2, category: 'Ana Yemekler', name: 'Hünkar Beğendi', price: 180, desc: 'Közlenmiş patlıcan püresi.', tag: 'Şef Tavsiyesi' },
-  { id: 3, category: 'Kebaplar', name: 'Adana Kebap', price: 160, desc: 'Acılı, zırh kıymasıyla.', tag: 'Yeni' },
-  { id: 4, category: 'Fast Food', name: 'Cheeseburger Menü', price: 140, desc: 'Patates ve içecekle.', tag: 'Popüler' },
-  { id: 5, category: 'Fast Food', name: 'Tavuk Dürüm', price: 95, desc: 'Marine edilmiş tavuk.', tag: 'Ekonomik' },
-  { id: 6, category: 'İtalyan', name: 'Pepperoni Pizza', price: 175, desc: 'Bol mozzarella.', tag: 'Yeni' },
-  { id: 7, category: 'İtalyan', name: 'Pesto Makarna', price: 120, desc: 'El yapımı pesto.', tag: 'Vejetaryen' },
-  { id: 8, category: 'Hafif Lezzetler', name: 'Tavuklu Salata', price: 110, desc: 'Akdeniz yeşillikleri.', tag: 'Diyet' },
-  { id: 9, category: 'Tatlılar', name: 'Sufle', price: 70, desc: 'Belçika çikolatası.', tag: 'Popüler' },
-  { id: 10, category: 'İçecekler', name: 'Limonata', price: 40, desc: 'Taze nane ile.', tag: 'Soğuk' },
-];
 
 const categories = [
   { name: 'Hepsi', icon: MdOutlineFastfood },
@@ -34,6 +21,49 @@ const categories = [
   { name: 'İçecekler', icon: MdLocalCafe },
 ];
 
+// Tag'den CSS class ismini oluşturan fonksiyon
+// CSS'teki class isimleri: tag-Hızlı, tag-Şef, tag-Yeni, tag-Popüler, tag-Ekonomik, tag-Vejetaryen, tag-Diyet, tag-Soğuk
+const getTagClassName = (tag) => {
+  if (!tag || tag.trim() === '') return '';
+  
+  // Tag'in ilk kelimesini al
+  const firstWord = tag.trim().split(' ')[0];
+  
+  // CSS class isimleriyle eşleştirme (büyük/küçük harf duyarsız)
+  // Veritabanından "Hızlı Teslim", "Şef Tavsiyesi" gibi gelebilir
+  const tagMap = {
+    'Hızlı': 'Hızlı',
+    'hızlı': 'Hızlı',
+    'HIZLI': 'Hızlı',
+    'Şef': 'Şef',
+    'şef': 'Şef',
+    'ŞEF': 'Şef',
+    'Yeni': 'Yeni',
+    'yeni': 'Yeni',
+    'YENİ': 'Yeni',
+    'Popüler': 'Popüler',
+    'popüler': 'Popüler',
+    'POPÜLER': 'Popüler',
+    'Ekonomik': 'Ekonomik',
+    'ekonomik': 'Ekonomik',
+    'EKONOMİK': 'Ekonomik',
+    'Vejetaryen': 'Vejetaryen',
+    'vejetaryen': 'Vejetaryen',
+    'VEJETARYEN': 'Vejetaryen',
+    'Diyet': 'Diyet',
+    'diyet': 'Diyet',
+    'DİYET': 'Diyet',
+    'Soğuk': 'Soğuk',
+    'soğuk': 'Soğuk',
+    'SOĞUK': 'Soğuk',
+  };
+  
+  // Eşleşme varsa CSS class ismini döndür, yoksa ilk kelimeyi kullan (ilk harfi büyük yaparak)
+  const normalizedTag = tagMap[firstWord] || firstWord;
+  
+  return `tag-${normalizedTag}`;
+};
+
 const MenuItemCard = ({ item }) => (
   <div className="menu-item-card">
     <div className="item-image-placeholder">
@@ -42,7 +72,10 @@ const MenuItemCard = ({ item }) => (
     <div className="item-details">
       <div className="item-header">
         <h3>{item.name}</h3>
-        <span className={`item-tag tag-${item.tag.split(' ')[0]}`}>{item.tag}</span>
+        {/* Tag varsa göster, yoksa gösterme */}
+        {item.tag && item.tag.trim() !== '' && (
+          <span className={`item-tag ${getTagClassName(item.tag)}`}>{item.tag}</span>
+        )}
       </div>
       <p className="item-desc">{item.desc}</p>
       <div className="item-footer">
@@ -54,11 +87,48 @@ const MenuItemCard = ({ item }) => (
 );
 
 const Menu = () => {
+  // Menü verilerini tutacak state (API'den gelecek)
+  const [menuData, setMenuData] = useState([]);
+  // Yükleme durumunu takip eden state
+  const [loading, setLoading] = useState(true);
+  // Hata durumunu tutan state
+  const [error, setError] = useState(null);
+  
   const [activeCategory, setActiveCategory] = useState('Hepsi');
-
-
   const [selectedTags, setSelectedTags] = useState([]);
 
+  // Component mount olduğunda API'den menü verilerini çek
+  useEffect(() => {
+    const fetchMenuData = async () => {
+      try {
+        setLoading(true); // Yükleme başladı
+        setError(null); // Önceki hataları temizle
+        
+        // Backend'den menü verilerini çek
+        const response = await fetch('/api/menu');
+        
+        // Response başarılı değilse hata fırlat
+        if (!response.ok) {
+          throw new Error('Menü verileri yüklenemedi');
+        }
+        
+        // JSON verisini al
+        const data = await response.json();
+        
+        // State'i güncelle
+        setMenuData(data);
+        setLoading(false); // Yükleme tamamlandı
+      } catch (err) {
+        // Hata durumunda
+        console.error('Menü yükleme hatası:', err);
+        setError(err.message || 'Bir hata oluştu');
+        setLoading(false);
+      }
+    };
+
+    // Fonksiyonu çağır
+    fetchMenuData();
+  }, []); // Boş dependency array = sadece component mount olduğunda çalış
 
   const toggleTag = (tag) => {
     if (tag === "Hepsi") {
@@ -74,16 +144,22 @@ const Menu = () => {
   };
 
 
+  // Mevcut tag'leri hesapla (menuData yüklendikten sonra)
   const availableTags = [
     'Hepsi',
     ...new Set(
       menuData
-        .filter(item => activeCategory === 'Hepsi' || item.category === activeCategory)
+        .filter(item => {
+          // Kategori filtresine uygun mu?
+          const categoryMatch = activeCategory === 'Hepsi' || item.category === activeCategory;
+          // Tag'i var mı ve boş değil mi?
+          return categoryMatch && item.tag && item.tag.trim() !== '';
+        })
         .map(item => item.tag)
     )
   ];
 
-
+  // Filtrelenmiş menüyü hesapla
   const filteredMenu = menuData.filter(item => {
     const categoryMatch =
       activeCategory === 'Hepsi' || item.category === activeCategory;
@@ -124,6 +200,7 @@ const Menu = () => {
         <div className="tag-filter-bar">
         {availableTags.map(tag => (
           <button
+            key={tag}
             className={`tag-btn ${selectedTags.includes(tag) ? 'active' : ''}`}
             data-tag={tag.split(' ')[0]}
             onClick={() => toggleTag(tag)}
@@ -136,14 +213,57 @@ const Menu = () => {
 
         <section className="menu-list-section">
           <div className="menu-items-grid">
-            {filteredMenu.length > 0 ? (
-              filteredMenu.map(item => (
-                <MenuItemCard key={item.id} item={item} />
-              ))
-            ) : (
-              <p className="no-items-message">
-                Seçili filtrelerde ürün bulunamadı.
-              </p>
+            {/* Yükleme durumu */}
+            {loading && (
+              <div style={{ 
+                gridColumn: '1 / -1', 
+                textAlign: 'center', 
+                padding: '40px',
+                fontSize: '18px',
+                color: '#666'
+              }}>
+                Menü yükleniyor...
+              </div>
+            )}
+            
+            {/* Hata durumu */}
+            {error && !loading && (
+              <div style={{ 
+                gridColumn: '1 / -1', 
+                textAlign: 'center', 
+                padding: '40px',
+                fontSize: '18px',
+                color: '#d32f2f'
+              }}>
+                <p>Hata: {error}</p>
+                <button 
+                  onClick={() => window.location.reload()} 
+                  style={{
+                    marginTop: '10px',
+                    padding: '10px 20px',
+                    backgroundColor: '#1976d2',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '5px',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Tekrar Dene
+                </button>
+              </div>
+            )}
+            
+            {/* Veri yüklendi ve hata yoksa menüyü göster */}
+            {!loading && !error && (
+              filteredMenu.length > 0 ? (
+                filteredMenu.map(item => (
+                  <MenuItemCard key={item.id} item={item} />
+                ))
+              ) : (
+                <p className="no-items-message">
+                  Seçili filtrelerde ürün bulunamadı.
+                </p>
+              )
             )}
           </div>
         </section>
