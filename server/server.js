@@ -110,6 +110,7 @@ app.get('/api/menu', async (req, res) => {
       price: p.prodUnitPrice,
       desc: p.prodDesc,
       tag: p.prodLabel || '',
+      photo: p.prodPhoto || '',
       category: p.CATEGORY?.categoryName || '',
     }));
 

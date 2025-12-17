@@ -4,7 +4,7 @@ import Footer from '../components/Footer';
 import {
   MdOutlineFastfood, MdLocalCafe, MdOutlineWater,
   MdBakeryDining, MdDinnerDining, MdKebabDining,
-  MdLocalPizza, MdRamenDining
+  MdLocalPizza, MdRamenDining, MdCheckCircle
 } from 'react-icons/md';
 import './Menu.css';
 import { Fade } from 'react-awesome-reveal';
@@ -64,27 +64,55 @@ const getTagClassName = (tag) => {
   return `tag-${normalizedTag}`;
 };
 
-const MenuItemCard = ({ item }) => (
-  <div className="menu-item-card">
-    <div className="item-image-placeholder">
-      <img src={`/assets/menu/${item.id}.jpg`} alt={item.name} />
-    </div>
-    <div className="item-details">
-      <div className="item-header">
-        <h3>{item.name}</h3>
-        {/* Tag varsa göster, yoksa gösterme */}
-        {item.tag && item.tag.trim() !== '' && (
-          <span className={`item-tag ${getTagClassName(item.tag)}`}>{item.tag}</span>
-        )}
+const MenuItemCard = ({ item, onAddToCart }) => {
+  const [added, setAdded] = useState(false);
+
+  const handleButtonClick = () => {
+    // Sepete ekleme fonksiyonunu çağır
+    onAddToCart(item);
+    
+    // Buton durumunu değiştir
+    setAdded(true);
+    
+    // 2 saniye sonra eski haline döndür
+    setTimeout(() => {
+      setAdded(false);
+    }, 2000);
+  };
+
+ return (
+    <div className="menu-item-card">
+      <div className="item-image-placeholder">
+        <img src={`/assets/menu/${item.photo}.jpg`} alt={item.name} />
       </div>
-      <p className="item-desc">{item.desc}</p>
-      <div className="item-footer">
-        <span className="item-price">{item.price} ₺</span>
-        <button className="add-to-cart-btn">Sepete Ekle</button>
+      <div className="item-details">
+        <div className="item-header">
+          <h3>{item.name}</h3>
+          {item.tag && item.tag.trim() !== '' && (
+            <span className={`item-tag ${getTagClassName(item.tag)}`}>{item.tag}</span>
+          )}
+        </div>
+        <p className="item-desc">{item.desc}</p>
+        <div className="item-footer">
+          <span className="item-price">{item.price} ₺</span>
+          <button
+            className={`add-to-cart-btn ${added ? 'added' : ''}`}
+            onClick={handleButtonClick} // Değişen fonksiyon
+            disabled={added} // Eklendiğinde tıklamayı kapatır
+          >
+            {added ? (
+              <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                <MdCheckCircle size={18} /> Eklendi
+              </span>
+            ) : (
+              "Sepete Ekle"
+            )}
+          </button>
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 const Menu = () => {
   // Menü verilerini tutacak state (API'den gelecek)
@@ -96,6 +124,34 @@ const Menu = () => {
   
   const [activeCategory, setActiveCategory] = useState('Hepsi');
   const [selectedTags, setSelectedTags] = useState([]);
+
+  const handleAddToCart = (item) => {
+    try {
+      const storedCart = JSON.parse(localStorage.getItem('cart')) || [];
+
+      const existingIndex = storedCart.findIndex(
+        (cartItem) => cartItem.id === item.id
+      );
+
+      if (existingIndex !== -1) {
+        storedCart[existingIndex].quantity += 1;
+      } else {
+        storedCart.push({
+          id: item.id,
+          name: item.name,
+          price: Number(item.price) || 0,
+          quantity: 1,
+        });
+      }
+
+      localStorage.setItem('cart', JSON.stringify(storedCart));
+
+      // Cart sayfası ve diğer bileşenlerin güncellenmesi için event gönder
+      window.dispatchEvent(new Event('cartUpdated'));
+    } catch (err) {
+      console.error('Ürün sepete eklenirken hata oluştu:', err);
+    }
+  };
 
   // Component mount olduğunda API'den menü verilerini çek
   useEffect(() => {
@@ -257,7 +313,11 @@ const Menu = () => {
             {!loading && !error && (
               filteredMenu.length > 0 ? (
                 filteredMenu.map(item => (
-                  <MenuItemCard key={item.id} item={item} />
+                  <MenuItemCard
+                    key={item.id}
+                    item={item}
+                    onAddToCart={handleAddToCart}
+                  />
                 ))
               ) : (
                 <p className="no-items-message">
