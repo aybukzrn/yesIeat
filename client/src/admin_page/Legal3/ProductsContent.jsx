@@ -6,13 +6,13 @@ import Modal from '../../components/Modal';
 const ProductsContent = () => {
 
   const [activeCategory, setActiveCategory] = useState('Ürünler');
-  const [products, setProducts] = useState([])
-  const [menus, setMenus] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [products, setProducts] = useState([]);
+  const [menus, setMenus] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-
-  const [currentPage, setCurrentPage] = useState(1)
-  const itemsPerPage = 10
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   const [isApprovalModalOpen, setIsApprovalModalOpen] = useState(false);
 
@@ -20,49 +20,60 @@ const ProductsContent = () => {
     name: '',
     category: '',
     price: '',
-    taxRate: '10', 
+    taxRate: '10',
     proPhoto: '',
     tag: 'yeni',
     stockStatus: 'Stokta Var',
-    content: '' // Sadece menüler için
+    content: '', // Sadece menüler için
+    description: '' // Ürün açıklaması
   });
 
-  useEffect(() => {
-    const fetchData = () => {
+  // Ürünleri backend'den çeken fonksiyon (yeniden kullanılabilir)
+  const fetchProducts = async () => {
+    try {
       setLoading(true);
+      setError(null);
 
-      setTimeout(() => {
+      const response = await fetch('/api/menu');
 
+      if (!response.ok) {
+        throw new Error('Ürünler yüklenemedi');
+      }
 
-        const mockProducts = Array.from({ length: 25 }, (_, i) => ({
-          id: 100 + i,
-          name: i % 3 === 0 ? `Ev Yapımı Limonata ${i + 1}` : `Pesto Soslu Makarna ${i + 1}`,
-          category: i % 3 === 0 ? 'İçecekler' : 'İtalyan',
-          price: (i + 1) * 10,
-          stockStatus: i % 5 === 0 ? 'Stokta Yok' : 'Stokta Var' // Her 5 üründen biri yok
-        }))
+      const data = await response.json();
 
+      // /api/menu aynı veriyi müşteri menüsü için de kullanıyor.
+      // Admin tarafında tablo kolonlarına uysun diye temel alanları mapliyoruz.
+      const mappedProducts = data.map((item) => ({
+        id: item.id,
+        name: item.name,
+        category: item.category || '',
+        price: Number(item.price) || 0,
+        taxRate: 10,
+        tag: item.tag || '',
+        stockStatus: 'Stokta Var',
+        proPhoto: item.photo || '',
+        content: item.desc || '',
+      }));
 
-        const mockMenus = Array.from({ length: 15 }, (_, i) => ({
-          id: 200 + i,
-          name: `Süper Menü ${i + 1}`,
-          content: 'Burger, Patates, İçecek',
-          price: 150 + (i * 5)
-        }));
+      setProducts(mappedProducts);
+    } catch (err) {
+      console.error('Ürünler yüklenirken hata:', err);
+      setError(err.message || 'Bir hata oluştu');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-        setProducts(mockProducts)
-        setMenus(mockMenus)
-        setLoading(false)
-      }, 500)
-    };
-
-    fetchData()
-  }, [])
+  // Admin ürün tablosunu backend'deki /api/menu endpointine bağla
+  useEffect(() => {
+    fetchProducts();
+  }, []);
 
 
   const handleCategoryChange = (e) => {
-    setActiveCategory(e.target.value)
-    setCurrentPage(1)
+    setActiveCategory(e.target.value);
+    setCurrentPage(1);
   };
 
   // Form verilerini güncelleyen fonksiyon
@@ -74,30 +85,89 @@ const ProductsContent = () => {
     }));
   };
 
-  // YENİ ÜRÜN / MENÜ EKLEME FONKSİYONU
-  const handleAddItem = () => {
+  // YENİ ÜRÜN / MENÜ EKLEME FONKSİYONU - Backend'e POST request gönderir
+  const handleAddItem = async () => {
     // Basit validasyon
-    if (!formData.name || !formData.price) {
-      alert("Lütfen isim ve fiyat alanlarını doldurun.");
+    if (!formData.name || !formData.price || !formData.category) {
+      alert('Lütfen isim, fiyat ve kategori alanlarını doldurun.');
       return;
     }
 
-    const newItem = {
-      id: Date.now(), // Geçici ID
-      ...formData,
-      price: Number(formData.price),
-      taxRate: Number(formData.taxRate)
-    };
-
+    // Sadece Ürünler için backend'e gönder (Menüler için henüz endpoint yok)
     if (activeCategory === 'Ürünler') {
-      setProducts([newItem, ...products]);
-    } else {
-      setMenus([newItem, ...menus]);
-    }
+      try {
+        setLoading(true);
+        
+        const response = await fetch('/api/admin/products', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            name: formData.name,
+            category: formData.category,
+            price: formData.price,
+            taxRate: formData.taxRate,
+            tag: formData.tag,
+            proPhoto: formData.proPhoto,
+            stockStatus: formData.stockStatus,
+            description: formData.description || '',
+          }),
+        });
 
-    // Formu temizle ve modalı kapat
-    setFormData({ name: '', category: '', price: '', taxRate: '10', stockStatus: 'Stokta Var', tag: 'yeni', content: '' });
-    setIsAddModalOpen(false);
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+          throw new Error(result.message || 'Ürün eklenirken bir hata oluştu');
+        }
+
+        // Başarılı ekleme sonrası ürün listesini yeniden çek
+        await fetchProducts();
+
+        // Formu temizle ve modalı kapat
+        setFormData({
+          name: '',
+          category: '',
+          price: '',
+          taxRate: '10',
+          proPhoto: '',
+          tag: 'yeni',
+          stockStatus: 'Stokta Var',
+          content: '',
+          description: '',
+        });
+        setIsApprovalModalOpen(false);
+        
+        alert('Ürün başarıyla eklendi!');
+      } catch (err) {
+        console.error('Ürün ekleme hatası:', err);
+        alert(err.message || 'Ürün eklenirken bir hata oluştu');
+        setLoading(false);
+      }
+    } else {
+      // Menüler için henüz backend endpoint'i yok, sadece local state'e ekle
+      const newItem = {
+        id: Date.now(),
+        ...formData,
+        price: Number(formData.price),
+        taxRate: Number(formData.taxRate),
+      };
+      setMenus(prev => [newItem, ...prev]);
+
+      // Formu temizle ve modalı kapat
+      setFormData({
+        name: '',
+        category: '',
+        price: '',
+        taxRate: '10',
+        proPhoto: '',
+        tag: 'yeni',
+        stockStatus: 'Stokta Var',
+        content: '',
+        description: '',
+      });
+      setIsApprovalModalOpen(false);
+    }
   };
 
   const currentDataList = activeCategory === 'Ürünler' ? products : menus;
@@ -148,8 +218,10 @@ const ProductsContent = () => {
           </div>
 
 
-          {loading ? (
+              {loading ? (
             <p>Veriler yükleniyor...</p>
+          ) : error ? (
+            <p style={{ color: 'red' }}>Hata: {error}</p>
           ) : (
             <>
 
@@ -173,10 +245,17 @@ const ProductsContent = () => {
                         <td>{item.id}</td>
                         <td>{item.name}</td>
                         <td>{item.category}</td>
-                        <td>{item.price} ₺
-                        <span className="net-price-info"> (Net: {(item.price / (1 + item.taxRate/100)).toFixed(2)})</span></td>
+                        <td>
+                          {item.price} ₺
+                          <span className="net-price-info">
+                            {' '}
+                            (Net:{' '}
+                            {(item.price / (1 + (item.taxRate || 10) / 100)).toFixed(2)}
+                            )
+                          </span>
+                        </td>
                         <td>{item.taxRate || 10} %</td>
-                        <td>{item.label}</td>
+                        <td>{item.tag}</td>
                         <td>{/* Placeholder for product image */}</td>
                         <td className={item.stockStatus === 'Stokta Yok' ? 'status-out' : 'status-in'}>
                           {item.stockStatus}
@@ -273,11 +352,35 @@ const ProductsContent = () => {
   
               <div className="pro-name">
                 <label>Ürün Adı:</label>
-                <input type="text" id='pro-name' placeholder="Ürün adı girin" />
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  placeholder="Ürün adı girin"
+                />
               </div>
+
+                 <div className="pro-description">
+                <label>Ürün Açıklaması:</label>
+                <input
+                  type="text"
+                  name="description"
+                  value={formData.description}
+                  onChange={handleInputChange}
+                  placeholder="Ürün açıklaması girin"
+                />
+              </div>
+
               <div className="pro-category">
                 <label>Kategori:</label>
-                <input type="text" id='pro-category' placeholder="Kategori girin" />
+                <input
+                  type="text"
+                  name="category"
+                  value={formData.category}
+                  onChange={handleInputChange}
+                  placeholder="Kategori girin"
+                />
               </div>
 
               <div className="form-row">
@@ -302,57 +405,54 @@ const ProductsContent = () => {
 
               <div className="pro-tag">
                 <label>Etiket:</label>
-                <select>
-                  <option value="hizli">Hızlı</option>
-                  <option value="sef">Şef</option>
-                  <option value="populer">Popüler</option>
-                  <option value="yeni">Yeni</option>
-                  <option value="ekonomik">Ekonomik</option>
-                  <option value="vejetaryen">Vejetaryen</option>
-                  <option value="diyet">Diyet</option>
-                  <option value="soguk">Soğuk</option>
+                <select
+                  name="tag"
+                  value={formData.tag}
+                  onChange={handleInputChange}
+                >
+                  <option value="Hızlı">Hızlı</option>
+                  <option value="Şef">Şef</option>
+                  <option value="Popüler">Popüler</option>
+                  <option value="Yeni">Yeni</option>
+                  <option value="Ekonomik">Ekonomik</option>
+                  <option value="Vejetaryen">Vejetaryen</option>
+                  <option value="Diyet">Diyet</option>
+                  <option value="Soğuk">Soğuk</option>
                 </select>
 
               </div>
 
               <div className="pro-photo">
-                <label>Ürün Fotoğrafı:</label>
-                <input type="file" id='pro-photo' />
+                <label>Ürün Fotoğrafı (opsiyonel):</label>
+                <input
+                  type="text"
+                  name="proPhoto"
+                  value={formData.proPhoto}
+                  onChange={handleInputChange}
+                  placeholder="Fotoğraf adı (menu görselleri ile uyumlu)"
+                />
               </div>
 
-              <div className="pro-fee">
-                <label>Fiyat:</label>
-                <input type="number" id='pro-fee' placeholder="Fiyat girin" />
-              </div>
-              
               <div className="pro-stock">
                 <label>Stok Durumu:</label>
-                <select>
-                  <option value="in">Stokta Var</option>
-                  <option value="out">Stokta Yok</option>
+                <select
+                  name="stockStatus"
+                  value={formData.stockStatus}
+                  onChange={handleInputChange}
+                >
+                  <option value="Stokta Var">Stokta Var</option>
+                  <option value="Stokta Yok">Stokta Yok</option>
                 </select>
               
               </div>
 
               <button
-                        type="button"
-                        onClick={() => {
-                            const newProduct = {
-                                id: String(Date.now()),
-                                customer: document.getElementById("pro-name").value,
-                                content: document.getElementById("pro-category").value,
-                                total: Number(document.getElementById("pro-fee").value),
-                                stockStatus: document.querySelector(".pro-stock select").value === "in" ? "Stokta Var" : "Stokta Yok"
-                                
-                            };
-
-                            handleAddOrder(newProduct);
-                            setIsAddOrderModalOpen(false);
-                        }}
-                        className="btn-submit-product"
-                    >
-                        Ürün Ekle
-                    </button>
+                type="button"
+                onClick={handleAddItem}
+                className="btn-submit-product"
+              >
+                Ürün Ekle
+              </button>
 
             </div>
           </div>
@@ -364,17 +464,35 @@ const ProductsContent = () => {
               
               <div className="menu-name">
                 <label>Menü Adı:</label>
-                <input type="text" id='menu-name' placeholder="Menü adı girin" />
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  placeholder="Menü adı girin"
+                />
               </div>
 
               <div className="menu-content">
                 <label>Menü İçeriği:</label>
-                <input type="text" id='menu-content' placeholder="Menü içeriğini girin" />
+                <input
+                  type="text"
+                  name="content"
+                  value={formData.content}
+                  onChange={handleInputChange}
+                  placeholder="Menü içeriğini girin"
+                />
               </div>
 
               <div className="menu-photo">
-                <label>Menü Fotoğrafı:</label>
-                <input type="file" id='menu-photo' />
+                <label>Menü Fotoğrafı (opsiyonel):</label>
+                <input
+                  type="text"
+                  name="proPhoto"
+                  value={formData.proPhoto}
+                  onChange={handleInputChange}
+                  placeholder="Fotoğraf adı (menu görselleri ile uyumlu)"
+                />
               </div>
 
               <div className="kdv-group">
@@ -396,31 +514,13 @@ const ProductsContent = () => {
                 </div>
 
 
-              <div className="menu-fee">
-                <label>Fiyat:</label>
-                <input type="number" id='menu-fee' placeholder="Fiyat girin" />
-              </div>
-              
-
               <button
-                        type="button"
-                        onClick={() => {
-                            const newMenu = {
-                                id: String(Date.now()),
-                                customer: document.getElementById("menu-name").value,
-                                content: document.getElementById("menu-content").value,
-                                total: Number(document.getElementById("menu-fee").value),
-                                
-                          
-                            };
-
-                            handleAddOrder(newMenu);
-                            setIsAddOrderModalOpen(false);
-                        }}
-                        className="btn-submit-menu"
-                    >
-                        Menü Ekle
-                    </button>
+                type="button"
+                onClick={handleAddItem}
+                className="btn-submit-menu"
+              >
+                Menü Ekle
+              </button>
 
             </div>
           </div>
