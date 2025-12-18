@@ -190,7 +190,6 @@ const Cart = () => {
               <p className="empty-cart-message">Sepetinizde ürün bulunmamaktadır.</p>
             ) : (
               <>
-                <h4>Ustam Çiğ Köfte</h4>
                 {cartItems.map(item => (
                   <div className="summary-item" key={item.id}>
                     <div className="item-info">
