@@ -128,6 +128,7 @@
 }
 
 .add-to-cart-btn {
+    transition: all 0.3s ease;
     font-family: 'Dm Serif Text', serif;
     background-color: #e2bb5e; 
     color: white;
@@ -142,6 +143,13 @@
 
 .add-to-cart-btn:hover {
     background-color: #d5160c;
+}
+
+.add-to-cart-btn.added {
+    letter-spacing: .7px;
+  background-color: #4f9d22 !important; /* Yeşil renk */
+  color: white;
+  cursor: default;
 }
 
 .item-tag {
