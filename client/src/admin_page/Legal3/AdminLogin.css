@@ -1,0 +1,82 @@
+.adminlogin{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 550px;
+    padding: 40px;
+    margin: 150px auto;
+    background-color: #f9f9f9;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 22px;
+}
+
+.admin-header{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-bottom: 1px solid #D34E4E;
+    margin-bottom: 20px;
+}
+
+.admin-header h2{
+    font-size: 26px;
+    font-weight: lighter;
+    margin-bottom: 10px;
+    color: #D34E4E;
+    letter-spacing: 2.5px;
+}
+
+.adminlogin-logo{
+    width: 80px;
+    margin-bottom: 20px;
+    border-radius: 100px;
+}
+
+.admin-input-group{
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+
+.admin-input-group label{
+    margin-bottom: 10px;
+}
+
+.admin-input-group input{
+    padding: 10px 15px;
+    border: 1px solid #ccc;
+    border-radius: 22px;
+    font-size: 16px;
+    font-family: 'Dm Serif Text', serif;
+}
+
+.admin-input-group input:focus{
+    border-color: #D34E4E;
+    outline: none;
+}
+
+.admin-button-group{
+    display: flex;
+    justify-content: center;
+    margin-top: 50px;
+}
+
+.adminlogin-button{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50%;
+    padding: 10px;
+    background-color: #D34E4E;
+    border: none;
+    border-radius: 22px;
+    color: white;
+    font-size: 16px;
+    font-family: 'Dm Serif Text', serif;
+}
+
+.adminlogin-button:hover{
+    background-color: #b43a3a;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}

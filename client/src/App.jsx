@@ -12,6 +12,7 @@ import Cart from './pages/Cart';
 import Payment from './pages/Payment';
 import IntroAnimation from './components/IntroAnimation';
 import Dashboard from './admin_page/Dashboard';
+import AdminLogin from './admin_page/Legal3/AdminLogin';
 
 
 
@@ -41,6 +42,7 @@ function App() {
       <Route path="/cart" element={<Cart />} />
       <Route path="/odeme" element={<Payment />} />
       <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/adminlogin" element={<AdminLogin />} />
     </Routes>
   );
 }

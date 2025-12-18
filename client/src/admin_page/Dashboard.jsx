@@ -9,6 +9,7 @@ import AnalyticsContent from './Legal3/AnalyticsContent';
 import ProductsContent from './Legal3/ProductsContent';
 import OrdersContent from './Legal3/OrdersContent';
 import SettingsContent from './Legal3/SettingsContent';
+import AdminLogin from './Legal3/AdminLogin';
 
 
 

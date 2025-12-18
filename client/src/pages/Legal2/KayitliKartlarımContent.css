@@ -98,4 +98,96 @@
     color: red;
 }
 
+.card-information p{
+    margin: 5px 0;
+    font-size: 14px;
+    color: #333;
+}
 
+
+.add-card-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; 
+    padding: 10px 0;
+}
+
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px; 
+}
+
+
+.form-row {
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+}
+
+.form-row .form-group {
+    flex: 1; 
+}
+
+
+.add-card-form label {
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+    margin-left: 5px; 
+}
+
+
+.add-card-form input,
+.add-card-form select {
+    padding: 12px 15px;
+    border: 1px solid #ccc; 
+    border-radius: 16px; 
+    background-color: #fff;
+    font-size: 14px;
+    color: #333;
+    outline: none; 
+    transition: all 0.3s ease;
+}
+
+
+.add-card-form input:focus,
+.add-card-form select:focus {
+    border-color: #e2bb5e; 
+    box-shadow: 0 0 0 3px rgba(226, 187, 94, 0.2); 
+}
+
+
+.add-card-form input:disabled {
+    background-color: #f0f0f0;
+    color: #888;
+    cursor: not-allowed;
+    border-style: dashed; 
+}
+
+
+.card-save-btn {
+    margin-top: 10px;
+    font-family: 'Dm Serif Text', serif;
+    background: #f4f4f4;
+    color: #333;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border: none;
+    padding: 12px;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.card-save-btn:hover {
+    background-color: #e2bb5e; 
+    color: white;
+}
+
+.add-card-form small {
+    font-size: 12px;
+    margin-top: -5px;
+    margin-left: 5px;
+    font-weight: 600;
+}

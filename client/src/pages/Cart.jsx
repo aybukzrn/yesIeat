@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import Navbar2 from '../components/Navbar2';
 import Footer from '../components/Footer';
+import Payment from './Payment';
 import { FaTimes } from 'react-icons/fa';
 import './Cart.css';
 
@@ -18,7 +18,6 @@ const savedUserInfo = {
 };
 
 const Cart = () => {
-  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     sokak: '', apartman: '', daire: '', kat: '', sirket: '', telefon: '', not: '',
     email: 'selinayturksal@gmail.com', ad: 'Selinay', soyad: 'Türksal', cep: ''
@@ -27,6 +26,9 @@ const Cart = () => {
   const [selectedDelivery, setSelectedDelivery] = useState('standart');
   const [selectedTip, setSelectedTip] = useState(null);
   const [cartItems, setCartItems] = useState(() => JSON.parse(localStorage.getItem('cart')) || []);
+  
+  // YENİ STATE: Ödeme Yöntemi
+  const [paymentMethod, setPaymentMethod] = useState('null'); 
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -55,17 +57,23 @@ const Cart = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+  // Sadece KAPIDA ÖDEME için çalışacak fonksiyon
   const handleCompleteOrder = () => {
     const allFields = ['sokak', 'apartman', 'daire', 'telefon', 'cep', 'delivery', 'tip'];
+    
     if (validateForm(allFields)) {
-      navigate('/odeme', { state: { totalAmount: total } });
+        // Burada artık navigate yerine siparişi tamamlama backend isteği veya başarı mesajı olacak
+        alert("Siparişiniz 'Kapıda Ödeme' seçeneği ile alındı! Teşekkürler.");
+        // Sepeti temizleme işlemleri vb. buraya eklenebilir.
+        localStorage.removeItem('cart');
+        setCartItems([]);
+        window.dispatchEvent(new Event('cartUpdated'));
     } else {
       console.log("Doğrulama başarısız. Hatalar:", errors);
       alert("Lütfen tüm alanları (Bahşiş dahil) doldurunuz.");
       window.scrollTo(0, 0);
     }
   };
-
 
   useEffect(() => {
     const syncCart = () => {
@@ -96,7 +104,8 @@ const Cart = () => {
       <div className="cart-page-container">
 
         <div className="checkout-details">
-          <h2 className="main-title">İncele ve siparişini ver</h2>
+          
+          {/* Adres Bölümü */}
           <div className="info-card">
             <div className="card-header">
               <h3>Teslimat Adresi</h3>
@@ -116,6 +125,7 @@ const Cart = () => {
             <button className="btn btn-secondary" onClick={() => validateForm(['sokak', 'apartman', 'daire', 'telefon'])}>Kaydet ve Devam Et</button>
           </div>
 
+          {/* Teslimat Seçenekleri */}
           <div className="info-card">
             <h3>Teslimat seçenekleri</h3>
             {errors.delivery && <span className="error-text">{errors.delivery}</span>}
@@ -127,15 +137,7 @@ const Cart = () => {
             </div>
           </div>
 
-          <div className="info-card">
-            <h3>Kişisel Bilgiler</h3>
-            <input name="adSoyad" value={formData.adSoyad} onChange={handleInputChange} type="text" placeholder="İsim Soyisim" className={errors.adSoyad ? 'input-error' : ''} />
-            {errors.adSoyad && <span className="error-text">{errors.adSoyad}</span>}
-            <input name="cep" value={formData.cep} onChange={handleInputChange} type="tel" placeholder="Cep telefonu" className={errors.cep ? 'input-error' : ''} />
-            {errors.cep && <span className="error-text">{errors.cep}</span>}
-            <button className="btn btn-secondary" onClick={() => validateForm(['cep'])}>Kaydet</button>
-          </div>
-
+          {/* Bahşiş */}
           <div className="info-card">
             <h3>Bahşiş</h3>
             {errors.tip && <span className="error-text">{errors.tip}</span>}
@@ -150,13 +152,40 @@ const Cart = () => {
             </div>
           </div>
 
-          <button className="btn btn-primary btn-complete-order" onClick={handleCompleteOrder}>Siparişi Tamamla</button>
+          {/*Ödeme Yöntemi Seçimi */}
+          <div className="info-card">
+            <h3>Ödeme Yöntemi</h3>
+            
+            <div className={`radio-option ${paymentMethod === 'kapida' ? 'active' : ''}`} onClick={() => setPaymentMethod('kapida')}>
+               <label><strong>Kapıda Ödeme</strong> (Nakit veya Kart)</label>
+            </div>
+
+            <div className={`radio-option ${paymentMethod === 'kart' ? 'active' : ''}`} onClick={() => setPaymentMethod('kart')}>
+               <label><strong>Kredi / Banka Kartı</strong> (Online Ödeme)</label>
+            </div>
+
+            {/* Kredi Kartı Seçiliyse Payment Bileşenini Göster */}
+            {paymentMethod === 'kart' && (
+                <div style={{ marginTop: '20px', borderTop: '1px solid #eee', paddingTop: '15px' }}>
+                    {/* Payment bileşenine toplam tutarı prop olarak geçiyoruz */}
+                    <Payment totalAmount={total} /> 
+                </div>
+            )}
+          </div>
+
+          {/* Siparişi Tamamla Butonu (Sadece Kapıda Ödeme Seçiliyse Görünür) */}
+          {paymentMethod === 'kapida' && (
+             <button className="btn btn-primary btn-complete-order" onClick={handleCompleteOrder}>
+               Kapıda Ödeme ile Siparişi Tamamla
+             </button>
+          )}
+          
         </div>
 
+        {/* Sağ Taraf: Sipariş Özeti (Değişmedi) */}
         <div className="order-summary-container">
           <div className="order-summary-card">
             <h3>Siparişiniz</h3>
-
             {cartItems.length === 0 ? (
               <p className="empty-cart-message">Sepetinizde ürün bulunmamaktadır.</p>
             ) : (

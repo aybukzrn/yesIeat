@@ -33,12 +33,11 @@
 .payment-card {
   background-color: #ffffff !important;
   width: 100%;
-  max-width: 550px;
-  padding: 40px;
-  margin-left: 400px; 
+  
+  
   border-radius: 20px;
-  box-shadow: 0 15px 35px rgba(0,0,0,0.05); 
-  border: 1px solid #f9f9f9;
+
+  
   height: fit-content;
   position: relative;
   z-index: 2;
@@ -87,8 +86,8 @@
 }
 
 .input-group input:focus { 
-  border-color: #F89C0E; 
-  box-shadow: 0 0 0 3px rgba(248, 156, 14, 0.1); 
+  border-color: #e2bb52;
+  
 }
 
 .row-group { 
@@ -103,19 +102,21 @@
 .pay-button {
   width: 100%; 
   padding: 15px;
-  background-color: #e2bb52; 
-  color: #ffffff; 
   border: none;
   border-radius: 22px;
   font-size: 16px;
   font-weight: bold;
   cursor: pointer;
   margin-top: 20px;
-  transition: background-color 0.3s;
+  background-color: #ececec; 
+  color: #656565;            
+  margin-bottom: 10px;
+  transition: all 0.3s ease;
 }
 
 .pay-button:hover { 
-  background-color: #d68100; 
+  background-color: #e2bb5e;
+  color: #ffffff;
 }
 
 .error-msg {
