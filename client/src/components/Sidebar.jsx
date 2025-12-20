@@ -22,7 +22,7 @@ const Sidebar = ({ activeCategory, setActiveCategory }) => {
 
     const handleLogout = () => {
         
-        navigate("/"); 
+        navigate("/adminlogin"); 
     };
 
     return (

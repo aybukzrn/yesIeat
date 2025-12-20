@@ -138,7 +138,7 @@ const Navbar = ({ searchQuery = '', onSearchChange = null }) => {
 
                     <Fade direction="left" triggerOnce>
 
-                        <Link to="/home">
+                        <Link to="/">
 
                             <img src="assets/LoginPages/logo.png" className="navbar-logo" />
                         </Link>
@@ -199,7 +199,7 @@ const Navbar = ({ searchQuery = '', onSearchChange = null }) => {
                 <ul className="navbar-links">
                     <li>
 
-                        <Link to="/home" className="nav-link">
+                        <Link to="/" className="nav-link">
                             Anasayfa
                         </Link>
                     </li>
@@ -232,7 +232,7 @@ const Navbar = ({ searchQuery = '', onSearchChange = null }) => {
 
                 <ul className={`navbar-links ${isMenuOpen ? 'open' : ''}`}>
                     <li>
-                        <Link to="/home" className="nav-link" onClick={() => setIsMenuOpen(false)}>
+                        <Link to="/" className="nav-link" onClick={() => setIsMenuOpen(false)}>
                             <MdHome size={18} /> Anasayfa
                         </Link>
                     </li>

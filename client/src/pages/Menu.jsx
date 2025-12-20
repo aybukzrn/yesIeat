@@ -148,11 +148,13 @@ const Menu = () => {
     if (storedQuery !== searchQuery) {
       setSearchQuery(storedQuery);
     }
-  }, [location, searchQuery]);
+  }, [location.pathname]); // searchQuery dependency'sini kaldırdık, sadece location değiştiğinde çalışsın
 
   // Arama değiştiğinde localStorage'a kaydet
   useEffect(() => {
-    localStorage.setItem('globalSearchQuery', searchQuery);
+    if (searchQuery !== undefined && searchQuery !== null) {
+      localStorage.setItem('globalSearchQuery', searchQuery);
+    }
   }, [searchQuery]);
 
   const handleAddToCart = (item) => {

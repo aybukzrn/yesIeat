@@ -23,7 +23,7 @@ const AdminLogin = () => {
       }
 
       localStorage.setItem('admin', JSON.stringify(data.admin));
-      alert(`Hoş geldiniz ${data.admin.name}!`);
+      alert(`Hoş geldiniz.`);
       sessionStorage.setItem('adminLoggedIn', 'true');
       window.location.href = '/dashboard';
     } catch (err) {

@@ -110,7 +110,7 @@ const Navbar = () => {
             <div className="up-section">
                 <div className="navbar-brand">
                     <Fade direction="left" triggerOnce>
-                        <Link to="/home">
+                        <Link to="/">
                             <img src="assets/LoginPages/logo.png" className="navbar-logo" />
                         </Link>
                     </Fade>
