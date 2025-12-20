@@ -50,6 +50,8 @@ app.post('/api/login', async (req, res) => {
     console.error('Giriş hatası:', err);
     return res.status(500).json({success: false, message: 'Sunucu hatası.'});
   }
+
+  sessionStorage.setItem('userLoggedIn', 'true');
 });
 
 //Customer Register
@@ -111,6 +113,7 @@ app.get('/api/menu', async (req, res) => {
       desc: p.prodDesc,
       tag: p.prodLabel || '',
       photo: p.prodPhoto || '',
+      stock: p.prodStock || 0,
       category: p.CATEGORY?.categoryName || '',
     }));
 
@@ -124,7 +127,7 @@ app.get('/api/menu', async (req, res) => {
 // Admin - Yeni Ürün Ekleme
 app.post('/api/admin/products', async (req, res) => {
   try {
-    const { name, category, price, taxRate, tag, proPhoto, stockStatus, description } = req.body;
+    const { name, category, price, taxRate, tag, proPhoto, description, stock } = req.body;
 
     // Validasyon
     if (!name || !price || !category) {
@@ -160,15 +163,13 @@ app.post('/api/admin/products', async (req, res) => {
       });
     }
 
-    // Stok durumunu sayıya çevir
-    const stock = stockStatus === 'Stokta Var' ? 10 : 0;
-
     // Ürünü oluştur
     const newProduct = await prisma.PRODUCT.create({
       data: {
         prodName: name,
         prodUnitPrice: parseFloat(price),
-        prodStock: stock,
+        // Frontend'den gelen stok adedini kaydet
+        prodStock: stock ? parseInt(stock, 10) || 0 : 0,
         prodPhoto: proPhoto || '',
         prodLabel: tag || null,
         prodDesc: description || '',
@@ -188,6 +189,7 @@ app.post('/api/admin/products', async (req, res) => {
         tag: newProduct.prodLabel || '',
         photo: newProduct.prodPhoto || '',
         category: newProduct.CATEGORY?.categoryName || '',
+        stock: newProduct.prodStock,
       },
     });
   } catch (err) {

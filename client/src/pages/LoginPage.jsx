@@ -30,7 +30,10 @@ const LoginPage = () => {
 
       localStorage.setItem('user', JSON.stringify(data.user));
       alert(`Hoş geldin ${data.user.name} !`);
-      window.location.href = '/home';
+      sessionStorage.setItem('userLoggedIn', 'true');
+      sessionStorage.setItem('userName', data.user.name);
+      sessionStorage.setItem('userSurname', data.user.surname);
+      window.location.href = '/';
     } catch (err) {
       console.error('Giriş hatası:', err);
       alert('Sunucu hatası. Lütfen daha sonra tekrar deneyin.');

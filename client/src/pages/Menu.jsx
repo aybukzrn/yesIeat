@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import {
@@ -67,7 +68,13 @@ const getTagClassName = (tag) => {
 const MenuItemCard = ({ item, onAddToCart }) => {
   const [added, setAdded] = useState(false);
 
+  // Stok bilgisi (backend'den gelmiyorsa varsayılan 0 kabul ediyoruz)
+  const stock = item.stock ?? 0;
+  const isOutOfStock = stock <= 0;
+
   const handleButtonClick = () => {
+    if (isOutOfStock) return; // Stok yoksa hiçbir şey yapma
+
     // Sepete ekleme fonksiyonunu çağır
     onAddToCart(item);
     
@@ -80,7 +87,7 @@ const MenuItemCard = ({ item, onAddToCart }) => {
     }, 2000);
   };
 
- return (
+  return (
     <div className="menu-item-card">
       <div className="item-image-placeholder">
         <img src={`/assets/menu/${item.photo}.jpg`} alt={item.name} />
@@ -96,11 +103,15 @@ const MenuItemCard = ({ item, onAddToCart }) => {
         <div className="item-footer">
           <span className="item-price">{item.price} ₺</span>
           <button
-            className={`add-to-cart-btn ${added ? 'added' : ''}`}
-            onClick={handleButtonClick} // Değişen fonksiyon
-            disabled={added} // Eklendiğinde tıklamayı kapatır
+            className={`add-to-cart-btn ${added ? 'added' : ''} ${isOutOfStock ? 'disabled' : ''}`}
+            onClick={handleButtonClick}
+            disabled={added || isOutOfStock}
           >
-            {added ? (
+            {isOutOfStock ? (
+              <span style={{ display: 'flex', alignItems: 'center', gap: '5px', cursor: 'not-allowed' }}>
+                Stokta yok
+              </span>
+            ) : added ? (
               <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
                 <MdCheckCircle size={18} /> Eklendi
               </span>
@@ -122,8 +133,27 @@ const Menu = () => {
   // Hata durumunu tutan state
   const [error, setError] = useState(null);
   
+  const location = useLocation();
   const [activeCategory, setActiveCategory] = useState('Hepsi');
   const [selectedTags, setSelectedTags] = useState([]);
+  
+  // localStorage'dan arama query'sini oku (diğer sayfalardan geliyorsa)
+  const [searchQuery, setSearchQuery] = useState(() => {
+    return localStorage.getItem('globalSearchQuery') || '';
+  });
+
+  // Sayfa yüklendiğinde veya location değiştiğinde localStorage'dan oku
+  useEffect(() => {
+    const storedQuery = localStorage.getItem('globalSearchQuery') || '';
+    if (storedQuery !== searchQuery) {
+      setSearchQuery(storedQuery);
+    }
+  }, [location, searchQuery]);
+
+  // Arama değiştiğinde localStorage'a kaydet
+  useEffect(() => {
+    localStorage.setItem('globalSearchQuery', searchQuery);
+  }, [searchQuery]);
 
   const handleAddToCart = (item) => {
     try {
@@ -215,6 +245,15 @@ const Menu = () => {
     )
   ];
 
+  // Büyük küçük harfe duyarsız arama için normalize fonksiyonu (Türkçe karakter desteği ile)
+  const normalizeString = (str) => {
+    if (!str) return '';
+    return String(str)
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, ''); // Türkçe karakterleri normalize et
+  };
+
   // Filtrelenmiş menüyü hesapla
   const filteredMenu = menuData.filter(item => {
     const categoryMatch =
@@ -223,12 +262,24 @@ const Menu = () => {
     const tagMatch =
       selectedTags.length === 0 || selectedTags.includes(item.tag);
 
-    return categoryMatch && tagMatch;
+    // Arama filtresi (sadece isim ve kategori)
+    let searchMatch = true;
+    if (searchQuery) {
+      const query = normalizeString(searchQuery);
+      searchMatch = 
+        normalizeString(item.name).includes(query) ||
+        normalizeString(item.category).includes(query);
+    }
+
+    return categoryMatch && tagMatch && searchMatch;
   });
 
   return (
     <>
-      <Navbar />
+      <Navbar 
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+      />
 
       <div className="menu-page container">
 

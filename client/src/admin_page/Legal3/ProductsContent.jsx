@@ -10,6 +10,7 @@ const ProductsContent = () => {
   const [menus, setMenus] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -20,10 +21,10 @@ const ProductsContent = () => {
     name: '',
     category: '',
     price: '',
-    taxRate: '10',
     proPhoto: '',
-    tag: 'yeni',
-    stockStatus: 'Stokta Var',
+    tag: '',
+    // Stok adedi
+    stock: 0,
     content: '', // Sadece menüler için
     description: '' // Ürün açıklaması
   });
@@ -49,9 +50,10 @@ const ProductsContent = () => {
         name: item.name,
         category: item.category || '',
         price: Number(item.price) || 0,
-        taxRate: 10,
         tag: item.tag || '',
-        stockStatus: 'Stokta Var',
+        // Backend'den gelen stok adedine göre stok durumu
+        stock: item.stock ?? 0,
+        stockStatus: (item.stock ?? 0) > 0 ? 'Stokta Var' : 'Stokta Yok',
         proPhoto: item.photo || '',
         content: item.desc || '',
       }));
@@ -65,15 +67,62 @@ const ProductsContent = () => {
     }
   };
 
+  // Menüleri backend'den çeken fonksiyon
+  const fetchMenus = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const response = await fetch('/api/menu');
+
+      if (!response.ok) {
+        throw new Error('Menüler yüklenemedi');
+      }
+
+      const data = await response.json();
+
+      // Menüleri filtrele (kategori "Menü" olanları veya tag ile ayırt edilebilir)
+      // Şimdilik tüm ürünleri menü olarak gösteriyoruz, backend'de menü kategorisi varsa filtreleyebiliriz
+      const mappedMenus = data
+        .filter((item) => {
+          // Eğer backend'de menü kategorisi varsa buraya filtre eklenebilir
+          // Şimdilik tüm ürünleri menü olarak gösteriyoruz
+          return true;
+        })
+        .map((item) => ({
+          id: item.id,
+          name: item.name,
+          content: item.desc || '',
+          price: Number(item.price) || 0,
+          proPhoto: item.photo || '',
+        }));
+
+      setMenus(mappedMenus);
+    } catch (err) {
+      console.error('Menüler yüklenirken hata:', err);
+      setError(err.message || 'Bir hata oluştu');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Admin ürün tablosunu backend'deki /api/menu endpointine bağla
   useEffect(() => {
     fetchProducts();
+    fetchMenus();
   }, []);
 
 
   const handleCategoryChange = (e) => {
     setActiveCategory(e.target.value);
     setCurrentPage(1);
+    setSearchQuery(''); // Kategori değiştiğinde aramayı temizle
+  };
+
+  // Arama fonksiyonu
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(1); // Arama yapıldığında ilk sayfaya dön
   };
 
   // Form verilerini güncelleyen fonksiyon
@@ -107,10 +156,10 @@ const ProductsContent = () => {
             name: formData.name,
             category: formData.category,
             price: formData.price,
-            taxRate: formData.taxRate,
             tag: formData.tag,
             proPhoto: formData.proPhoto,
-            stockStatus: formData.stockStatus,
+            // Stok adedini backend'e gönder
+            stock: Number(formData.stock) || 0,
             description: formData.description || '',
           }),
         });
@@ -129,10 +178,9 @@ const ProductsContent = () => {
           name: '',
           category: '',
           price: '',
-          taxRate: '10',
           proPhoto: '',
-          tag: 'yeni',
-          stockStatus: 'Stokta Var',
+          tag: '',
+          stock: '',
           content: '',
           description: '',
         });
@@ -145,32 +193,89 @@ const ProductsContent = () => {
         setLoading(false);
       }
     } else {
-      // Menüler için henüz backend endpoint'i yok, sadece local state'e ekle
-      const newItem = {
-        id: Date.now(),
-        ...formData,
-        price: Number(formData.price),
-        taxRate: Number(formData.taxRate),
-      };
-      setMenus(prev => [newItem, ...prev]);
+      // Menüler için backend'e gönder
+      try {
+        setLoading(true);
+        
+        const response = await fetch('/api/admin/products', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            name: formData.name,
+            category: 'Menü', // Menüler için özel kategori
+            price: formData.price,
+            tag: '',
+            proPhoto: formData.proPhoto,
+            stock: 0, // Menüler için stok yok
+            description: formData.content || '', // Menü içeriği description olarak kaydediliyor
+          }),
+        });
 
-      // Formu temizle ve modalı kapat
-      setFormData({
-        name: '',
-        category: '',
-        price: '',
-        taxRate: '10',
-        proPhoto: '',
-        tag: 'yeni',
-        stockStatus: 'Stokta Var',
-        content: '',
-        description: '',
-      });
-      setIsApprovalModalOpen(false);
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+          throw new Error(result.message || 'Menü eklenirken bir hata oluştu');
+        }
+
+        // Başarılı ekleme sonrası menü listesini yeniden çek
+        await fetchMenus();
+
+        // Formu temizle ve modalı kapat
+        setFormData({
+          name: '',
+          category: '',
+          price: '',
+          proPhoto: '',
+          tag: '',
+          stock: '',
+          content: '',
+          description: '',
+        });
+        setIsApprovalModalOpen(false);
+        
+        alert('Menü başarıyla eklendi!');
+      } catch (err) {
+        console.error('Menü ekleme hatası:', err);
+        alert(err.message || 'Menü eklenirken bir hata oluştu');
+        setLoading(false);
+      }
     }
   };
 
-  const currentDataList = activeCategory === 'Ürünler' ? products : menus;
+  // Büyük küçük harfe duyarsız arama için normalize fonksiyonu (Türkçe karakter desteği ile)
+  const normalizeString = (str) => {
+    if (!str) return '';
+    return String(str)
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, ''); // Türkçe karakterleri normalize et
+  };
+
+  // Arama filtresi uygula
+  const filteredProducts = products.filter((item) => {
+    if (!searchQuery) return true;
+    const query = normalizeString(searchQuery);
+    return (
+      normalizeString(item.name).includes(query) ||
+      normalizeString(item.category).includes(query) ||
+      normalizeString(item.tag).includes(query) ||
+      item.id.toString().includes(query)
+    );
+  });
+
+  const filteredMenus = menus.filter((item) => {
+    if (!searchQuery) return true;
+    const query = normalizeString(searchQuery);
+    return (
+      normalizeString(item.name).includes(query) ||
+      normalizeString(item.content).includes(query) ||
+      item.id.toString().includes(query)
+    );
+  });
+
+  const currentDataList = activeCategory === 'Ürünler' ? filteredProducts : filteredMenus;
 
   // Şu anki sayfada gösterilecek verileri kesme
   const indexOfLastItem = currentPage * itemsPerPage
@@ -184,7 +289,7 @@ const ProductsContent = () => {
   const paginate = (pageNumber) => setCurrentPage(pageNumber)
 
 
-  const outOfStockItems = products.filter(p => p.stockStatus === 'Stokta Yok');
+  const outOfStockItems = filteredProducts.filter(p => p.stockStatus === 'Stokta Yok');
 
   return (
     <><div className='ProductsContent'>
@@ -196,7 +301,12 @@ const ProductsContent = () => {
           {/* Üst kontrol bölümü */}
           <div className="controls-container">
             <div className="search-bar-product">
-              <input type="text" placeholder="Ürün Ara..." />
+              <input 
+                type="text" 
+                placeholder={activeCategory === 'Ürünler' ? "Ürün Ara..." : "Menü Ara..."}
+                value={searchQuery}
+                onChange={handleSearchChange}
+              />
             </div>
 
             <div className="r-controls">
@@ -233,7 +343,6 @@ const ProductsContent = () => {
                       <th>Ürün Adı</th>
                       <th>Kategori</th>
                       <th>Fiyat</th>
-                      <th>KDV Oranı</th>
                       <th>Etiket</th>
                       <th>Fotoğraf</th>
                       <th>Stok Durumu</th>
@@ -245,18 +354,9 @@ const ProductsContent = () => {
                         <td>{item.id}</td>
                         <td>{item.name}</td>
                         <td>{item.category}</td>
-                        <td>
-                          {item.price} ₺
-                          <span className="net-price-info">
-                            {' '}
-                            (Net:{' '}
-                            {(item.price / (1 + (item.taxRate || 10) / 100)).toFixed(2)}
-                            )
-                          </span>
-                        </td>
-                        <td>{item.taxRate || 10} %</td>
+                        <td>{item.price} ₺</td>
                         <td>{item.tag}</td>
-                        <td>{/* Placeholder for product image */}</td>
+                        <td>{item.proPhoto}</td>
                         <td className={item.stockStatus === 'Stokta Yok' ? 'status-out' : 'status-in'}>
                           {item.stockStatus}
                         </td>
@@ -283,9 +383,7 @@ const ProductsContent = () => {
                         <td>{item.name}</td>
                         <td>{item.content}</td>
                         <td>{/* Placeholder for menu image */}</td>
-                        <td>{item.taxRate || 10} %</td>
-                        <td>{item.price} ₺
-                        <span className="net-price-info"> (Net: {(item.price / (1 + item.taxRate/100)).toFixed(2)})</span></td>
+                        <td>{item.price} ₺ </td>
                       </tr>
                     ))}
                   </tbody>
@@ -393,14 +491,7 @@ const ProductsContent = () => {
                         onChange={handleInputChange} 
                     />
                 </div>
-                <div className="kdv-group">
-                    <label>KDV Oranı (%):</label>
-                    <select name="taxRate" value={formData.taxRate} onChange={handleInputChange}>
-                        <option value="1">%1 (Hizmet)</option>
-                        <option value="10">%10 (İçecek)</option>
-                        <option value="20">%20 (Yemek)</option>
-                    </select>
-                </div>
+                
             </div>
 
               <div className="pro-tag">
@@ -434,15 +525,14 @@ const ProductsContent = () => {
               </div>
 
               <div className="pro-stock">
-                <label>Stok Durumu:</label>
-                <select
-                  name="stockStatus"
-                  value={formData.stockStatus}
+                <label>Stok Adedi:</label>
+                <input
+                  type="number"
+                  name="stock"
+                  value={formData.stock}
                   onChange={handleInputChange}
-                >
-                  <option value="Stokta Var">Stokta Var</option>
-                  <option value="Stokta Yok">Stokta Yok</option>
-                </select>
+                  placeholder="Stok adedini girin"
+                />
               
               </div>
 
@@ -504,15 +594,6 @@ const ProductsContent = () => {
                         onChange={handleInputChange} 
                     />
                 </div>
-                <div className="kdv-group">
-                    <label>KDV Oranı (%):</label>
-                    <select name="taxRate" value={formData.taxRate} onChange={handleInputChange}>
-                        <option value="1">%1 (Hizmet)</option>
-                        <option value="10">%10 (İçecek)</option>
-                        <option value="20">%20 (Yemek)</option>
-                    </select>
-                </div>
-
 
               <button
                 type="button"

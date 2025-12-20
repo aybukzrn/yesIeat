@@ -152,6 +152,14 @@
   cursor: default;
 }
 
+/* Stokta olmayan ürünler için gri, pasif buton */
+.add-to-cart-btn.disabled {
+    background-color: #827b7b !important;
+    color: #f5f5f5 !important;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
 .item-tag {
     font-size: 0.75rem;
     padding: 3px 8px;

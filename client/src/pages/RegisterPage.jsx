@@ -51,7 +51,7 @@ const RegisterPage = () => {
         }
     
         alert('Kayıt başarılı, giriş yapabilirsiniz.');
-        window.location.href = '/';
+        window.location.href = '/login';
       } catch (err) {
         console.error('Register hatası:', err);
         alert('Sunucu hatası. Lütfen tekrar deneyin.');
