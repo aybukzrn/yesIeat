@@ -18,6 +18,37 @@ app.get('/', (req, res) => {
   res.send('API is running');
 });
 
+//admin login
+app.post('/api/admin/login', async (req, res) => {
+  try {
+    const { ownername, password } = req.body;
+
+    if (!ownername || !password) {
+      return res.status(400).json({ success: false, message: 'Kullanıcı adı ve şifre gereklidir.'});
+    }
+
+    const admin =  await prisma.OWNER.findFirst({
+      where: {
+        oName: ownername,
+        oPassword: password,
+      },
+    });
+
+    if (!admin) {
+      return res.status(401).json({ success: false, message: 'Kullanıcı adı veya şifre hatalı.'});
+    }
+    return res.json({
+      success: true,
+      admin: {
+        name: admin.oName,
+      },
+    });
+  } catch (err) {
+    console.error('Admin giriş hatası:', err);
+    return res.status(500).json({success: false, message: 'Sunucu hatası.'});
+  }
+});
+
 // Customer Login
 app.post('/api/login', async (req, res) => {
   try {
