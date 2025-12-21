@@ -28,7 +28,7 @@ const Cart = () => {
   const [cartItems, setCartItems] = useState(() => JSON.parse(localStorage.getItem('cart')) || []);
   
   // YENİ STATE: Ödeme Yöntemi
-  const [paymentMethod, setPaymentMethod] = useState('null'); 
+  const [paymentMethod, setPaymentMethod] = useState(null); 
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -58,20 +58,103 @@ const Cart = () => {
   };
 
   // Sadece KAPIDA ÖDEME için çalışacak fonksiyon
-  const handleCompleteOrder = () => {
+  const handleCompleteOrder = async () => {
+    // Sepet boş kontrolü
+    if (!cartItems || cartItems.length === 0) {
+      alert('Sepetinizde ürün bulunmamaktadır.');
+      return;
+    }
+
     const allFields = ['sokak', 'apartman', 'daire', 'telefon', 'cep', 'delivery', 'tip'];
     
-    if (validateForm(allFields)) {
-        // Burada artık navigate yerine siparişi tamamlama backend isteği veya başarı mesajı olacak
-        alert("Siparişiniz 'Kapıda Ödeme' seçeneği ile alındı! Teşekkürler.");
-        // Sepeti temizleme işlemleri vb. buraya eklenebilir.
-        localStorage.removeItem('cart');
-        setCartItems([]);
-        window.dispatchEvent(new Event('cartUpdated'));
-    } else {
-      console.log("Doğrulama başarısız. Hatalar:", errors);
+    if (!validateForm(allFields)) {
       alert("Lütfen tüm alanları (Bahşiş dahil) doldurunuz.");
       window.scrollTo(0, 0);
+      return;
+    }
+
+    // Kullanıcı bilgisini al
+    const userData = localStorage.getItem('user');
+    if (!userData) {
+      alert('Giriş yapmanız gerekiyor.');
+      window.location.href = '/login';
+      return;
+    }
+
+    const user = JSON.parse(userData);
+    if (!user || !user.id) {
+      alert('Kullanıcı bilgisi bulunamadı. Lütfen tekrar giriş yapın.');
+      window.location.href = '/login';
+      return;
+    }
+
+    // Adres bilgisini birleştir
+    const fullAddress = `${formData.sokak} ${formData.apartman} ${formData.daire}`.trim();
+    
+    if (!fullAddress || fullAddress.length < 5) {
+      alert('Lütfen geçerli bir adres girin.');
+      return;
+    }
+    
+    // Adres objesi oluştur
+    const addressData = {
+      fullAddress: fullAddress,
+      addressTitle: 'Teslimat Adresi',
+      flatNum: formData.apartman ? parseInt(formData.apartman.replace(/\D/g, '')) || null : null,
+      aptNum: formData.daire ? parseInt(formData.daire.replace(/\D/g, '')) || null : null,
+      floorNum: formData.kat ? parseInt(formData.kat.replace(/\D/g, '')) || null : null,
+    };
+
+    try {
+      // API'ye sipariş oluşturma isteği gönder
+      // Toplam hesaplama (ürünler + öncelikli teslimat + bahşiş)
+      const productsTotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+      const priorityDeliveryFee = selectedDelivery === 'oncelikli' ? 39.99 : 0;
+      const tipAmount = typeof selectedTip === 'number' ? selectedTip : 0;
+      const finalTotal = productsTotal + priorityDeliveryFee + tipAmount;
+
+      const orderData = {
+        userId: user.id,
+        address: addressData,
+        cartItems: cartItems,
+        paymentMethod: paymentMethod || 'kapida',
+        deliveryType: selectedDelivery,
+        tip: selectedTip,
+        deliveryNote: formData.not || null,
+        subTotal: finalTotal,
+        priorityDeliveryFee: priorityDeliveryFee,
+        tipAmount: tipAmount,
+      };
+
+      console.log('Sipariş verisi:', orderData);
+
+      const response = await fetch('/api/orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(orderData),
+      });
+
+      const data = await response.json();
+      
+      console.log('API yanıtı:', data);
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || 'Sipariş oluşturulurken bir hata oluştu.');
+      }
+
+      // Başarılı - sepeti temizle
+      alert("Siparişiniz 'Kapıda Ödeme' seçeneği ile başarıyla alındı! Teşekkürler.");
+      localStorage.removeItem('cart');
+      setCartItems([]);
+      window.dispatchEvent(new Event('cartUpdated'));
+      
+      // Siparişler sayfasına yönlendir (opsiyonel)
+      // window.location.href = '/account';
+    } catch (err) {
+      console.error('Sipariş oluşturma hatası:', err);
+      alert(err.message || 'Sipariş oluşturulurken bir hata oluştu. Lütfen tekrar deneyin.');
     }
   };
 
@@ -96,7 +179,11 @@ const Cart = () => {
     window.dispatchEvent(new Event('cartUpdated'));
   };
 
-  const total = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  // Sepet toplamı hesaplama (ürünler + öncelikli teslimat + bahşiş)
+  const productsTotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const priorityDeliveryFee = selectedDelivery === 'oncelikli' ? 39.99 : 0;
+  const tipAmount = typeof selectedTip === 'number' ? selectedTip : 0;
+  const total = productsTotal + priorityDeliveryFee + tipAmount;
 
   return (
     <>
@@ -167,17 +254,37 @@ const Cart = () => {
             {/* Kredi Kartı Seçiliyse Payment Bileşenini Göster */}
             {paymentMethod === 'kart' && (
                 <div style={{ marginTop: '20px', borderTop: '1px solid #eee', paddingTop: '15px' }}>
-                    {/* Payment bileşenine toplam tutarı prop olarak geçiyoruz */}
-                    <Payment totalAmount={total} /> 
+                    {/* Payment bileşenine gerekli prop'ları geçiyoruz */}
+                    <Payment 
+                      totalAmount={total}
+                      formData={formData}
+                      selectedDelivery={selectedDelivery}
+                      selectedTip={selectedTip}
+                      cartItems={cartItems}
+                      onPaymentSuccess={() => {
+                        localStorage.removeItem('cart');
+                        setCartItems([]);
+                        window.dispatchEvent(new Event('cartUpdated'));
+                        alert('Ödemeniz başarıyla tamamlandı! Teşekkürler.');
+                        window.location.href = '/account';
+                      }}
+                    /> 
                 </div>
             )}
           </div>
 
           {/* Siparişi Tamamla Butonu (Sadece Kapıda Ödeme Seçiliyse Görünür) */}
-          {paymentMethod === 'kapida' && (
+          {paymentMethod === 'kapida' && cartItems.length > 0 && (
              <button className="btn btn-primary btn-complete-order" onClick={handleCompleteOrder}>
                Kapıda Ödeme ile Siparişi Tamamla
              </button>
+          )}
+          
+          {/* Ödeme yöntemi seçilmediyse uyarı */}
+          {!paymentMethod && cartItems.length > 0 && (
+            <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#fff3cd', borderRadius: '8px', color: '#856404' }}>
+              Lütfen bir ödeme yöntemi seçin.
+            </div>
           )}
           
         </div>
@@ -203,6 +310,23 @@ const Cart = () => {
                     </div>
                   </div>
                 ))}
+                <hr />
+                <div className="summary-row">
+                  <span>Ara Toplam</span>
+                  <span>{productsTotal.toFixed(2)} TL</span>
+                </div>
+                {priorityDeliveryFee > 0 && (
+                  <div className="summary-row">
+                    <span>Öncelikli Teslimat</span>
+                    <span>+{priorityDeliveryFee.toFixed(2)} TL</span>
+                  </div>
+                )}
+                {tipAmount > 0 && (
+                  <div className="summary-row">
+                    <span>Bahşiş</span>
+                    <span>+{tipAmount.toFixed(2)} TL</span>
+                  </div>
+                )}
                 <hr />
                 <div className="summary-row total">
                   <span>Toplam</span>

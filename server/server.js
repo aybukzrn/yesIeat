@@ -155,6 +155,394 @@ app.get('/api/menu', async (req, res) => {
   }
 });
 
+// Kullanıcı Siparişlerini Getir
+app.get('/api/orders', async (req, res) => {
+  try {
+    const { userId } = req.query;
+
+    if (!userId) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Kullanıcı ID gereklidir.' 
+      });
+    }
+
+    const orders = await prisma.ORDERS.findMany({
+      where: {
+        uID: parseInt(userId),
+      },
+      include: {
+        ORDER_DETAIL: {
+          include: {
+            PRODUCT: true,
+          },
+        },
+        ADDRESS: true,
+        PAYMENT: true,
+        USERS: {
+          select: {
+            uName: true,
+            uSurname: true,
+          },
+        },
+      },
+      orderBy: {
+        orderDate: 'desc',
+      },
+    });
+
+    // Status mapping: pending -> Hazırlanıyor, confirmed -> Hazırlanıyor, delivered -> Teslim Edildi, canceled -> İptal Edildi
+    const statusMap = {
+      pending: 'Hazırlanıyor',
+      confirmed: 'Hazırlanıyor',
+      delivered: 'Teslim Edildi',
+      canceled: 'İptal Edildi',
+    };
+
+    // Tarih formatlama fonksiyonu
+    const formatDate = (dateString) => {
+      const date = new Date(dateString);
+      const months = [
+        'Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran',
+        'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'
+      ];
+      return `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`;
+    };
+
+    // Saat formatlama fonksiyonu
+    const formatTime = (timeValue) => {
+      if (!timeValue) return '';
+      
+      let time;
+      if (timeValue instanceof Date) {
+        time = timeValue;
+      } else if (typeof timeValue === 'string') {
+        // String formatından parse et (HH:MM:SS veya HH:MM)
+        const timeStr = timeValue.includes('T') ? timeValue.split('T')[1] : timeValue;
+        time = new Date(`2000-01-01T${timeStr}`);
+      } else {
+        return '';
+      }
+      
+      return `${time.getHours().toString().padStart(2, '0')}.${time.getMinutes().toString().padStart(2, '0')}`;
+    };
+
+    const formattedOrders = orders.map((order) => {
+      const items = order.ORDER_DETAIL.map((detail) => detail.PRODUCT.prodName);
+      const payment = order.PAYMENT[0]; // İlk ödeme yöntemini al
+      const address = order.ADDRESS;
+
+      return {
+        id: order.orderID,
+        date: formatDate(order.orderDate),
+        time: formatTime(order.orderTime),
+        total: order.subTotal,
+        status: statusMap[order.orderStatus] || order.orderStatus,
+        items: items,
+        // Detaylar için ekstra bilgiler
+        customerName: `${order.USERS.uName} ${order.USERS.uSurname}`,
+        address: address ? address.fullAddress : 'Adres bilgisi bulunamadı',
+        paymentMethod: payment ? payment.paymentMethod : 'Ödeme bilgisi bulunamadı',
+        orderDetails: order.ORDER_DETAIL.map((detail) => ({
+          productName: detail.PRODUCT.prodName,
+          quantity: detail.oQuantity,
+          unitPrice: detail.prodUnitPrice,
+        })),
+      };
+    });
+
+    return res.json({
+      success: true,
+      orders: formattedOrders,
+    });
+  } catch (err) {
+    console.error('Sipariş getirme hatası:', err);
+    return res.status(500).json({ 
+      success: false, 
+      message: 'Siparişler getirilirken bir hata oluştu.' 
+    });
+  }
+});
+
+// Sipariş Oluşturma
+app.post('/api/orders', async (req, res) => {
+  try {
+    const { 
+      userId, 
+      address, 
+      cartItems, 
+      paymentMethod, 
+      deliveryType, 
+      tip, 
+      deliveryNote,
+      subTotal 
+    } = req.body;
+
+    if (!userId) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Kullanıcı ID gereklidir.' 
+      });
+    }
+
+    if (!address || !address.fullAddress) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Adres bilgisi gereklidir.' 
+      });
+    }
+
+    if (!cartItems || !Array.isArray(cartItems) || cartItems.length === 0) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Sepet boş olamaz. Lütfen sepete ürün ekleyin.' 
+      });
+    }
+
+    // Adresi oluştur veya mevcut adresi bul
+    let addressRecord = await prisma.ADDRESS.findFirst({
+      where: {
+        uID: parseInt(userId),
+        fullAddress: address.fullAddress || address,
+      },
+    });
+
+    if (!addressRecord) {
+      // Yeni adres oluştur
+      addressRecord = await prisma.ADDRESS.create({
+        data: {
+          uID: parseInt(userId),
+          addressTitle: address.addressTitle || 'Teslimat Adresi',
+          fullAddress: address.fullAddress || address,
+          flatNum: address.flatNum || null,
+          floorNum: address.floorNum || null,
+          aptNum: address.aptNum || null,
+        },
+      });
+    }
+
+    const now = new Date();
+    const orderDate = now;
+    const orderTime = now;
+
+    // Sipariş oluştur
+    const newOrder = await prisma.ORDERS.create({
+      data: {
+        uID: parseInt(userId),
+        orderDate: orderDate,
+        orderTime: orderTime,
+        orderStatus: 'pending',
+        addressID: addressRecord.addressID,
+        subTotal: parseFloat(subTotal) || 0,
+      },
+    });
+
+    // Sipariş detaylarını oluştur
+    for (const item of cartItems) {
+      const productId = parseInt(item.id);
+      const quantity = parseInt(item.quantity);
+      const price = parseFloat(item.price);
+
+      if (!productId || isNaN(productId)) {
+        throw new Error(`Geçersiz ürün ID: ${item.id}`);
+      }
+
+      if (!quantity || quantity <= 0 || isNaN(quantity)) {
+        throw new Error(`Geçersiz miktar: ${item.quantity}`);
+      }
+
+      if (!price || price <= 0 || isNaN(price)) {
+        throw new Error(`Geçersiz fiyat: ${item.price}`);
+      }
+
+      // Ürünün var olup olmadığını kontrol et
+      const product = await prisma.PRODUCT.findUnique({
+        where: { prodID: productId },
+      });
+
+      if (!product) {
+        throw new Error(`Ürün bulunamadı: ${item.name || item.id}`);
+      }
+
+      await prisma.ORDER_DETAIL.create({
+        data: {
+          orderID: newOrder.orderID,
+          prodID: productId,
+          oQuantity: quantity,
+          oPriority: deliveryType || 'standart',
+          deliveryNote: deliveryNote || null,
+          prodUnitPrice: price,
+        },
+      });
+    }
+
+    // Ödeme kaydı oluştur
+    const paymentMethodText = paymentMethod === 'kapida' ? 'Kapıda Ödeme' : 
+                              paymentMethod === 'kart' ? 'Kredi Kartı' : 
+                              'Bilinmeyen';
+    
+    await prisma.PAYMENT.create({
+      data: {
+        uID: parseInt(userId),
+        orderID: newOrder.orderID,
+        paymentMethod: paymentMethodText,
+        paymentDate: now,
+        amount: parseFloat(subTotal) || 0,
+      },
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: 'Sipariş başarıyla oluşturuldu.',
+      order: {
+        id: newOrder.orderID,
+        orderDate: newOrder.orderDate,
+        total: newOrder.subTotal,
+      },
+    });
+  } catch (err) {
+    console.error('Sipariş oluşturma hatası:', err);
+    return res.status(500).json({ 
+      success: false, 
+      message: 'Sipariş oluşturulurken bir hata oluştu.' 
+    });
+  }
+});
+
+// Admin - Tüm Siparişleri Getir
+app.get('/api/admin/orders', async (req, res) => {
+  try {
+    const orders = await prisma.ORDERS.findMany({
+      include: {
+        ORDER_DETAIL: {
+          include: {
+            PRODUCT: true,
+          },
+        },
+        ADDRESS: true,
+        PAYMENT: true,
+        USERS: {
+          select: {
+            uName: true,
+            uSurname: true,
+          },
+        },
+      },
+      orderBy: {
+        orderDate: 'desc',
+      },
+    });
+
+    // Status mapping
+    const statusMap = {
+      pending: 'Beklemede',
+      confirmed: 'Hazırlanıyor',
+      delivered: 'Teslim Edildi',
+      canceled: 'İptal Edildi',
+    };
+
+    // Tarih formatlama
+    const formatDate = (dateString) => {
+      const date = new Date(dateString);
+      return `${date.getDate().toString().padStart(2, '0')}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getFullYear()}`;
+    };
+
+    const formattedOrders = orders.map((order) => {
+      const items = order.ORDER_DETAIL.map((detail) => detail.PRODUCT.prodName);
+      const content = items.join(', ');
+
+      // Eğer ORDER_DETAIL'deki oPriority "yolda" ise, durumu "Yolda" olarak göster
+      const isOnWay = order.ORDER_DETAIL.some(detail => detail.oPriority === 'yolda');
+      let displayStatus = statusMap[order.orderStatus] || order.orderStatus;
+      if (isOnWay && order.orderStatus === 'confirmed') {
+        displayStatus = 'Yolda';
+      }
+
+      return {
+        id: order.orderID,
+        customer: `${order.USERS.uName} ${order.USERS.uSurname}`,
+        content: content,
+        date: formatDate(order.orderDate),
+        total: order.subTotal,
+        status: displayStatus,
+        address: order.ADDRESS ? order.ADDRESS.fullAddress : 'Adres bulunamadı',
+        orderDetails: order.ORDER_DETAIL.map((detail) => ({
+          productName: detail.PRODUCT.prodName,
+          quantity: detail.oQuantity,
+          unitPrice: detail.prodUnitPrice,
+        })),
+        paymentMethod: order.PAYMENT[0] ? order.PAYMENT[0].paymentMethod : 'Bilinmiyor',
+      };
+    });
+
+    return res.json({
+      success: true,
+      orders: formattedOrders,
+    });
+  } catch (err) {
+    console.error('Admin sipariş getirme hatası:', err);
+    return res.status(500).json({ 
+      success: false, 
+      message: 'Siparişler getirilirken bir hata oluştu.' 
+    });
+  }
+});
+
+// Admin - Sipariş Durumu Güncelleme
+app.patch('/api/admin/orders/:orderId/status', async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const { status } = req.body;
+
+    // Status mapping (Türkçe'den İngilizce'ye)
+    const statusMap = {
+      'Beklemede': 'pending',
+      'Hazırlanıyor': 'confirmed',
+      'Yolda': 'confirmed', // Yolda durumu backend'de confirmed olarak saklanır
+      'Teslim Edildi': 'delivered',
+      'İptal Edildi': 'canceled',
+    };
+
+    const dbStatus = statusMap[status] || status;
+
+    if (!['pending', 'confirmed', 'delivered', 'canceled'].includes(dbStatus)) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Geçersiz sipariş durumu.' 
+      });
+    }
+
+    // Sipariş durumunu güncelle
+    const updatedOrder = await prisma.ORDERS.update({
+      where: { orderID: parseInt(orderId) },
+      data: { orderStatus: dbStatus },
+    });
+
+    // Eğer "Yolda" durumuna geçiliyorsa, ORDER_DETAIL'deki oPriority'yi güncelle
+    if (status === 'Yolda') {
+      await prisma.ORDER_DETAIL.updateMany({
+        where: { orderID: parseInt(orderId) },
+        data: { oPriority: 'yolda' },
+      });
+    }
+
+    return res.json({
+      success: true,
+      message: 'Sipariş durumu güncellendi.',
+      order: {
+        id: updatedOrder.orderID,
+        status: updatedOrder.orderStatus,
+      },
+    });
+  } catch (err) {
+    console.error('Sipariş durumu güncelleme hatası:', err);
+    return res.status(500).json({ 
+      success: false, 
+      message: 'Sipariş durumu güncellenirken bir hata oluştu.' 
+    });
+  }
+});
+
 // Admin - Yeni Ürün Ekleme
 app.post('/api/admin/products', async (req, res) => {
   try {

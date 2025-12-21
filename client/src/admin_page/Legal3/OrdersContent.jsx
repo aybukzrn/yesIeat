@@ -13,26 +13,6 @@ const ORDER_STAGES = {
     CANCELLED: 'İptal Edildi'
 };
 
-const DATA = {
-    items: ['Cheeseburger Menü', 'Pesto Makarna', 'Adana Kebap', 'Salata', 'Sufle', 'Ev Yapımı Limonata', 'Tiramisu', 'Margarita Pizza'],
-    names: ['Zeynep Özdemir', 'Selinay Türksal', 'Miray Tokel', 'Ahmet Yılmaz', 'Ayşe Kaya'],
-};
-
-// Mock data üretici 
-const generateDeterministicOrders = () => {
-    const statuses = Object.values(ORDER_STAGES);
-    return Array.from({ length: 35 }, (_, i) => {
-        return {
-            id: String(100 + i),
-            customer: DATA.names[i % DATA.names.length],
-            content: DATA.items[i % DATA.items.length],
-            date: `15.${(i % 12) + 1}.2025`,
-            total: parseFloat((100 + (i * 15)).toFixed(2)),
-            status: statuses[i % statuses.length], // Rastgele durum
-            address: "Atatürk Mah. Lale Sok. No:5" 
-        };
-    });
-};
 
 const OrdersContent = () => {
     const [orders, setOrders] = useState([]);
@@ -48,20 +28,53 @@ const OrdersContent = () => {
     
 
     useEffect(() => {
-        setIsLoading(true);
-        setTimeout(() => {
-            setOrders(generateDeterministicOrders());
-            setIsLoading(false);
-        }, 800);
+        fetchOrders();
     }, []);
 
+    const fetchOrders = async () => {
+        try {
+            setIsLoading(true);
+            const response = await fetch('/api/admin/orders');
+            const data = await response.json();
+
+            if (!response.ok || !data.success) {
+                throw new Error(data.message || 'Siparişler yüklenirken bir hata oluştu.');
+            }
+
+            setOrders(data.orders || []);
+        } catch (err) {
+            console.error('Sipariş yükleme hatası:', err);
+            alert(err.message || 'Siparişler yüklenirken bir hata oluştu.');
+            setOrders([]);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     // 2. ADIM: Durum Değiştirme Fonksiyonu
-    const handleStatusChange = (orderId, newStatus) => {
-        setOrders(prev => prev.map(order => 
-            order.id === orderId ? { ...order, status: newStatus } : order
-        ));
-        
-        setManageModalOpen(false); 
+    const handleStatusChange = async (orderId, newStatus) => {
+        try {
+            const response = await fetch(`/api/admin/orders/${orderId}/status`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ status: newStatus }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok || !data.success) {
+                throw new Error(data.message || 'Sipariş durumu güncellenirken bir hata oluştu.');
+            }
+
+            // Başarılı - siparişleri yeniden yükle
+            await fetchOrders();
+            setManageModalOpen(false);
+        } catch (err) {
+            console.error('Durum güncelleme hatası:', err);
+            alert(err.message || 'Sipariş durumu güncellenirken bir hata oluştu.');
+        }
     };
 
     const openManagementModal = (order) => {
@@ -235,17 +248,19 @@ const OrdersContent = () => {
 
                     <button
                         type="button"
-                        onClick={() => {
-                            const newOrder = {
-                                id: String(Date.now()),
-                                customer: document.getElementById("customerName").value,
-                                content: document.getElementById("orderContent").value,
-                                total: Number(document.getElementById("orderTotal").value),
-                                date: new Date().toLocaleDateString(),
-                                status: 'Beklemede'
-                            };
+                        onClick={async () => {
+                            const customerName = document.getElementById("customerName").value;
+                            const orderContent = document.getElementById("orderContent").value;
+                            const orderTotal = Number(document.getElementById("orderTotal").value);
 
-                            handleAddOrder(newOrder);
+                            if (!customerName || !orderContent || !orderTotal) {
+                                alert('Lütfen tüm alanları doldurun.');
+                                return;
+                            }
+
+                            // Not: Manuel sipariş ekleme için backend endpoint'i eklenebilir
+                            // Şimdilik sadece frontend'de gösteriyoruz
+                            alert('Manuel sipariş ekleme özelliği yakında eklenecektir.');
                             setIsAddOrderModalOpen(false);
                         }}
                         className="approve-btn"
