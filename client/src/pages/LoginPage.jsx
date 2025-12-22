@@ -77,7 +77,7 @@ const LoginPage = () => {
               />
               <span onClick={togglePasswordVisibility} className="password-toggle-icon">
                 <img
-                  src={isPasswordVisible ? '/assets/LoginPages/openeye.png' : '/assets/LoginPages/closedeye.png'}
+                  src={isPasswordVisible ?'/assets/LoginPages/closedeye.png' :  '/assets/LoginPages/openeye.png'}
                   alt="Toggle password visibility"
                   className="password-toggle-img"
                 />

@@ -97,7 +97,7 @@ const RegisterPage = () => {
             <div className="password-input-container">
                 <input type={isPasswordVisible ? 'text' : 'password'} id="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Şifrenizi giriniz" required />
                 <span onClick={togglePasswordVisibility} className="password-toggle-icon">
-                    <img src={isPasswordVisible ? '/assets/LoginPages/openeye.png' : '/assets/LoginPages/closedeye.png'} alt="Toggle password visibility" className="password-toggle-img" />
+                    <img src={isPasswordVisible ?'/assets/LoginPages/closedeye.png' :  '/assets/LoginPages/openeye.png'} />
                 </span>
             </div>
         </div>
@@ -106,7 +106,7 @@ const RegisterPage = () => {
             <div className="password-input-container">
                 <input type={isConfirmPasswordVisible ? 'text' : 'password'} id="confirmPassword" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Şifrenizi tekrar giriniz" required />
                 <span onClick={toggleConfirmPasswordVisibility} className="password-toggle-icon">
-                    <img src={isConfirmPasswordVisible ? '/assets/LoginPages/openeye.png' : '/assets/LoginPages/closedeye.png'} alt="Toggle password visibility" className="password-toggle-img" />
+                    <img src={isConfirmPasswordVisible ? '/assets/LoginPages/closedeye.png' :  '/assets/LoginPages/openeye.png'} alt="Toggle password visibility" className="password-toggle-img" />
                 </span>
             </div>
         </div>
