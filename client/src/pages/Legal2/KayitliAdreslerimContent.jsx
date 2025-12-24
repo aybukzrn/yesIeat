@@ -58,7 +58,7 @@ const KayitliAdreslerimContent = () => {
   const [newAddress, setNewAddress] = useState({
     title: "",
     city: "Ankara",        
-    district: "",  
+    district: ankaraDistricts[0] || "",  
     building: "",
     floor: "",
     apartment: "",
@@ -121,8 +121,8 @@ const KayitliAdreslerimContent = () => {
   // Yeni adres ekle
   const handleAddAddress = async () => {
     try {
-      if (!newAddress.title || !newAddress.fullAddress) {
-        setMessage({ type: 'error', text: 'Lütfen adres başlığı ve tam adres bilgilerini doldurun.' });
+      if (!newAddress.title || !newAddress.fullAddress || !newAddress.district) {
+        setMessage({ type: 'error', text: 'Lütfen adres başlığı, ilçe ve tam adres bilgilerini doldurun.' });
         return;
       }
 
@@ -141,8 +141,11 @@ const KayitliAdreslerimContent = () => {
         return;
       }
 
-      // Tam adresi oluştur
-      const fullAddressText = `${newAddress.city} / ${newAddress.district}, ${newAddress.fullAddress}`;
+      // Tam adresi oluştur (telefon numarasını da ekle)
+      let fullAddressText = `${newAddress.city} / ${newAddress.district}, ${newAddress.fullAddress}`;
+      if (newAddress.phone) {
+        fullAddressText += ` | ${newAddress.phone}`;
+      }
 
       const response = await fetch('/api/user/addresses', {
         method: 'POST',
@@ -173,7 +176,7 @@ const KayitliAdreslerimContent = () => {
       setNewAddress({
         title: "",
         city: "Ankara",
-        district: "",
+        district: ankaraDistricts[0] || "",
         building: "",
         floor: "",
         apartment: "",
@@ -236,8 +239,8 @@ const KayitliAdreslerimContent = () => {
   // Adres düzenle
   const saveEditedAddress = async () => {
     try {
-      if (!editAddress.title || !editAddress.fullAddress) {
-        setMessage({ type: 'error', text: 'Lütfen adres başlığı ve tam adres bilgilerini doldurun.' });
+      if (!editAddress.title || !editAddress.fullAddress || !editAddress.district) {
+        setMessage({ type: 'error', text: 'Lütfen adres başlığı, ilçe ve tam adres bilgilerini doldurun.' });
         return;
       }
 
@@ -256,8 +259,11 @@ const KayitliAdreslerimContent = () => {
         return;
       }
 
-      // Tam adresi oluştur
-      const fullAddressText = `${editAddress.city} / ${editAddress.district}, ${editAddress.fullAddress}`;
+      // Tam adresi oluştur (telefon numarasını da ekle)
+      let fullAddressText = `${editAddress.city} / ${editAddress.district}, ${editAddress.fullAddress}`;
+      if (editAddress.phone) {
+        fullAddressText += ` | ${editAddress.phone}`;
+      }
 
       const response = await fetch(`/api/user/addresses/${editAddressId}`, {
         method: 'PUT',
@@ -298,12 +304,35 @@ const KayitliAdreslerimContent = () => {
 
   // Adres düzenleme modalını aç
   const openEditModal = (address) => {
-    // fullAddress'ten şehir ve ilçe bilgisini parse et
-    const parts = address.fullAddress.split(' / ');
-    const city = parts[0] || 'Ankara';
-    const districtAndAddress = parts[1] || '';
-    const district = districtAndAddress.split(',')[0] || '';
-    const fullAddress = districtAndAddress.split(',').slice(1).join(',').trim() || '';
+    // fullAddress'ten şehir, ilçe, adres ve telefon bilgisini parse et
+    // Format: "Ankara / İlçe, Açık Adres | Telefon"
+    let city = 'Ankara';
+    let district = ankaraDistricts[0] || '';
+    let fullAddress = '';
+    let phone = '';
+
+    if (address.fullAddress) {
+      // Telefon numarasını ayır (| karakterinden sonrası)
+      const phoneParts = address.fullAddress.split(' | ');
+      if (phoneParts.length > 1) {
+        phone = phoneParts[1] || '';
+      }
+
+      // Şehir ve ilçe bilgisini parse et
+      const mainPart = phoneParts[0] || address.fullAddress;
+      const parts = mainPart.split(' / ');
+      
+      if (parts.length > 0) {
+        city = parts[0] || 'Ankara';
+      }
+      
+      if (parts.length > 1) {
+        const districtAndAddress = parts[1];
+        const districtParts = districtAndAddress.split(',');
+        district = districtParts[0]?.trim() || ankaraDistricts[0] || '';
+        fullAddress = districtParts.slice(1).join(',').trim() || '';
+      }
+    }
 
     setEditAddressId(address.id);
     setEditAddress({
@@ -314,7 +343,7 @@ const KayitliAdreslerimContent = () => {
       floor: address.floor || '',
       apartment: address.apartment || '',
       fullAddress: fullAddress,
-      phone: address.phone || '',
+      phone: phone,
     });
     setIsEditModalOpen(true);
   };
@@ -354,12 +383,35 @@ const KayitliAdreslerimContent = () => {
           <p>Henüz adres eklemediniz.</p>
         ) : (
           addresses.map((addr) => {
-            // fullAddress'ten şehir ve ilçe bilgisini parse et
-            const parts = addr.fullAddress.split(' / ');
-            const city = parts[0] || 'Ankara';
-            const districtAndAddress = parts[1] || '';
-            const district = districtAndAddress.split(',')[0] || '';
-            const fullAddressText = districtAndAddress.split(',').slice(1).join(',').trim() || '';
+            // fullAddress'ten şehir, ilçe, adres ve telefon bilgisini parse et
+            // Format: "Ankara / İlçe, Açık Adres | Telefon"
+            let city = 'Ankara';
+            let district = '';
+            let fullAddressText = '';
+            let phone = '';
+
+            if (addr.fullAddress) {
+              // Telefon numarasını ayır (| karakterinden sonrası)
+              const phoneParts = addr.fullAddress.split(' | ');
+              if (phoneParts.length > 1) {
+                phone = phoneParts[1] || '';
+              }
+
+              // Şehir ve ilçe bilgisini parse et
+              const mainPart = phoneParts[0] || addr.fullAddress;
+              const parts = mainPart.split(' / ');
+              
+              if (parts.length > 0) {
+                city = parts[0] || 'Ankara';
+              }
+              
+              if (parts.length > 1) {
+                const districtAndAddress = parts[1];
+                const districtParts = districtAndAddress.split(',');
+                district = districtParts[0]?.trim() || '';
+                fullAddressText = districtParts.slice(1).join(',').trim() || '';
+              }
+            }
 
             return (
               <div className="address-cards" key={addr.id}>
@@ -369,7 +421,7 @@ const KayitliAdreslerimContent = () => {
                 {(addr.building || addr.floor || addr.apartment) && (
                   <p>Bina: {addr.building || '-'}, Kat: {addr.floor || '-'}, Daire: {addr.apartment || '-'}</p>
                 )}
-                {addr.phone && <p>Telefon: {addr.phone}</p>}
+                {phone && <p>Telefon: {phone}</p>}
 
                 <div className="actions">
                   <button onClick={() => handleDeleteAddress(addr.id)}>
@@ -411,7 +463,7 @@ const KayitliAdreslerimContent = () => {
                 setNewAddress({
                   ...newAddress,
                   city: e.target.value,
-                  district: ankaraDistricts[0] // şehir değişirse ilçeyi resetleyelim
+                  district: ankaraDistricts[0] || '' // şehir değişirse ilçeyi resetleyelim
                 })
               }
             >
@@ -427,7 +479,7 @@ const KayitliAdreslerimContent = () => {
               }
             >
               {ankaraDistricts.map((d, i) => (
-                <option key={i}>{d}</option>
+                <option key={i} value={d}>{d}</option>
               ))}
             </select>
           </div>
@@ -510,7 +562,7 @@ const KayitliAdreslerimContent = () => {
                 setEditAddress({
                   ...editAddress,
                   city: e.target.value,
-                  district: ankaraDistricts[0] 
+                  district: ankaraDistricts[0] || ''
                 })
               }
             >
@@ -526,7 +578,7 @@ const KayitliAdreslerimContent = () => {
               }
             >
               {ankaraDistricts.map((d, i) => (
-                <option key={i}>{d}</option>
+                <option key={i} value={d}>{d}</option>
               ))}
             </select>
           </div>
