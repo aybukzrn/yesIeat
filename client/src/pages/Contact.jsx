@@ -75,9 +75,8 @@ const Contact = () => {
 
 
                 <section className="contact-section">
-                    <h2 className='section-title mb-4'>{activeItem ? activeCategory : '' }</h2>
-
-                    <div className="content-content">
+        
+                    <div className="content-content1">
                         <div className="content-item">
                             {getContentComponent(activeCategory)}
                         </div>

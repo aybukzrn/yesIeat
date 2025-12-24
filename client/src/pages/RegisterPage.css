@@ -81,3 +81,28 @@
   display: flex;
   flex-direction: column; 
 }
+
+
+/* Responsive Design */
+
+@media (max-width: 768px) {
+  .login-page-container2 {
+    flex-direction: column; 
+    padding: 20px;
+    gap: 40px; 
+  }
+
+  .chef-gorseli2 img {
+    display: none;
+  }
+
+  .login-form-container2 {
+    width: 100%; 
+    max-width: 400px; 
+    padding: 30px; 
+  }
+
+  .form-group #lastName{
+     margin-left: 5px;
+  }
+}

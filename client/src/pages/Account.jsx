@@ -115,7 +115,7 @@ const Account = () => {
         <div>
             <Navbar2 />
 
-            <div className="content-page-layout">
+            <div className="content-page-layout1">
                 <div className="sidebar">
                     <div className="category-filter-bar mb-5">
                         {categoriesConfig.map((cat) => (
@@ -129,8 +129,9 @@ const Account = () => {
                         ))}
                     </div>
                 </div>
+                
 
-                <section className="contact-section">
+                <section className="contact-section1">
                     <div className="content-content">
                         <div className="content-item">
                             {getContentComponent()}

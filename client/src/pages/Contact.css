@@ -48,3 +48,51 @@
 }
 
 
+@media (max-width: 768px) {
+    .content-page-layout{
+        display: flex;
+        flex-direction: column;
+        padding: 0px;
+        gap: 15px;
+        
+    }
+
+    .content-page-layout .sidebar{
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        flex-shrink: 0;
+        background: none;
+        box-shadow: none;
+        margin-bottom: -50px;
+    }
+
+    .content-page-layout .category-filter-bar {
+        display: flex;
+        flex-direction: row;
+        overflow-x: auto;        /* Yatay kaydırma aç */
+        gap: 10px;
+        padding-bottom: 5px;     /* Scroll çubuğu için hafif boşluk */
+        white-space: nowrap;
+        border-bottom: 1px solid #eee; /* İsteğe bağlı görsel ayrım */
+        
+        /* Mobil kaydırma hissiyatı */
+        -webkit-overflow-scrolling: touch; 
+        
+        /* Scroll çubuğunu gizlemek istersen bu blok kalsın, görmek istersen sil */
+        scrollbar-width: none; 
+        -ms-overflow-style: none;
+    }
+
+    .contact-section{
+        display: flex;
+        margin-left: 2px;
+    }
+
+    .content-content1{
+        margin-left: 5px;
+    }
+
+    
+    
+}

@@ -192,7 +192,8 @@
     overflow-x: auto;
     white-space: nowrap;
     scrollbar-width:thin;
-    scrollbar-color: #0000003c transparent;
+    scrollbar-color: #b7b7b73c transparent;
+    
   }
   
   .tag-filter-bar::-webkit-scrollbar {
@@ -247,17 +248,43 @@
 
 
 /* Mobil Uyum */
-@media (max-width: 1024px) {
+@media (max-width: 768px) {
     .menu-page {
         flex-direction: column;
         padding: 15px;
         gap: 20px;
     }
 
-    .menu-list-section {
-        
+    .menu-page .sidebar{
+        flex-basis: 100%;
+        margin-left: 0;
+        padding: 0;
+        background: none;
+        box-shadow: none;
+        margin-bottom: -50px;
     }
+
+    .menu-page .category-filter-bar {
+        display: flex;            
+        flex-direction: row;      
+        overflow-x: auto;         
+        white-space: nowrap;      
+        gap: 12px;                 
+        -webkit-overflow-scrolling: touch; 
+        scrollbar-width: none;
+        -ms-overflow-style: none; 
+      }
+
+    
+
+    .menu-items-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
 }
+
+
 
 
 

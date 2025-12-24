@@ -165,23 +165,23 @@ const Navbar = ({ searchQuery = '', onSearchChange = null }) => {
                 <div className="right-section">
 
                     <div className="account">
-    <div className="acc-icon"><RiAccountCircleFill /></div>
-    <div className="acc-dropdown">
-        <CustomDropdown title={accountTitle}>
-            {isUserLoggedIn ? (
-                /* Birden fazla eleman olduğu için <> </> (Fragment) içine aldık */
-                <>
-                    <Link to="/account?tab=siparislerim">Siparişlerim</Link>
-                    <Link to="/account?tab=kullanici-bilgilerim">Profilim</Link>
-                    <Link to="/" onClick={handleLogout}>Çıkış Yap</Link>
-                </>
-            ) : (
-                /* Burada tek bir Link olduğu için kapsayıcıya gerek yok ama olsa da zarar etmez */
-                <Link to="/login">Giriş Yap</Link>
-            )}
-        </CustomDropdown>
-    </div>
-</div>
+                        <div className="acc-icon"><RiAccountCircleFill /></div>
+                        <div className="acc-dropdown">
+                            <CustomDropdown title={accountTitle}>
+                                {isUserLoggedIn ? (
+                                    /* Birden fazla eleman olduğu için <> </> (Fragment) içine aldık */
+                                    <>
+                                        <Link to="/account?tab=siparislerim">Siparişlerim</Link>
+                                        <Link to="/account?tab=kullanici-bilgilerim">Profilim</Link>
+                                        <Link to="/" onClick={handleLogout}>Çıkış Yap</Link>
+                                    </>
+                                ) : (
+                                    /* Burada tek bir Link olduğu için kapsayıcıya gerek yok ama olsa da zarar etmez */
+                                    <Link to="/login">Giriş Yap</Link>
+                                )}
+                            </CustomDropdown>
+                        </div>
+                    </div>
 
                     <div className="cart">
                         <Link to="/cart">
@@ -247,15 +247,15 @@ const Navbar = ({ searchQuery = '', onSearchChange = null }) => {
                 ></div>
 
                 <ul className={`navbar-links ${isMenuOpen ? 'open' : ''}`}>
-                    
-                        <button
-                            type="button"
-                            className="close-menu-btn"
-                            onClick={() => setIsMenuOpen(false)}
-                        >
-                            <MdClose size={30} />
-                        </button>
-                    
+
+                    <button
+                        type="button"
+                        className="close-menu-btn"
+                        onClick={() => setIsMenuOpen(false)}
+                    >
+                        <MdClose size={30} />
+                    </button>
+
 
                     <li>
                         <Link to="/" className="nav-link" onClick={() => setIsMenuOpen(false)}>

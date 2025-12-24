@@ -135,3 +135,23 @@ h2 {
 .register-link:hover {
   color: #fff;
 }
+
+/* Responsive Design */
+
+@media (max-width: 768px) {
+  .login-page-container {
+    flex-direction: column; 
+    padding: 20px;
+    gap: 40px; 
+  }
+
+  .chef-gorseli img {
+    display: none;
+  }
+
+  .login-form-container {
+    width: 100%; 
+    max-width: 400px; 
+    padding: 30px; 
+  }
+}

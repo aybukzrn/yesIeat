@@ -191,3 +191,37 @@
     margin-left: 5px;
     font-weight: 600;
 }
+
+
+/* Responsive Design */
+
+@media (max-width: 768px) {
+    .card-form {
+        flex-direction: column;
+        align-items: flex-start;
+        margin-left: -20px;
+    }
+
+    .right-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+        margin-top: -5px;
+    }
+
+    .form-row {
+        flex-direction: column;
+    }
+
+    .header {
+        flex-direction: row;
+        gap: 10px;
+        margin-left: -20px;
+    }
+
+    .add-card button {
+        padding: 8px 15px;
+        font-size: 13px;
+        margin-top: 18px;
+    }
+}

@@ -114,3 +114,27 @@
     color: #e22b01;
     transition: all .3s;
 }
+
+
+/* Responsive Design */
+
+@media (max-width: 768px) {
+    .personal-information {
+        flex-direction: column;
+    }
+
+    .user-information,
+    .password,
+    .delete-account {
+        flex-basis: 100%;
+        margin-left: -25px;
+    }
+
+    .name {
+        flex-direction: column;
+    }
+
+    .ui-form-group {
+        flex-basis: 100%;
+    }
+}

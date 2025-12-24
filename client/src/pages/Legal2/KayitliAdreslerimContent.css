@@ -114,3 +114,25 @@
     width: 100%;
     padding: 8px 12px;
 }
+
+/* Responsive Design */
+
+@media (max-width: 768px) {
+    .triple{
+        flex-direction: column;
+    }
+
+    .address-cards{
+        width: 100%;
+    }
+
+    .location-selects{
+        flex-direction: column;
+    }
+
+    .address-list{
+        
+        align-items: center;
+        margin-left: -25px;
+    }
+}
