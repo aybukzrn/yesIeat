@@ -167,8 +167,8 @@ const Navbar = ({ searchQuery = '', onSearchChange = null }) => {
             {isUserLoggedIn ? (
                 /* Birden fazla eleman olduğu için <> </> (Fragment) içine aldık */
                 <>
-                    <Link to="/account">Siparişlerim</Link>
-                    <Link to="/account">Profilim</Link>
+                    <Link to="/account?tab=siparislerim">Siparişlerim</Link>
+                    <Link to="/account?tab=kullanici-bilgilerim">Profilim</Link>
                     <Link to="/" onClick={handleLogout}>Çıkış Yap</Link>
                 </>
             ) : (

@@ -620,6 +620,646 @@ app.post('/api/admin/products', async (req, res) => {
   }
 });
 
+// ==================== KULLANICI BİLGİLERİ API ====================
+
+// Kullanıcı bilgilerini getir
+app.get('/api/user/profile', async (req, res) => {
+  try {
+    const { userId } = req.query;
+
+    if (!userId) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Kullanıcı ID gereklidir.' 
+      });
+    }
+
+    const user = await prisma.USERS.findUnique({
+      where: { uID: parseInt(userId) },
+      select: {
+        uID: true,
+        uName: true,
+        uSurname: true,
+        uMail: true,
+        uPhnNum: true,
+      },
+    });
+
+    if (!user) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Kullanıcı bulunamadı.' 
+      });
+    }
+
+    return res.json({
+      success: true,
+      user: {
+        id: user.uID,
+        name: user.uName,
+        surname: user.uSurname,
+        email: user.uMail,
+        phone: user.uPhnNum || '',
+      },
+    });
+  } catch (err) {
+    console.error('Kullanıcı bilgisi getirme hatası:', err);
+    return res.status(500).json({ 
+      success: false, 
+      message: 'Kullanıcı bilgisi getirilirken bir hata oluştu.' 
+    });
+  }
+});
+
+// Kullanıcı bilgilerini güncelle
+app.put('/api/user/profile', async (req, res) => {
+  try {
+    const { userId, name, surname, email, phone } = req.body;
+
+    if (!userId) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Kullanıcı ID gereklidir.' 
+      });
+    }
+
+    // Email değişiyorsa, başka bir kullanıcıda kullanılıyor mu kontrol et
+    if (email) {
+      const existingUser = await prisma.USERS.findFirst({
+        where: {
+          uMail: email,
+          uID: { not: parseInt(userId) },
+        },
+      });
+
+      if (existingUser) {
+        return res.status(409).json({ 
+          success: false, 
+          message: 'Bu e-posta adresi başka bir kullanıcı tarafından kullanılıyor.' 
+        });
+      }
+    }
+
+    const updatedUser = await prisma.USERS.update({
+      where: { uID: parseInt(userId) },
+      data: {
+        uName: name,
+        uSurname: surname,
+        uMail: email,
+        uPhnNum: phone || null,
+      },
+      select: {
+        uID: true,
+        uName: true,
+        uSurname: true,
+        uMail: true,
+        uPhnNum: true,
+      },
+    });
+
+    return res.json({
+      success: true,
+      message: 'Kullanıcı bilgileri güncellendi.',
+      user: {
+        id: updatedUser.uID,
+        name: updatedUser.uName,
+        surname: updatedUser.uSurname,
+        email: updatedUser.uMail,
+        phone: updatedUser.uPhnNum || '',
+      },
+    });
+  } catch (err) {
+    console.error('Kullanıcı bilgisi güncelleme hatası:', err);
+    return res.status(500).json({ 
+      success: false, 
+      message: 'Kullanıcı bilgisi güncellenirken bir hata oluştu.' 
+    });
+  }
+});
+
+// Şifre değiştir
+app.put('/api/user/password', async (req, res) => {
+  try {
+    const { userId, currentPassword, newPassword } = req.body;
+
+    if (!userId || !currentPassword || !newPassword) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Tüm alanlar gereklidir.' 
+      });
+    }
+
+    // Mevcut şifreyi kontrol et
+    const user = await prisma.USERS.findUnique({
+      where: { uID: parseInt(userId) },
+    });
+
+    if (!user) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Kullanıcı bulunamadı.' 
+      });
+    }
+
+    if (user.uPassword !== currentPassword) {
+      return res.status(401).json({ 
+        success: false, 
+        message: 'Mevcut şifre hatalı.' 
+      });
+    }
+
+    // Yeni şifreyi güncelle
+    await prisma.USERS.update({
+      where: { uID: parseInt(userId) },
+      data: { uPassword: newPassword },
+    });
+
+    return res.json({
+      success: true,
+      message: 'Şifre başarıyla güncellendi.',
+    });
+  } catch (err) {
+    console.error('Şifre güncelleme hatası:', err);
+    return res.status(500).json({ 
+      success: false, 
+      message: 'Şifre güncellenirken bir hata oluştu.' 
+    });
+  }
+});
+
+// ==================== ADRES API ====================
+
+// Kullanıcının adreslerini getir
+app.get('/api/user/addresses', async (req, res) => {
+  try {
+    const { userId } = req.query;
+
+    if (!userId) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Kullanıcı ID gereklidir.' 
+      });
+    }
+
+    const addresses = await prisma.ADDRESS.findMany({
+      where: { uID: parseInt(userId) },
+      orderBy: { addressID: 'desc' },
+    });
+
+    const formattedAddresses = addresses.map(addr => ({
+      id: addr.addressID,
+      title: addr.addressTitle,
+      fullAddress: addr.fullAddress,
+      building: addr.flatNum || '',
+      floor: addr.floorNum || '',
+      apartment: addr.aptNum || '',
+      // Adres parse etmek için (şehir/ilçe bilgisi fullAddress'te olabilir)
+      city: 'Ankara', // Varsayılan olarak Ankara
+      district: '', // fullAddress'ten parse edilebilir
+      phone: '', // ADDRESS tablosunda telefon yok, gerekirse eklenebilir
+    }));
+
+    return res.json({
+      success: true,
+      addresses: formattedAddresses,
+    });
+  } catch (err) {
+    console.error('Adres getirme hatası:', err);
+    return res.status(500).json({ 
+      success: false, 
+      message: 'Adresler getirilirken bir hata oluştu.' 
+    });
+  }
+});
+
+// Yeni adres ekle
+app.post('/api/user/addresses', async (req, res) => {
+  try {
+    const { userId, title, fullAddress, building, floor, apartment } = req.body;
+
+    if (!userId || !title || !fullAddress) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Adres başlığı ve tam adres gereklidir.' 
+      });
+    }
+
+    const newAddress = await prisma.ADDRESS.create({
+      data: {
+        uID: parseInt(userId),
+        addressTitle: title,
+        fullAddress: fullAddress,
+        flatNum: building ? parseInt(building) : null,
+        floorNum: floor ? parseInt(floor) : null,
+        aptNum: apartment ? parseInt(apartment) : null,
+      },
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: 'Adres başarıyla eklendi.',
+      address: {
+        id: newAddress.addressID,
+        title: newAddress.addressTitle,
+        fullAddress: newAddress.fullAddress,
+        building: newAddress.flatNum || '',
+        floor: newAddress.floorNum || '',
+        apartment: newAddress.aptNum || '',
+      },
+    });
+  } catch (err) {
+    console.error('Adres ekleme hatası:', err);
+    return res.status(500).json({ 
+      success: false, 
+      message: 'Adres eklenirken bir hata oluştu.' 
+    });
+  }
+});
+
+// Adres güncelle
+app.put('/api/user/addresses/:addressId', async (req, res) => {
+  try {
+    const { addressId } = req.params;
+    const { userId, title, fullAddress, building, floor, apartment } = req.body;
+
+    if (!userId) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Kullanıcı ID gereklidir.' 
+      });
+    }
+
+    // Adresin kullanıcıya ait olduğunu kontrol et
+    const address = await prisma.ADDRESS.findFirst({
+      where: {
+        addressID: parseInt(addressId),
+        uID: parseInt(userId),
+      },
+    });
+
+    if (!address) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Adres bulunamadı veya bu adrese erişim yetkiniz yok.' 
+      });
+    }
+
+    const updatedAddress = await prisma.ADDRESS.update({
+      where: { addressID: parseInt(addressId) },
+      data: {
+        addressTitle: title,
+        fullAddress: fullAddress,
+        flatNum: building ? parseInt(building) : null,
+        floorNum: floor ? parseInt(floor) : null,
+        aptNum: apartment ? parseInt(apartment) : null,
+      },
+    });
+
+    return res.json({
+      success: true,
+      message: 'Adres başarıyla güncellendi.',
+      address: {
+        id: updatedAddress.addressID,
+        title: updatedAddress.addressTitle,
+        fullAddress: updatedAddress.fullAddress,
+        building: updatedAddress.flatNum || '',
+        floor: updatedAddress.floorNum || '',
+        apartment: updatedAddress.aptNum || '',
+      },
+    });
+  } catch (err) {
+    console.error('Adres güncelleme hatası:', err);
+    return res.status(500).json({ 
+      success: false, 
+      message: 'Adres güncellenirken bir hata oluştu.' 
+    });
+  }
+});
+
+// Adres sil
+app.delete('/api/user/addresses/:addressId', async (req, res) => {
+  try {
+    const { addressId } = req.params;
+    const { userId } = req.query;
+
+    if (!userId) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Kullanıcı ID gereklidir.' 
+      });
+    }
+
+    // Adresin kullanıcıya ait olduğunu kontrol et
+    const address = await prisma.ADDRESS.findFirst({
+      where: {
+        addressID: parseInt(addressId),
+        uID: parseInt(userId),
+      },
+    });
+
+    if (!address) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Adres bulunamadı veya bu adrese erişim yetkiniz yok.' 
+      });
+    }
+
+    await prisma.ADDRESS.delete({
+      where: { addressID: parseInt(addressId) },
+    });
+
+    return res.json({
+      success: true,
+      message: 'Adres başarıyla silindi.',
+    });
+  } catch (err) {
+    console.error('Adres silme hatası:', err);
+    return res.status(500).json({ 
+      success: false, 
+      message: 'Adres silinirken bir hata oluştu.' 
+    });
+  }
+});
+
+// ==================== KART API ====================
+
+// Kullanıcının kartlarını getir
+app.get('/api/user/cards', async (req, res) => {
+  try {
+    const { userId } = req.query;
+
+    if (!userId) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Kullanıcı ID gereklidir.' 
+      });
+    }
+
+    const cards = await prisma.CARD_DETAIL.findMany({
+      where: { uID: parseInt(userId) },
+      orderBy: { cardID: 'desc' },
+    });
+
+    // Kart numarasını maskele ve banka/kart tipini algıla
+    const detectBankAndBrand = (number) => {
+      const cleanNumber = number.replace(/\s/g, '');
+      let result = { bank: '', brand: '' };
+
+      if (cleanNumber.startsWith('4')) {
+        result.brand = 'visa';
+      } else if (cleanNumber.startsWith('5')) {
+        result.brand = 'mastercard';
+      } else if (cleanNumber.startsWith('9')) {
+        result.brand = 'troy';
+      }
+
+      const prefix6 = cleanNumber.substring(0, 6);
+      if (['444676', '979280', '528208', '658755'].includes(prefix6)) {
+        result.bank = 'ziraat';
+      } else if (['540709', '517041', '48945501', '979236'].includes(prefix6)) {
+        result.bank = 'garanti';
+      } else if (['545103', '491206', '540061'].includes(prefix6)) {
+        result.bank = 'yapikredi';
+      } else {
+        result.bank = 'other';
+      }
+
+      return result;
+    };
+
+    const formattedCards = cards.map(card => {
+      const detected = detectBankAndBrand(card.cardNum);
+      return {
+        id: card.cardID,
+        alias: card.cardType || 'Kartım',
+        holderName: card.cardHolder,
+        cardNumber: card.cardNum,
+        bank: detected.bank,
+        brand: detected.brand,
+        expDate: card.cardExpDate,
+      };
+    });
+
+    return res.json({
+      success: true,
+      cards: formattedCards,
+    });
+  } catch (err) {
+    console.error('Kart getirme hatası:', err);
+    return res.status(500).json({ 
+      success: false, 
+      message: 'Kartlar getirilirken bir hata oluştu.' 
+    });
+  }
+});
+
+// Yeni kart ekle
+app.post('/api/user/cards', async (req, res) => {
+  try {
+    const { userId, alias, holderName, cardNumber, expDate } = req.body;
+
+    if (!userId || !holderName || !cardNumber || !expDate) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Kart sahibi adı, kart numarası ve son kullanma tarihi gereklidir.' 
+      });
+    }
+
+    const newCard = await prisma.CARD_DETAIL.create({
+      data: {
+        uID: parseInt(userId),
+        cardNum: cardNumber.replace(/\s/g, ''),
+        cardExpDate: expDate,
+        cardHolder: holderName,
+        cardType: alias || 'Kartım',
+      },
+    });
+
+    // Kart tipi ve banka algılama
+    const detectBankAndBrand = (number) => {
+      const cleanNumber = number.replace(/\s/g, '');
+      let result = { bank: '', brand: '' };
+
+      if (cleanNumber.startsWith('4')) {
+        result.brand = 'visa';
+      } else if (cleanNumber.startsWith('5')) {
+        result.brand = 'mastercard';
+      } else if (cleanNumber.startsWith('9')) {
+        result.brand = 'troy';
+      }
+
+      const prefix6 = cleanNumber.substring(0, 6);
+      if (['444676', '979280', '528208', '658755'].includes(prefix6)) {
+        result.bank = 'ziraat';
+      } else if (['540709', '517041', '48945501', '979236'].includes(prefix6)) {
+        result.bank = 'garanti';
+      } else if (['545103', '491206', '540061'].includes(prefix6)) {
+        result.bank = 'yapikredi';
+      } else {
+        result.bank = 'other';
+      }
+
+      return result;
+    };
+
+    const detected = detectBankAndBrand(cardNumber);
+
+    return res.status(201).json({
+      success: true,
+      message: 'Kart başarıyla eklendi.',
+      card: {
+        id: newCard.cardID,
+        alias: newCard.cardType,
+        holderName: newCard.cardHolder,
+        cardNumber: newCard.cardNum,
+        bank: detected.bank,
+        brand: detected.brand,
+        expDate: newCard.cardExpDate,
+      },
+    });
+  } catch (err) {
+    console.error('Kart ekleme hatası:', err);
+    return res.status(500).json({ 
+      success: false, 
+      message: 'Kart eklenirken bir hata oluştu.' 
+    });
+  }
+});
+
+// Kart güncelle
+app.put('/api/user/cards/:cardId', async (req, res) => {
+  try {
+    const { cardId } = req.params;
+    const { userId, alias, holderName, cardNumber, expDate } = req.body;
+
+    if (!userId) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Kullanıcı ID gereklidir.' 
+      });
+    }
+
+    // Kartın kullanıcıya ait olduğunu kontrol et
+    const card = await prisma.CARD_DETAIL.findFirst({
+      where: {
+        cardID: parseInt(cardId),
+        uID: parseInt(userId),
+      },
+    });
+
+    if (!card) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Kart bulunamadı veya bu karta erişim yetkiniz yok.' 
+      });
+    }
+
+    const updatedCard = await prisma.CARD_DETAIL.update({
+      where: { cardID: parseInt(cardId) },
+      data: {
+        cardNum: cardNumber ? cardNumber.replace(/\s/g, '') : card.cardNum,
+        cardExpDate: expDate || card.cardExpDate,
+        cardHolder: holderName || card.cardHolder,
+        cardType: alias || card.cardType,
+      },
+    });
+
+    // Kart tipi ve banka algılama
+    const detectBankAndBrand = (number) => {
+      const cleanNumber = number.replace(/\s/g, '');
+      let result = { bank: '', brand: '' };
+
+      if (cleanNumber.startsWith('4')) {
+        result.brand = 'visa';
+      } else if (cleanNumber.startsWith('5')) {
+        result.brand = 'mastercard';
+      } else if (cleanNumber.startsWith('9')) {
+        result.brand = 'troy';
+      }
+
+      const prefix6 = cleanNumber.substring(0, 6);
+      if (['444676', '979280', '528208', '658755'].includes(prefix6)) {
+        result.bank = 'ziraat';
+      } else if (['540709', '517041', '48945501', '979236'].includes(prefix6)) {
+        result.bank = 'garanti';
+      } else if (['545103', '491206', '540061'].includes(prefix6)) {
+        result.bank = 'yapikredi';
+      } else {
+        result.bank = 'other';
+      }
+
+      return result;
+    };
+
+    const detected = detectBankAndBrand(updatedCard.cardNum);
+
+    return res.json({
+      success: true,
+      message: 'Kart başarıyla güncellendi.',
+      card: {
+        id: updatedCard.cardID,
+        alias: updatedCard.cardType,
+        holderName: updatedCard.cardHolder,
+        cardNumber: updatedCard.cardNum,
+        bank: detected.bank,
+        brand: detected.brand,
+        expDate: updatedCard.cardExpDate,
+      },
+    });
+  } catch (err) {
+    console.error('Kart güncelleme hatası:', err);
+    return res.status(500).json({ 
+      success: false, 
+      message: 'Kart güncellenirken bir hata oluştu.' 
+    });
+  }
+});
+
+// Kart sil
+app.delete('/api/user/cards/:cardId', async (req, res) => {
+  try {
+    const { cardId } = req.params;
+    const { userId } = req.query;
+
+    if (!userId) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Kullanıcı ID gereklidir.' 
+      });
+    }
+
+    // Kartın kullanıcıya ait olduğunu kontrol et
+    const card = await prisma.CARD_DETAIL.findFirst({
+      where: {
+        cardID: parseInt(cardId),
+        uID: parseInt(userId),
+      },
+    });
+
+    if (!card) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Kart bulunamadı veya bu karta erişim yetkiniz yok.' 
+      });
+    }
+
+    await prisma.CARD_DETAIL.delete({
+      where: { cardID: parseInt(cardId) },
+    });
+
+    return res.json({
+      success: true,
+      message: 'Kart başarıyla silindi.',
+    });
+  } catch (err) {
+    console.error('Kart silme hatası:', err);
+    return res.status(500).json({ 
+      success: false, 
+      message: 'Kart silinirken bir hata oluştu.' 
+    });
+  }
+});
+
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

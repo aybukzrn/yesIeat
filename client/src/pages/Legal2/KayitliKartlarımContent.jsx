@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './KayitliKartlarımContent.css';
 import { MdAddCard, MdDeleteForever } from "react-icons/md";
 import { FaEdit } from "react-icons/fa";
@@ -48,21 +48,28 @@ const getBankLogo = (bankName) => {
     case 'yapikredi': return '/assets/AccountPage/yapikredi-logo.png';
     case 'garanti': return '/assets/AccountPage/garanti-logo.png';
     case 'isbankasi': return '/assets/AccountPage/isbankasi-logo.png';
-    default: return '/assets/AccountPage/default-bank.png';
+    default: return '/assets/AccountPage/ziraat-logo.webp'; // Varsayılan logo
   }
 };
 
 // Brand Logo Getirici
 const getBrandLogo = (brandName) => {
   if (brandName === 'visa') return '/assets/AccountPage/visa-brand.svg';
+  if (brandName === 'mastercard') return '/assets/AccountPage/mastercard-logo.webp';
   if (brandName === 'troy') return '/assets/AccountPage/troy-logo.png';
-  if (brandName == 'mastercard') return 'mastercard-logo.webp';
+  return null; // Logo bulunamazsa null döndür
 };
 
 
 
 const CardDetail = ({ card, onEdit, onDelete }) => {
-  const maskedNumber = `**** **** **** ${card.cardNumber.slice(-4)}`;
+  // Kart numarasını temizle ve son 4 hanesini al
+  const cleanCardNumber = (card.cardNumber || '').replace(/\s/g, '');
+  const lastFour = cleanCardNumber.length >= 4 ? cleanCardNumber.slice(-4) : cleanCardNumber;
+  const maskedNumber = `**** **** **** ${lastFour}`;
+  const bankLogo = getBankLogo(card.bank);
+  const brandLogo = getBrandLogo(card.brand);
+  
   return (
     <div className="card-form">
       <div className="head">
@@ -70,13 +77,12 @@ const CardDetail = ({ card, onEdit, onDelete }) => {
         <div className="right-card">
           <div className="card">
             <div className="card-logo">
-
-              <img src={getBankLogo(card.bank)} alt={card.bank} />
+              {bankLogo && <img src={bankLogo} alt={card.bank || 'Banka'} onError={(e) => { e.target.style.display = 'none'; }} />}
             </div>
             <div className="card-value"><span>{maskedNumber}</span></div>
           </div>
           <div className="card-brand">
-            <img src={getBrandLogo(card.brand)} alt={card.brand} />
+            {brandLogo && <img src={brandLogo} alt={card.brand || 'Kart'} onError={(e) => { e.target.style.display = 'none'; }} />}
           </div>
         </div>
       </div>
@@ -89,9 +95,10 @@ const CardDetail = ({ card, onEdit, onDelete }) => {
 };
 
 const KayitliKartlarımContent = () => {
-  const [cards, setCards] = useState([
-    { id: 1, alias: 'Şahsi Kartım', holderName: 'Aybüke Zeren', bank: 'ziraat', cardNumber: '4600123412341234', brand: 'visa' }
-  ]);
+  const [cards, setCards] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [message, setMessage] = useState({ type: '', text: '' });
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState('add');
@@ -101,14 +108,64 @@ const KayitliKartlarımContent = () => {
     alias: '',
     holderName: '',
     cardNumber: '',
+    expDate: '',
     bank: '',
     brand: ''
   });
 
+  // Kartları yükle
+  useEffect(() => {
+    const fetchCards = async () => {
+      try {
+        setIsLoading(true);
+        const userData = localStorage.getItem('user');
+        if (!userData) {
+          setMessage({ type: 'error', text: 'Giriş yapmanız gerekiyor.' });
+          setIsLoading(false);
+          return;
+        }
+
+        const user = JSON.parse(userData);
+        if (!user || !user.id) {
+          setMessage({ type: 'error', text: 'Kullanıcı bilgisi bulunamadı.' });
+          setIsLoading(false);
+          return;
+        }
+
+        const response = await fetch(`/api/user/cards?userId=${user.id}`);
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+          throw new Error(data.message || 'Kartlar yüklenirken bir hata oluştu.');
+        }
+
+        setCards(data.cards || []);
+      } catch (err) {
+        console.error('Kart yükleme hatası:', err);
+        setMessage({ type: 'error', text: err.message || 'Kartlar yüklenirken bir hata oluştu.' });
+        setCards([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchCards();
+  }, []);
+
+
+  // Son kullanma tarihi formatlama fonksiyonu (MM/YY)
+  const formatExpDate = (value) => {
+    // Sadece rakamları al
+    const digits = value.replace(/\D/g, '').slice(0, 4);
+    
+    if (digits.length === 0) return '';
+    if (digits.length <= 2) return digits;
+    // 2'den fazla rakam varsa "/" ekle
+    return `${digits.substring(0, 2)}/${digits.substring(2, 4)}`;
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-
 
     setFormData(prev => {
       const newData = { ...prev, [name]: value };
@@ -118,50 +175,209 @@ const KayitliKartlarımContent = () => {
         if (value.length >= 2) {
           const detected = detectBankAndBrand(value);
 
-
           if (detected.bank !== 'other') {
             newData.bank = detected.bank;
           }
           newData.brand = detected.brand;
         }
       }
+
+      // EĞER DEĞİŞEN ALAN 'expDate' İSE OTOMATİK FORMATLA
+      if (name === 'expDate') {
+        newData.expDate = formatExpDate(value);
+      }
+
       return newData;
     });
   };
 
   const openAddModal = () => {
     setModalType('add');
-    setFormData({ id: null, alias: '', holderName: '', cardNumber: '', bank: '', brand: '' });
+    setFormData({ id: null, alias: '', holderName: '', cardNumber: '', expDate: '', bank: '', brand: '' });
     setIsModalOpen(true);
   };
 
   const openEditModal = (card) => {
     setModalType('edit');
-    setFormData(card);
+    setFormData({
+      id: card.id,
+      alias: card.alias || '',
+      holderName: card.holderName || '',
+      cardNumber: card.cardNumber || '',
+      expDate: card.expDate || '',
+      bank: card.bank || '',
+      brand: card.brand || ''
+    });
     setIsModalOpen(true);
   };
 
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e.preventDefault();
 
-    if (!formData.bank) {
-      alert("Lütfen bankanızı seçin (Otomatik algılanamadı).");
+    if (!formData.holderName || !formData.cardNumber || !formData.expDate) {
+      setMessage({ type: 'error', text: 'Lütfen tüm alanları doldurun.' });
       return;
     }
 
-    if (modalType === 'add') {
-      const newCard = { ...formData, id: Date.now() };
-      setCards([...cards, newCard]);
-    } else {
-      setCards(cards.map(card => card.id === formData.id ? formData : card));
+    // Kart numarası validasyonu (sadece rakam, 13-19 karakter)
+    const cleanCardNumber = formData.cardNumber.replace(/\s/g, '');
+    if (cleanCardNumber.length < 13 || cleanCardNumber.length > 19) {
+      setMessage({ type: 'error', text: 'Kart numarası geçersiz.' });
+      return;
     }
-    setIsModalOpen(false);
+
+    try {
+      setIsSaving(true);
+      setMessage({ type: '', text: '' });
+
+      const userData = localStorage.getItem('user');
+      if (!userData) {
+        setMessage({ type: 'error', text: 'Giriş yapmanız gerekiyor.' });
+        return;
+      }
+
+      const user = JSON.parse(userData);
+      if (!user || !user.id) {
+        setMessage({ type: 'error', text: 'Kullanıcı bilgisi bulunamadı.' });
+        return;
+      }
+
+      // ExpDate'i temizle (sadece rakamlar) ve formatla
+      const cleanExpDate = formData.expDate.replace(/\D/g, '');
+      if (cleanExpDate.length !== 4) {
+        setMessage({ type: 'error', text: 'Son kullanma tarihi geçersiz. (AA/YY formatında olmalı)' });
+        setIsSaving(false);
+        return;
+      }
+      const formattedExpDate = `${cleanExpDate.substring(0, 2)}/${cleanExpDate.substring(2, 4)}`;
+
+      if (modalType === 'add') {
+        const response = await fetch('/api/user/cards', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId: user.id,
+            alias: formData.alias || 'Kartım',
+            holderName: formData.holderName,
+            cardNumber: cleanCardNumber,
+            expDate: formattedExpDate,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+          throw new Error(data.message || 'Kart eklenirken bir hata oluştu.');
+        }
+
+        // Kartları yeniden yükle
+        const cardsResponse = await fetch(`/api/user/cards?userId=${user.id}`);
+        const cardsData = await cardsResponse.json();
+        if (cardsData.success) {
+          setCards(cardsData.cards || []);
+        }
+
+        setMessage({ type: 'success', text: 'Kart başarıyla eklendi.' });
+      } else {
+        const response = await fetch(`/api/user/cards/${formData.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId: user.id,
+            alias: formData.alias || 'Kartım',
+            holderName: formData.holderName,
+            cardNumber: cleanCardNumber,
+            expDate: formattedExpDate,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+          throw new Error(data.message || 'Kart güncellenirken bir hata oluştu.');
+        }
+
+        // Kartları yeniden yükle
+        const cardsResponse = await fetch(`/api/user/cards?userId=${user.id}`);
+        const cardsData = await cardsResponse.json();
+        if (cardsData.success) {
+          setCards(cardsData.cards || []);
+        }
+
+        setMessage({ type: 'success', text: 'Kart başarıyla güncellendi.' });
+      }
+
+      setIsModalOpen(false);
+    } catch (err) {
+      console.error('Kart kaydetme hatası:', err);
+      setMessage({ type: 'error', text: err.message || 'Kart kaydedilirken bir hata oluştu.' });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
-  const handleDelete = (id) => setCards(cards.filter(c => c.id !== id));
+  const handleDelete = async (id) => {
+    if (!window.confirm('Bu kartı silmek istediğinize emin misiniz?')) {
+      return;
+    }
+
+    try {
+      const userData = localStorage.getItem('user');
+      if (!userData) {
+        setMessage({ type: 'error', text: 'Giriş yapmanız gerekiyor.' });
+        return;
+      }
+
+      const user = JSON.parse(userData);
+      if (!user || !user.id) {
+        setMessage({ type: 'error', text: 'Kullanıcı bilgisi bulunamadı.' });
+        return;
+      }
+
+      const response = await fetch(`/api/user/cards/${id}?userId=${user.id}`, {
+        method: 'DELETE',
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || 'Kart silinirken bir hata oluştu.');
+      }
+
+      // Kartları yeniden yükle
+      const cardsResponse = await fetch(`/api/user/cards?userId=${user.id}`);
+      const cardsData = await cardsResponse.json();
+      if (cardsData.success) {
+        setCards(cardsData.cards || []);
+      }
+
+      setMessage({ type: 'success', text: 'Kart başarıyla silindi.' });
+    } catch (err) {
+      console.error('Kart silme hatası:', err);
+      setMessage({ type: 'error', text: err.message || 'Kart silinirken bir hata oluştu.' });
+    }
+  };
+
+  if (isLoading) {
+    return <div style={{ padding: '20px', textAlign: 'center' }}>Yükleniyor...</div>;
+  }
 
   return (
     <div className="carts">
+      {message.text && (
+        <div
+          style={{
+            padding: '10px',
+            marginBottom: '20px',
+            backgroundColor: message.type === 'success' ? '#d4edda' : '#f8d7da',
+            color: message.type === 'success' ? '#155724' : '#721c24',
+            borderRadius: '4px',
+          }}
+        >
+          {message.text}
+        </div>
+      )}
+
       <div className="header">
         <h3>Kayıtlı Kartlarım</h3>
         <div className="add-card">
@@ -177,7 +393,6 @@ const KayitliKartlarımContent = () => {
             <CardDetail key={card.id} card={card} onEdit={openEditModal} onDelete={handleDelete} />
           ))
         )}
-
       </div>
 
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={modalType === 'add' ? 'Yeni Kart Ekle' : 'Kartı Düzenle'}>
@@ -186,26 +401,43 @@ const KayitliKartlarımContent = () => {
             <label>Kart İsmi</label>
             <input type="text" name="alias" value={formData.alias} onChange={handleInputChange} required placeholder="Maaş Kartım" />
           </div>
-          <div className="form-group">
-            <label>Kart Numarası</label>
-            <input
-              type="text"
-              name="cardNumber"
-              value={formData.cardNumber}
-              onChange={handleInputChange}
-              maxLength="16"
-              placeholder="0000 0000 0000 0000"
-              required
-            />
+            <div className="form-group">
+              <label>Kart Numarası</label>
+              <input
+                type="text"
+                name="cardNumber"
+                value={formData.cardNumber}
+                onChange={handleInputChange}
+                maxLength="19"
+                placeholder="0000 0000 0000 0000"
+                required
+              />
+            </div>
 
-          </div>
+            <div className="form-group">
+              <label>Ad Soyad</label>
+              <input
+                type="text"
+                name="holderName"
+                value={formData.holderName}
+                onChange={handleInputChange}
+                required
+                placeholder="Aybüke Zeren"
+              />
+            </div>
 
-          <div className="form-group">
-            <label>Ad Soyad</label>
-            <input type="text" name="holderName" value={formData.holderName} onChange={handleInputChange} required
-              placeholder="Aybüke Zeren" />
-
-          </div>
+            <div className="form-group">
+              <label>Son Kullanma Tarihi (AA/YY)</label>
+              <input
+                type="text"
+                name="expDate"
+                value={formData.expDate}
+                onChange={handleInputChange}
+                maxLength="5"
+                placeholder="12/25"
+                required
+              />
+            </div>
 
           <div className="form-row">
             <div className="form-group">
@@ -224,7 +456,9 @@ const KayitliKartlarımContent = () => {
             </div>
           </div>
 
-          <button type="submit" className="card-save-btn">Kaydet</button>
+          <button type="submit" className="card-save-btn" disabled={isSaving}>
+            {isSaving ? 'Kaydediliyor...' : 'Kaydet'}
+          </button>
         </form>
       </Modal>
     </div>

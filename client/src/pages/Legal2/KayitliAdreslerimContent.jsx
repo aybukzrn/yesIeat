@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './KayitliAdreslerimContent.css';
 import { FaMapMarkerAlt } from "react-icons/fa";
 import Modal from '../../components/Modal';
@@ -49,9 +49,11 @@ const formatPhone = (value) => {
 
 
 const KayitliAdreslerimContent = () => {
-
   const [isAddAddressModalOpen, setIsAddAddressModalOpen] = useState(false);
   const [addresses, setAddresses] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [message, setMessage] = useState({ type: '', text: '' });
 
   const [newAddress, setNewAddress] = useState({
     title: "",
@@ -64,25 +66,8 @@ const KayitliAdreslerimContent = () => {
     phone: "",
   });
 
-
-  // Yeni adres ekle
-  const handleAddAddress = () => {
-    setAddresses([...addresses, newAddress]);
-    setNewAddress({
-      title: "",
-      city: "Ankara",
-      district: "",
-      building: "",
-      floor: "",
-      apartment: "",
-      fullAddress: "",
-      phone: "",
-    });
-    setIsAddAddressModalOpen(false);
-  };
-
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [editIndex, setEditIndex] = useState(null);
+  const [editAddressId, setEditAddressId] = useState(null);
   const [editAddress, setEditAddress] = useState({
     title: "",
     city: "Ankara",
@@ -94,23 +79,265 @@ const KayitliAdreslerimContent = () => {
     phone: "",
   });
 
+  // Adresleri yükle
+  useEffect(() => {
+    const fetchAddresses = async () => {
+      try {
+        setIsLoading(true);
+        const userData = localStorage.getItem('user');
+        if (!userData) {
+          setMessage({ type: 'error', text: 'Giriş yapmanız gerekiyor.' });
+          setIsLoading(false);
+          return;
+        }
+
+        const user = JSON.parse(userData);
+        if (!user || !user.id) {
+          setMessage({ type: 'error', text: 'Kullanıcı bilgisi bulunamadı.' });
+          setIsLoading(false);
+          return;
+        }
+
+        const response = await fetch(`/api/user/addresses?userId=${user.id}`);
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+          throw new Error(data.message || 'Adresler yüklenirken bir hata oluştu.');
+        }
+
+        setAddresses(data.addresses || []);
+      } catch (err) {
+        console.error('Adres yükleme hatası:', err);
+        setMessage({ type: 'error', text: err.message || 'Adresler yüklenirken bir hata oluştu.' });
+        setAddresses([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchAddresses();
+  }, []);
+
+  // Yeni adres ekle
+  const handleAddAddress = async () => {
+    try {
+      if (!newAddress.title || !newAddress.fullAddress) {
+        setMessage({ type: 'error', text: 'Lütfen adres başlığı ve tam adres bilgilerini doldurun.' });
+        return;
+      }
+
+      setIsSaving(true);
+      setMessage({ type: '', text: '' });
+
+      const userData = localStorage.getItem('user');
+      if (!userData) {
+        setMessage({ type: 'error', text: 'Giriş yapmanız gerekiyor.' });
+        return;
+      }
+
+      const user = JSON.parse(userData);
+      if (!user || !user.id) {
+        setMessage({ type: 'error', text: 'Kullanıcı bilgisi bulunamadı.' });
+        return;
+      }
+
+      // Tam adresi oluştur
+      const fullAddressText = `${newAddress.city} / ${newAddress.district}, ${newAddress.fullAddress}`;
+
+      const response = await fetch('/api/user/addresses', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: user.id,
+          title: newAddress.title,
+          fullAddress: fullAddressText,
+          building: newAddress.building,
+          floor: newAddress.floor,
+          apartment: newAddress.apartment,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || 'Adres eklenirken bir hata oluştu.');
+      }
+
+      // Adresleri yeniden yükle
+      const addressesResponse = await fetch(`/api/user/addresses?userId=${user.id}`);
+      const addressesData = await addressesResponse.json();
+      if (addressesData.success) {
+        setAddresses(addressesData.addresses || []);
+      }
+
+      setNewAddress({
+        title: "",
+        city: "Ankara",
+        district: "",
+        building: "",
+        floor: "",
+        apartment: "",
+        fullAddress: "",
+        phone: "",
+      });
+      setIsAddAddressModalOpen(false);
+      setMessage({ type: 'success', text: 'Adres başarıyla eklendi.' });
+    } catch (err) {
+      console.error('Adres ekleme hatası:', err);
+      setMessage({ type: 'error', text: err.message || 'Adres eklenirken bir hata oluştu.' });
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   // Adres sil
-  const handleDeleteAddress = (index) => {
-    const updated = addresses.filter((_, i) => i !== index);
-    setAddresses(updated);
+  const handleDeleteAddress = async (addressId) => {
+    if (!window.confirm('Bu adresi silmek istediğinize emin misiniz?')) {
+      return;
+    }
+
+    try {
+      const userData = localStorage.getItem('user');
+      if (!userData) {
+        setMessage({ type: 'error', text: 'Giriş yapmanız gerekiyor.' });
+        return;
+      }
+
+      const user = JSON.parse(userData);
+      if (!user || !user.id) {
+        setMessage({ type: 'error', text: 'Kullanıcı bilgisi bulunamadı.' });
+        return;
+      }
+
+      const response = await fetch(`/api/user/addresses/${addressId}?userId=${user.id}`, {
+        method: 'DELETE',
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || 'Adres silinirken bir hata oluştu.');
+      }
+
+      // Adresleri yeniden yükle
+      const addressesResponse = await fetch(`/api/user/addresses?userId=${user.id}`);
+      const addressesData = await addressesResponse.json();
+      if (addressesData.success) {
+        setAddresses(addressesData.addresses || []);
+      }
+
+      setMessage({ type: 'success', text: 'Adres başarıyla silindi.' });
+    } catch (err) {
+      console.error('Adres silme hatası:', err);
+      setMessage({ type: 'error', text: err.message || 'Adres silinirken bir hata oluştu.' });
+    }
   };
 
   // Adres düzenle
-  const saveEditedAddress = () => {
-    const updated = addresses.map((a, i) => (i === editIndex ? editAddress : a));
-    setAddresses(updated);
-    setIsEditModalOpen(false);
+  const saveEditedAddress = async () => {
+    try {
+      if (!editAddress.title || !editAddress.fullAddress) {
+        setMessage({ type: 'error', text: 'Lütfen adres başlığı ve tam adres bilgilerini doldurun.' });
+        return;
+      }
+
+      setIsSaving(true);
+      setMessage({ type: '', text: '' });
+
+      const userData = localStorage.getItem('user');
+      if (!userData) {
+        setMessage({ type: 'error', text: 'Giriş yapmanız gerekiyor.' });
+        return;
+      }
+
+      const user = JSON.parse(userData);
+      if (!user || !user.id) {
+        setMessage({ type: 'error', text: 'Kullanıcı bilgisi bulunamadı.' });
+        return;
+      }
+
+      // Tam adresi oluştur
+      const fullAddressText = `${editAddress.city} / ${editAddress.district}, ${editAddress.fullAddress}`;
+
+      const response = await fetch(`/api/user/addresses/${editAddressId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: user.id,
+          title: editAddress.title,
+          fullAddress: fullAddressText,
+          building: editAddress.building,
+          floor: editAddress.floor,
+          apartment: editAddress.apartment,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || 'Adres güncellenirken bir hata oluştu.');
+      }
+
+      // Adresleri yeniden yükle
+      const addressesResponse = await fetch(`/api/user/addresses?userId=${user.id}`);
+      const addressesData = await addressesResponse.json();
+      if (addressesData.success) {
+        setAddresses(addressesData.addresses || []);
+      }
+
+      setIsEditModalOpen(false);
+      setMessage({ type: 'success', text: 'Adres başarıyla güncellendi.' });
+    } catch (err) {
+      console.error('Adres güncelleme hatası:', err);
+      setMessage({ type: 'error', text: err.message || 'Adres güncellenirken bir hata oluştu.' });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
 
+  // Adres düzenleme modalını aç
+  const openEditModal = (address) => {
+    // fullAddress'ten şehir ve ilçe bilgisini parse et
+    const parts = address.fullAddress.split(' / ');
+    const city = parts[0] || 'Ankara';
+    const districtAndAddress = parts[1] || '';
+    const district = districtAndAddress.split(',')[0] || '';
+    const fullAddress = districtAndAddress.split(',').slice(1).join(',').trim() || '';
+
+    setEditAddressId(address.id);
+    setEditAddress({
+      title: address.title || '',
+      city: city,
+      district: district,
+      building: address.building || '',
+      floor: address.floor || '',
+      apartment: address.apartment || '',
+      fullAddress: fullAddress,
+      phone: address.phone || '',
+    });
+    setIsEditModalOpen(true);
+  };
+
+  if (isLoading) {
+    return <div style={{ padding: '20px', textAlign: 'center' }}>Yükleniyor...</div>;
+  }
+
   return (
     <div className="addresses">
+      {message.text && (
+        <div
+          style={{
+            padding: '10px',
+            marginBottom: '20px',
+            backgroundColor: message.type === 'success' ? '#d4edda' : '#f8d7da',
+            color: message.type === 'success' ? '#155724' : '#721c24',
+            borderRadius: '4px',
+          }}
+        >
+          {message.text}
+        </div>
+      )}
 
       <div className="header">
         <h3>Kayıtlı Adreslerim</h3>
@@ -122,39 +349,41 @@ const KayitliAdreslerimContent = () => {
         </div>
       </div>
 
-
       <div className="address-list">
         {addresses.length === 0 ? (
           <p>Henüz adres eklemediniz.</p>
         ) : (
-          addresses.map((addr, index) => (
-            <div className="address-cards" key={index}>
-              <h4>{addr.title}</h4>
-              <p>{addr.city} / {addr.district}</p>
+          addresses.map((addr) => {
+            // fullAddress'ten şehir ve ilçe bilgisini parse et
+            const parts = addr.fullAddress.split(' / ');
+            const city = parts[0] || 'Ankara';
+            const districtAndAddress = parts[1] || '';
+            const district = districtAndAddress.split(',')[0] || '';
+            const fullAddressText = districtAndAddress.split(',').slice(1).join(',').trim() || '';
 
-              <p>{addr.fullAddress}</p>
-              <p>Bina: {addr.building}, Kat: {addr.floor}, Daire: {addr.apartment}</p>
-              <p>Telefon: {addr.phone}</p>
+            return (
+              <div className="address-cards" key={addr.id}>
+                <h4>{addr.title}</h4>
+                <p>{city} / {district}</p>
+                <p>{fullAddressText}</p>
+                {(addr.building || addr.floor || addr.apartment) && (
+                  <p>Bina: {addr.building || '-'}, Kat: {addr.floor || '-'}, Daire: {addr.apartment || '-'}</p>
+                )}
+                {addr.phone && <p>Telefon: {addr.phone}</p>}
 
-              <div className="actions">
-
-                <button onClick={() => handleDeleteAddress(index)}>
-                  <MdDeleteForever className="delete-btn" />
-                  Sil
-                </button>
-                <button
-                  onClick={() => {
-                    setEditIndex(index);
-                    setEditAddress(addr);
-                    setIsEditModalOpen(true);
-                  }}
-                >
-                  <FaEdit className="edit-btn" />
-                  Düzenle
-                </button>
+                <div className="actions">
+                  <button onClick={() => handleDeleteAddress(addr.id)}>
+                    <MdDeleteForever className="delete-btn" />
+                    Sil
+                  </button>
+                  <button onClick={() => openEditModal(addr)}>
+                    <FaEdit className="edit-btn" />
+                    Düzenle
+                  </button>
+                </div>
               </div>
-            </div>
-          ))
+            );
+          })
         )}
       </div>
 
@@ -247,8 +476,8 @@ const KayitliAdreslerimContent = () => {
           />
 
 
-          <button className="save-btn" onClick={handleAddAddress}>
-            Adresi Kaydet
+          <button className="save-btn" onClick={handleAddAddress} disabled={isSaving}>
+            {isSaving ? 'Kaydediliyor...' : 'Adresi Kaydet'}
           </button>
         </div>
       </Modal>
@@ -354,8 +583,8 @@ const KayitliAdreslerimContent = () => {
             }
           />
 
-          <button className="save-btn" onClick={saveEditedAddress}>
-            Güncelle
+          <button className="save-btn" onClick={saveEditedAddress} disabled={isSaving}>
+            {isSaving ? 'Güncelleniyor...' : 'Güncelle'}
           </button>
         </div>
       </Modal>
