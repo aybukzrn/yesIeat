@@ -5,17 +5,6 @@ import Payment from './Payment';
 import { FaTimes } from 'react-icons/fa';
 import './Cart.css';
 
-const savedUserInfo = {
-  sokak: 'Örnek Mah. Atatürk Cad.',
-  apartman: 'No: 42',
-  daire: 'Daire: 8',
-  kat: '4',
-  telefon: '+905551234567',
-  email: 'selinayturksal@gmail.com',
-  ad: 'Selinay',
-  soyad: 'Türksal',
-  cep: '+905551234567',
-};
 
 const Cart = () => {
   const [formData, setFormData] = useState({
@@ -38,8 +27,95 @@ const Cart = () => {
     }
   };
 
-  const useSavedInfo = () => {
-    setFormData(prev => ({ ...prev, ...savedUserInfo }));
+  const useSavedInfo = async () => {
+    // Giriş kontrolü
+    const userData = localStorage.getItem('user');
+    const isLoggedIn = sessionStorage.getItem('userLoggedIn');
+    
+    if (!isLoggedIn || !userData) {
+      alert('Giriş yapmanız gerekmektedir.');
+      return;
+    }
+
+    try {
+      const user = JSON.parse(userData);
+      if (!user || !user.id) {
+        alert('Kullanıcı bilgisi bulunamadı. Lütfen tekrar giriş yapın.');
+        return;
+      }
+
+      // API'den adresleri çek
+      const response = await fetch(`/api/user/addresses?userId=${user.id}`);
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || 'Adresler yüklenirken bir hata oluştu.');
+      }
+
+      const addresses = data.addresses || [];
+
+      // Kayıtlı adres yoksa
+      if (addresses.length === 0) {
+        alert('Kayıtlı adresiniz bulunmamaktadır.');
+        return;
+      }
+
+      // İlk adresi al (en son eklenen)
+      const address = addresses[0];
+
+      // Adresi parse et
+      // Format: "Ankara / İlçe, Açık Adres | Telefon"
+      let fullAddressText = address.fullAddress || '';
+      let phone = '';
+      let sokak = '';
+      let apartman = '';
+      let daire = '';
+      let kat = '';
+
+      // Telefon numarasını ayır
+      if (fullAddressText.includes(' | ')) {
+        const parts = fullAddressText.split(' | ');
+        fullAddressText = parts[0] || '';
+        phone = parts[1] || '';
+      }
+
+      // Şehir ve ilçe bilgisini ayır
+      if (fullAddressText.includes(' / ')) {
+        const parts = fullAddressText.split(' / ');
+        if (parts.length > 1) {
+          const districtAndAddress = parts[1];
+          const addressParts = districtAndAddress.split(',');
+          // İlçe sonrası kısım açık adres
+          if (addressParts.length > 1) {
+            sokak = addressParts.slice(1).join(',').trim();
+          }
+        }
+      } else {
+        // Format yoksa direkt adres olarak kullan
+        sokak = fullAddressText;
+      }
+
+      // Bina, kat, daire bilgilerini al
+      apartman = address.building ? String(address.building) : '';
+      kat = address.floor ? String(address.floor) : '';
+      daire = address.apartment ? String(address.apartment) : '';
+
+      // FormData'yı güncelle
+      setFormData(prev => ({
+        ...prev,
+        sokak: sokak,
+        apartman: apartman,
+        daire: daire,
+        kat: kat,
+        telefon: phone,
+        cep: phone,
+      }));
+
+      alert('Kayıtlı adresiniz başarıyla yüklendi.');
+    } catch (err) {
+      console.error('Adres yükleme hatası:', err);
+      alert(err.message || 'Adres yüklenirken bir hata oluştu.');
+    }
   };
 
   const validateForm = (fields) => {

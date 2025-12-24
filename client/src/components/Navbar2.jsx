@@ -50,6 +50,10 @@ const Navbar = () => {
         sessionStorage.clear();
         // LocalStorage'dan user'ı temizle
         localStorage.removeItem('user');
+        // Sepeti temizle
+        localStorage.removeItem('cart');
+        // Sepet güncelleme eventi gönder
+        window.dispatchEvent(new Event('cartUpdated'));
         // Kullanıcı state'ini sıfırla
         setUser(null);
         setAccountTitle('Hesabım');

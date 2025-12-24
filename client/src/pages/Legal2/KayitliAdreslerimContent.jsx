@@ -105,7 +105,12 @@ const KayitliAdreslerimContent = () => {
           throw new Error(data.message || 'Adresler yüklenirken bir hata oluştu.');
         }
 
-        setAddresses(data.addresses || []);
+        // "Teslimat Adresi" başlıklı adresleri filtrele (siparişlerden otomatik oluşturulan adresler)
+        const filteredAddresses = (data.addresses || []).filter(
+          addr => addr.title !== 'Teslimat Adresi'
+        );
+
+        setAddresses(filteredAddresses);
       } catch (err) {
         console.error('Adres yükleme hatası:', err);
         setMessage({ type: 'error', text: err.message || 'Adresler yüklenirken bir hata oluştu.' });

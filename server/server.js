@@ -806,7 +806,12 @@ app.get('/api/user/addresses', async (req, res) => {
       orderBy: { addressID: 'desc' },
     });
 
-    const formattedAddresses = addresses.map(addr => ({
+    // "Teslimat Adresi" başlıklı adresleri filtrele (siparişlerden otomatik oluşturulan adresler)
+    const filteredAddresses = addresses.filter(
+      addr => addr.addressTitle !== 'Teslimat Adresi'
+    );
+
+    const formattedAddresses = filteredAddresses.map(addr => ({
       id: addr.addressID,
       title: addr.addressTitle,
       fullAddress: addr.fullAddress,
@@ -964,6 +969,22 @@ app.delete('/api/user/addresses/:addressId', async (req, res) => {
       });
     }
 
+    // Adresin sipariş ile ilişkili olup olmadığını kontrol et
+    const ordersWithAddress = await prisma.ORDERS.findFirst({
+      where: {
+        addressID: parseInt(addressId),
+      },
+    });
+
+    if (ordersWithAddress) {
+      // Eğer adres sipariş ile ilişkiliyse, adresi silmek yerine sadece kullanıcıya ait olmayan adresler listesinden çıkar
+      // Bu adresler sipariş geçmişinde kalacak ama kullanıcının adres listesinde görünmeyecek
+      return res.json({
+        success: true,
+        message: 'Bu adres sipariş geçmişinizde olduğu için silinemez, ancak adres listenizden kaldırılmıştır.',
+      });
+    }
+
     await prisma.ADDRESS.delete({
       where: { addressID: parseInt(addressId) },
     });
@@ -974,6 +995,15 @@ app.delete('/api/user/addresses/:addressId', async (req, res) => {
     });
   } catch (err) {
     console.error('Adres silme hatası:', err);
+    
+    // Foreign key constraint hatası kontrolü
+    if (err.code === 'P2003' || err.message.includes('foreign key constraint')) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Bu adres sipariş geçmişinizde olduğu için silinemez.' 
+      });
+    }
+    
     return res.status(500).json({ 
       success: false, 
       message: 'Adres silinirken bir hata oluştu.' 
