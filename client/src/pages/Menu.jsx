@@ -90,7 +90,25 @@ const MenuItemCard = ({ item, onAddToCart }) => {
   return (
     <div className="menu-item-card">
       <div className="item-image-placeholder">
-        <img src={`/assets/menu/${item.photo}.jpg`} alt={item.name} />
+        <img 
+          src={(() => {
+            if (!item.photo) return '/assets/menu/default.jpg';
+            const photoPath = item.photo.includes('.') 
+              ? `/assets/menu/${item.photo}` 
+              : `/assets/menu/${item.photo}.jpg`;
+            // Debug için console'a yazdır
+            if (process.env.NODE_ENV === 'development') {
+              console.log(`Fotoğraf yolu: ${photoPath} (Ürün: ${item.name}, Photo: ${item.photo})`);
+            }
+            return photoPath;
+          })()} 
+          alt={item.name}
+          onError={(e) => {
+            console.error(`Fotoğraf yüklenemedi: ${e.target.src} (Ürün: ${item.name})`);
+            // Eğer fotoğraf yüklenemezse varsayılan bir görsel göster
+            e.target.src = '/assets/menu/default.jpg';
+          }}
+        />
       </div>
       <div className="item-details">
         <div className="item-header">

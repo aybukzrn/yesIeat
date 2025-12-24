@@ -29,6 +29,9 @@ const ProductsContent = () => {
     description: '' // Ürün açıklaması
   });
 
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [photoPreview, setPhotoPreview] = useState(null);
+
   // Ürünleri backend'den çeken fonksiyon (yeniden kullanılabilir)
   const fetchProducts = async () => {
     try {
@@ -127,11 +130,51 @@ const ProductsContent = () => {
 
   // Form verilerini güncelleyen fonksiyon
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    const { name, value, type, files } = e.target;
+    
+    // Eğer file input ise
+    if (type === 'file' && files && files.length > 0) {
+      const file = files[0];
+      setSelectedFile(file);
+      
+      // Preview oluştur
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPhotoPreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
+  };
+
+  // Fotoğraf yükleme fonksiyonu
+  const uploadPhoto = async (file) => {
+    if (!file) return null;
+
+    const formData = new FormData();
+    formData.append('photo', file);
+
+    try {
+      const response = await fetch('/api/admin/upload-photo', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || 'Fotoğraf yüklenirken bir hata oluştu');
+      }
+
+      return result.fileName; // Dosya adını döndür (uzantı olmadan)
+    } catch (err) {
+      console.error('Fotoğraf yükleme hatası:', err);
+      throw err;
+    }
   };
 
   // YENİ ÜRÜN / MENÜ EKLEME FONKSİYONU - Backend'e POST request gönderir
@@ -142,11 +185,18 @@ const ProductsContent = () => {
       return;
     }
 
-    // Sadece Ürünler için backend'e gönder (Menüler için henüz endpoint yok)
-    if (activeCategory === 'Ürünler') {
-      try {
-        setLoading(true);
-        
+    try {
+      setLoading(true);
+
+      // Önce fotoğrafı yükle (eğer seçildiyse)
+      let photoFileName = formData.proPhoto; // Eğer manuel olarak girildiyse kullan
+      
+      if (selectedFile) {
+        photoFileName = await uploadPhoto(selectedFile);
+      }
+
+      // Sadece Ürünler için backend'e gönder
+      if (activeCategory === 'Ürünler') {
         const response = await fetch('/api/admin/products', {
           method: 'POST',
           headers: {
@@ -157,7 +207,7 @@ const ProductsContent = () => {
             category: formData.category,
             price: formData.price,
             tag: formData.tag,
-            proPhoto: formData.proPhoto,
+            proPhoto: photoFileName || '',
             // Stok adedini backend'e gönder
             stock: Number(formData.stock) || 0,
             description: formData.description || '',
@@ -184,19 +234,13 @@ const ProductsContent = () => {
           content: '',
           description: '',
         });
+        setSelectedFile(null);
+        setPhotoPreview(null);
         setIsApprovalModalOpen(false);
         
         alert('Ürün başarıyla eklendi!');
-      } catch (err) {
-        console.error('Ürün ekleme hatası:', err);
-        alert(err.message || 'Ürün eklenirken bir hata oluştu');
-        setLoading(false);
-      }
-    } else {
-      // Menüler için backend'e gönder
-      try {
-        setLoading(true);
-        
+      } else {
+        // Menüler için backend'e gönder
         const response = await fetch('/api/admin/products', {
           method: 'POST',
           headers: {
@@ -207,7 +251,7 @@ const ProductsContent = () => {
             category: 'Menü', // Menüler için özel kategori
             price: formData.price,
             tag: '',
-            proPhoto: formData.proPhoto,
+            proPhoto: photoFileName || '',
             stock: 0, // Menüler için stok yok
             description: formData.content || '', // Menü içeriği description olarak kaydediliyor
           }),
@@ -233,14 +277,16 @@ const ProductsContent = () => {
           content: '',
           description: '',
         });
+        setSelectedFile(null);
+        setPhotoPreview(null);
         setIsApprovalModalOpen(false);
         
         alert('Menü başarıyla eklendi!');
-      } catch (err) {
-        console.error('Menü ekleme hatası:', err);
-        alert(err.message || 'Menü eklenirken bir hata oluştu');
-        setLoading(false);
       }
+    } catch (err) {
+      console.error('Ekleme hatası:', err);
+      alert(err.message || 'Bir hata oluştu');
+      setLoading(false);
     }
   };
 
@@ -439,7 +485,22 @@ const ProductsContent = () => {
     </div>
 
       <Modal isOpen={isApprovalModalOpen}
-        onClose={() => setIsApprovalModalOpen(false)}
+        onClose={() => {
+          setIsApprovalModalOpen(false);
+          // Formu temizle
+          setFormData({
+            name: '',
+            category: '',
+            price: '',
+            proPhoto: '',
+            tag: '',
+            stock: '',
+            content: '',
+            description: '',
+          });
+          setSelectedFile(null);
+          setPhotoPreview(null);
+        }}
         title="Yeni Ürün / Menü Ekle"
       >
         {activeCategory === 'Ürünler' ? (
@@ -529,10 +590,28 @@ const ProductsContent = () => {
                 <input
                   type="file"
                   name="proPhoto"
-                  value={formData.proPhoto}
+                  accept="image/*"
                   onChange={handleInputChange}
-
                 />
+                {photoPreview && (
+                  <div style={{ marginTop: '10px' }}>
+                    <img 
+                      src={photoPreview} 
+                      alt="Önizleme" 
+                      style={{ 
+                        maxWidth: '200px', 
+                        maxHeight: '200px', 
+                        borderRadius: '5px',
+                        border: '1px solid #ddd'
+                      }} 
+                    />
+                  </div>
+                )}
+                {selectedFile && (
+                  <p style={{ marginTop: '5px', fontSize: '12px', color: '#666' }}>
+                    Seçilen dosya: {selectedFile.name}
+                  </p>
+                )}
               </div>
 
               <div className="pro-stock">
@@ -586,14 +665,32 @@ const ProductsContent = () => {
               </div>
 
               <div className="menu-photo">
-                <label>Menü Fotoğrafı (opsiyonel):</label>
+                <label>Menü Fotoğrafı:</label>
                 <input
-                  type="text"
+                  type="file"
                   name="proPhoto"
-                  value={formData.proPhoto}
+                  accept="image/*"
                   onChange={handleInputChange}
-                  placeholder="Fotoğraf adı (menu görselleri ile uyumlu)"
                 />
+                {photoPreview && (
+                  <div style={{ marginTop: '10px' }}>
+                    <img 
+                      src={photoPreview} 
+                      alt="Önizleme" 
+                      style={{ 
+                        maxWidth: '200px', 
+                        maxHeight: '200px', 
+                        borderRadius: '5px',
+                        border: '1px solid #ddd'
+                      }} 
+                    />
+                  </div>
+                )}
+                {selectedFile && (
+                  <p style={{ marginTop: '5px', fontSize: '12px', color: '#666' }}>
+                    Seçilen dosya: {selectedFile.name}
+                  </p>
+                )}
               </div>
 
               <div className="kdv-group">

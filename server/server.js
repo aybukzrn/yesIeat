@@ -2,6 +2,11 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import pkg from '@prisma/client';
+import multer from 'multer';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import fs from 'fs';
+
 const { PrismaClient } = pkg;
 
 dotenv.config();
@@ -11,8 +16,53 @@ const prisma = new PrismaClient();
 const app = express();
 const PORT = process.env.PORT || 5001;
 
+// __dirname için ES modules uyumlu çözüm
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 app.use(cors());
 app.use(express.json());
+
+// Static file serving - client/public/assets/menu klasörüne erişim için
+const menuImagesPath = path.join(__dirname, '../client/public/assets/menu');
+app.use('/assets/menu', express.static(menuImagesPath));
+
+// Multer yapılandırması - fotoğrafları client/public/assets/menu klasörüne kaydet
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    // Klasör yoksa oluştur
+    if (!fs.existsSync(menuImagesPath)) {
+      fs.mkdirSync(menuImagesPath, { recursive: true });
+    }
+    cb(null, menuImagesPath);
+  },
+  filename: (req, file, cb) => {
+    // Orijinal dosya adını kullan, eğer varsa uzantıyı koru
+    const originalName = file.originalname.replace(/\s+/g, '_'); // Boşlukları alt çizgi ile değiştir
+    const nameWithoutExt = path.parse(originalName).name;
+    const ext = path.parse(originalName).ext || '.jpg';
+    cb(null, `${nameWithoutExt}${ext}`);
+  }
+});
+
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024 // 5MB limit
+  },
+  fileFilter: (req, file, cb) => {
+    // Sadece resim dosyalarını kabul et
+    const allowedTypes = /jpeg|jpg|png|gif|webp/;
+    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = allowedTypes.test(file.mimetype);
+
+    if (mimetype && extname) {
+      return cb(null, true);
+    } else {
+      cb(new Error('Sadece resim dosyaları yüklenebilir (jpeg, jpg, png, gif, webp)'));
+    }
+  }
+});
 
 app.get('/', (req, res) => {
   res.send('API is running');
@@ -539,6 +589,35 @@ app.patch('/api/admin/orders/:orderId/status', async (req, res) => {
     return res.status(500).json({ 
       success: false, 
       message: 'Sipariş durumu güncellenirken bir hata oluştu.' 
+    });
+  }
+});
+
+// Admin - Fotoğraf Yükleme
+app.post('/api/admin/upload-photo', upload.single('photo'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: 'Fotoğraf yüklenemedi. Lütfen bir dosya seçin.'
+      });
+    }
+
+    // Dosya adını tam olarak döndür (uzantı ile birlikte)
+    // Çünkü Menu.jsx'te dosya adı direkt kullanılıyor
+    const fileName = req.file.filename;
+
+    return res.json({
+      success: true,
+      message: 'Fotoğraf başarıyla yüklendi.',
+      fileName: fileName,
+      fullPath: `/assets/menu/${req.file.filename}`
+    });
+  } catch (err) {
+    console.error('Fotoğraf yükleme hatası:', err);
+    return res.status(500).json({
+      success: false,
+      message: err.message || 'Fotoğraf yüklenirken bir hata oluştu.'
     });
   }
 });

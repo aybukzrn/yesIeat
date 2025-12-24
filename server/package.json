@@ -17,6 +17,7 @@
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
     "install": "^0.13.0",
+    "multer": "^2.0.2",
     "npm": "^11.6.4"
   },
   "devDependencies": {
