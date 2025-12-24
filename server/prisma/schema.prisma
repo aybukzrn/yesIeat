@@ -27,6 +27,8 @@ model CARD_DETAIL {
   cardExpDate String @db.VarChar(10)
   cardHolder  String @db.VarChar(255)
   cardType    String @db.VarChar(50)
+  bank        String? @db.VarChar(50)
+  brand       String? @db.VarChar(50)
   uID         Int
   USERS       USERS  @relation(fields: [uID], references: [uID], onDelete: Cascade, map: "fk_card_user")
 

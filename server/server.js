@@ -1109,42 +1109,14 @@ app.get('/api/user/cards', async (req, res) => {
       orderBy: { cardID: 'desc' },
     });
 
-    // Kart numarasını maskele ve banka/kart tipini algıla
-    const detectBankAndBrand = (number) => {
-      const cleanNumber = number.replace(/\s/g, '');
-      let result = { bank: '', brand: '' };
-
-      if (cleanNumber.startsWith('4')) {
-        result.brand = 'visa';
-      } else if (cleanNumber.startsWith('5')) {
-        result.brand = 'mastercard';
-      } else if (cleanNumber.startsWith('9')) {
-        result.brand = 'troy';
-      }
-
-      const prefix6 = cleanNumber.substring(0, 6);
-      if (['444676', '979280', '528208', '658755'].includes(prefix6)) {
-        result.bank = 'ziraat';
-      } else if (['540709', '517041', '48945501', '979236'].includes(prefix6)) {
-        result.bank = 'garanti';
-      } else if (['545103', '491206', '540061'].includes(prefix6)) {
-        result.bank = 'yapikredi';
-      } else {
-        result.bank = 'other';
-      }
-
-      return result;
-    };
-
     const formattedCards = cards.map(card => {
-      const detected = detectBankAndBrand(card.cardNum);
       return {
         id: card.cardID,
         alias: card.cardType || 'Kartım',
         holderName: card.cardHolder,
         cardNumber: card.cardNum,
-        bank: detected.bank,
-        brand: detected.brand,
+        bank: card.bank || '',
+        brand: card.brand || '',
         expDate: card.cardExpDate,
       };
     });
@@ -1165,7 +1137,7 @@ app.get('/api/user/cards', async (req, res) => {
 // Yeni kart ekle
 app.post('/api/user/cards', async (req, res) => {
   try {
-    const { userId, alias, holderName, cardNumber, expDate } = req.body;
+    const { userId, alias, holderName, cardNumber, expDate, bank, brand } = req.body;
 
     if (!userId || !holderName || !cardNumber || !expDate) {
       return res.status(400).json({ 
@@ -1181,37 +1153,10 @@ app.post('/api/user/cards', async (req, res) => {
         cardExpDate: expDate,
         cardHolder: holderName,
         cardType: alias || 'Kartım',
+        bank: bank || null,
+        brand: brand || null,
       },
     });
-
-    // Kart tipi ve banka algılama
-    const detectBankAndBrand = (number) => {
-      const cleanNumber = number.replace(/\s/g, '');
-      let result = { bank: '', brand: '' };
-
-      if (cleanNumber.startsWith('4')) {
-        result.brand = 'visa';
-      } else if (cleanNumber.startsWith('5')) {
-        result.brand = 'mastercard';
-      } else if (cleanNumber.startsWith('9')) {
-        result.brand = 'troy';
-      }
-
-      const prefix6 = cleanNumber.substring(0, 6);
-      if (['444676', '979280', '528208', '658755'].includes(prefix6)) {
-        result.bank = 'ziraat';
-      } else if (['540709', '517041', '48945501', '979236'].includes(prefix6)) {
-        result.bank = 'garanti';
-      } else if (['545103', '491206', '540061'].includes(prefix6)) {
-        result.bank = 'yapikredi';
-      } else {
-        result.bank = 'other';
-      }
-
-      return result;
-    };
-
-    const detected = detectBankAndBrand(cardNumber);
 
     return res.status(201).json({
       success: true,
@@ -1221,8 +1166,8 @@ app.post('/api/user/cards', async (req, res) => {
         alias: newCard.cardType,
         holderName: newCard.cardHolder,
         cardNumber: newCard.cardNum,
-        bank: detected.bank,
-        brand: detected.brand,
+        bank: newCard.bank || '',
+        brand: newCard.brand || '',
         expDate: newCard.cardExpDate,
       },
     });
@@ -1230,7 +1175,8 @@ app.post('/api/user/cards', async (req, res) => {
     console.error('Kart ekleme hatası:', err);
     return res.status(500).json({ 
       success: false, 
-      message: 'Kart eklenirken bir hata oluştu.' 
+      message: err.message || 'Kart eklenirken bir hata oluştu.',
+      error: process.env.NODE_ENV === 'development' ? err.stack : undefined
     });
   }
 });
@@ -1239,7 +1185,7 @@ app.post('/api/user/cards', async (req, res) => {
 app.put('/api/user/cards/:cardId', async (req, res) => {
   try {
     const { cardId } = req.params;
-    const { userId, alias, holderName, cardNumber, expDate } = req.body;
+    const { userId, alias, holderName, cardNumber, expDate, bank, brand } = req.body;
 
     if (!userId) {
       return res.status(400).json({ 
@@ -1270,37 +1216,10 @@ app.put('/api/user/cards/:cardId', async (req, res) => {
         cardExpDate: expDate || card.cardExpDate,
         cardHolder: holderName || card.cardHolder,
         cardType: alias || card.cardType,
+        bank: bank !== undefined ? bank : card.bank,
+        brand: brand !== undefined ? brand : card.brand,
       },
     });
-
-    // Kart tipi ve banka algılama
-    const detectBankAndBrand = (number) => {
-      const cleanNumber = number.replace(/\s/g, '');
-      let result = { bank: '', brand: '' };
-
-      if (cleanNumber.startsWith('4')) {
-        result.brand = 'visa';
-      } else if (cleanNumber.startsWith('5')) {
-        result.brand = 'mastercard';
-      } else if (cleanNumber.startsWith('9')) {
-        result.brand = 'troy';
-      }
-
-      const prefix6 = cleanNumber.substring(0, 6);
-      if (['444676', '979280', '528208', '658755'].includes(prefix6)) {
-        result.bank = 'ziraat';
-      } else if (['540709', '517041', '48945501', '979236'].includes(prefix6)) {
-        result.bank = 'garanti';
-      } else if (['545103', '491206', '540061'].includes(prefix6)) {
-        result.bank = 'yapikredi';
-      } else {
-        result.bank = 'other';
-      }
-
-      return result;
-    };
-
-    const detected = detectBankAndBrand(updatedCard.cardNum);
 
     return res.json({
       success: true,
@@ -1310,8 +1229,8 @@ app.put('/api/user/cards/:cardId', async (req, res) => {
         alias: updatedCard.cardType,
         holderName: updatedCard.cardHolder,
         cardNumber: updatedCard.cardNum,
-        bank: detected.bank,
-        brand: detected.brand,
+        bank: updatedCard.bank || '',
+        brand: updatedCard.brand || '',
         expDate: updatedCard.cardExpDate,
       },
     });

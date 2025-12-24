@@ -285,7 +285,6 @@ const Cart = () => {
               {errors.telefon && <span className="error-text full-width">{errors.telefon}</span>}
             </div>
             <textarea name="not" value={formData.not} onChange={handleInputChange} className="note-textarea" placeholder="Kuryeye not..."></textarea>
-            <button className="btn btn-secondary" onClick={() => validateForm(['sokak', 'apartman', 'daire', 'telefon'])}>Kaydet ve Devam Et</button>
           </div>
 
           {/* Teslimat Seçenekleri */}

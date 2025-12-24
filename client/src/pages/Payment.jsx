@@ -10,9 +10,32 @@ const Payment = ({ totalAmount, onPaymentSuccess, formData, selectedDelivery, se
   });
   const [isProcessing, setIsProcessing] = useState(false);
 
+  // Son kullanma tarihi formatlama fonksiyonu (MM/YY)
+  const formatExpDate = (value) => {
+    // Sadece rakamları al
+    const digits = value.replace(/\D/g, '').slice(0, 4);
+    
+    if (digits.length === 0) return '';
+    if (digits.length <= 2) return digits;
+    // 2'den fazla rakam varsa "/" ekle
+    return `${digits.substring(0, 2)}/${digits.substring(2, 4)}`;
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setCardData(prev => ({ ...prev, [name]: value }));
+    
+    setCardData(prev => {
+      const newData = { ...prev };
+      
+      // EĞER DEĞİŞEN ALAN 'expiryDate' İSE OTOMATİK FORMATLA
+      if (name === 'expiryDate') {
+        newData.expiryDate = formatExpDate(value);
+      } else {
+        newData[name] = value;
+      }
+      
+      return newData;
+    });
   };
 
   const handlePayment = async (e) => {
