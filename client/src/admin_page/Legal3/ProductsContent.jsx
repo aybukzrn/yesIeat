@@ -478,6 +478,7 @@ const ProductsContent = () => {
                   value={formData.category}
                   onChange={handleInputChange}
                 >
+                  <option value=""></option>
                   <option value="Çorbalar">Çorbalar</option>
                   <option value="Ana Yemekler">Ana Yemekler</option>
                   <option value="Kebaplar">Kebaplar</option>
@@ -497,6 +498,7 @@ const ProductsContent = () => {
                         name="price" 
                         value={formData.price} 
                         onChange={handleInputChange} 
+                        placeholder='Fiyatı girin'
                     />
                 </div>
                 
@@ -509,6 +511,7 @@ const ProductsContent = () => {
                   value={formData.tag}
                   onChange={handleInputChange}
                 >
+                  <option value=""></option>
                   <option value="Hızlı">Hızlı</option>
                   <option value="Şef">Şef</option>
                   <option value="Popüler">Popüler</option>
