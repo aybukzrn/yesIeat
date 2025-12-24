@@ -470,18 +470,26 @@ const ProductsContent = () => {
                 />
               </div>
 
+
               <div className="pro-category">
                 <label>Kategori:</label>
-                <input
-                  type="text"
+                <select
                   name="category"
                   value={formData.category}
                   onChange={handleInputChange}
-                  placeholder="Kategori girin"
-                />
+                >
+                  <option value="Çorbalar">Çorbalar</option>
+                  <option value="Ana Yemekler">Ana Yemekler</option>
+                  <option value="Kebaplar">Kebaplar</option>
+                  <option value="Fast Food">Fast Food</option>
+                  <option value="İtalyan">İtalyan</option>
+                  <option value="Hafif Lezzetler">Hafif Lezzetler</option>
+                  <option value="Tatlılar">Tatlılar</option>
+                  <option value="İçecekler">İçecekler</option>
+                </select>
               </div>
 
-              <div className="form-row">
+              <div className="form-row1">
                 <div className="kdv-group">
                     <label>Satış Fiyatı (TL):</label>
                     <input 
@@ -514,13 +522,13 @@ const ProductsContent = () => {
               </div>
 
               <div className="pro-photo">
-                <label>Ürün Fotoğrafı (opsiyonel):</label>
+                <label>Ürün Fotoğrafı:</label>
                 <input
-                  type="text"
+                  type="file"
                   name="proPhoto"
                   value={formData.proPhoto}
                   onChange={handleInputChange}
-                  placeholder="Fotoğraf adı (menu görselleri ile uyumlu)"
+
                 />
               </div>
 
