@@ -274,113 +274,180 @@
 }
 
 
-/* Responsive Design */
+/* ===========================
+   RESPONSIVE DESIGN (GÜNCELLENDİ)
+   =========================== */
 
-
-@media (max-width: 768px) {
-
+/* Tablet ve Küçük Laptoplar */
+@media (max-width: 1024px) {
   .slide-content .overlay {
-    padding: 50px 20px;
-    max-width: 90%;
+    max-width: 85%;
+    padding: 60px 30px;
   }
-
-  .category-list {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-    padding: 40px;
-    padding-top: 60px;
-  }
-
-  .category-item img{
-    width: 70px;
-    height: 80px;
-  }
-
-  .category-item{
-    height: 180px;
-  }
-
-  .category h3 {
-    font-size: 14px;
-    
-  }
-
-  .special-card {
-    flex-direction: column;
-    text-align: center;
+  
+  .overlay h2 {
+    font-size: 2.5rem;
   }
 
   .special-badge {
-    margin-top: -30px;
+    font-size: 2rem;
+  }
+  
+  .special-details h2 {
+    font-size: 1.8rem;
+  }
+}
+
+/* Mobil Cihazlar (Tablet Dikey ve Telefonlar) */
+@media (max-width: 768px) {
+
+  /* Slider Ayarları */
+  .main-slider {
+    height: 50vh; /* Mobilde biraz daha kısa */
+    margin-top: 60px;
+    margin-bottom: -80px;
+  }
+
+  .slide-content .overlay {
+    padding: 30px 20px;
+    max-width: 90%;
+    background-color: rgba(0, 0, 0, 0.6); /* Mobilde okunabilirlik için daha koyu */
+  }
+
+  .overlay h2 {
+    font-size: 1.8rem; /* Yazı boyutu küçültüldü */
     margin-bottom: 10px;
-    font-size: 35px;
+  }
+
+  .slide-content p {
+    font-size: 1rem;
+    display: none; /* Mobilde alt başlığı gizleyip sadeleştirebiliriz, veya açık bırakabilirsin */
+  }
+  
+  /* Kategoriler */
+  .category {
+    border-width: 5px; /* Kenarlık inceltildi */
+    margin-top: 0;
+  }
+
+  .category h2{
+    font-size: 26px;
+    margin-bottom: 0;
+    margin-top: 0;
+    padding-top: 5px;
+  }
+
+  .category-list {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding: 5px;
+    gap: 30px;
+  }
+
+  .category-item {
+    height: 150px;
+    padding: 10px 5px;
+    margin: 0;
+  }
+
+  .category-item img {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 10px;
+  }
+
+  .category-item h3 {
+    font-size: 14px;
+  }
+
+  /* Şefin Tavsiyesi */
+  .special-card {
+    flex-direction: column; /* Alt alta dizilim */
+    text-align: center;
+    padding: 20px;
+  }
+
+  .special-badge {
+    justify-content: center;
+    font-size: 1.8rem;
+    margin-top: 0;
     margin-left: 0;
-    
+    flex-wrap: wrap;
   }
-
-  .special-details {
-    padding-right: 0;
-    margin-bottom: 25px;
-  }
-
-  .special-image {
-    max-width: 80%;
+  
+  .chef-icon {
+    width: 40px;
+    margin-right: 10px;
   }
 
   .special-details h2 {
-    font-size: 1.5rem;
     margin-right: 0;
+    font-size: 1.6rem;
   }
 
   .special-details p {
     margin-left: 0;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
+  }
+
+  .special-image-container {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .special-image {
+    width: 100%;
+    max-height: 300px;
+  }
+
+  /* Butonlar */
+  .order-now-button {
+    display: none; /* Masaüstü butonu gizle */
   }
 
   .order-now-button-mobile {
-    display: inline-block;
-    padding: 10px 20px;
-    margin-top: 10px;
+    display: inline-block; /* Mobil butonu göster */
+    margin-top: 20px;
+    padding: 12px 40px;
     background-color: #d82800;
     color: white;
-    border: none;
     border-radius: 25px;
-    font-size: 1rem;
-    cursor: pointer;
     text-decoration: none;
-    transition: background-color 0.3s;
+    font-weight: bold;
   }
 
-  .order-now-button-mobile:hover {
-    background-color: #f33005;
+
+  .row.features-grid {
+    flex-direction: column;
+    align-items: center;
   }
 
-  .order-now-button {
-    display: none;
-}
-
-.row-features-grid{
-  flex-direction: row;
+  .info-item {
+    width: 100%; 
+    max-width: 240px; 
+    margin: 10px 0;
+    flex-direction: row; 
+    text-align: center;
+    padding: 20px;
+    gap: 20px;
+  }
   
-}
-
-.info-item{
-  width: 70px;
+  .feature-icon {
+    min-width: 50px; /* İkon küçülmesin */
+  }
   
-  font-size: 12px;
-}
-
-.feature-icon{
-  width: 30px;
+  .info-item h3 {
+    margin: 0;
+    font-size: 1.2rem;
+  }
   
-  
+  .info-item p {
+    margin: 5px 0 0 0;
+    font-size: 0.9rem;
+  }
+
+  .container.text-center h2 {
+    font-size: 24px;
+  }
 }
 
-.container.text-center h2{
-  font-size: 28px;
-}
-
-
-}

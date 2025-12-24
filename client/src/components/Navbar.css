@@ -32,7 +32,7 @@ body {
 }
 
 .account {
-    
+
     display: flex;
     align-items: center;
     flex-direction: row;
@@ -60,7 +60,7 @@ body {
 }
 
 .cart {
-    
+
     font-size: 16px;
     cursor: pointer;
     font-weight: 500;
@@ -235,32 +235,31 @@ body {
 
 
 
-/* Responsive Design */
-
-
+/* Responsive Design - TEMİZ HALİ */
 @media (max-width: 768px) {
 
+    /* Genel Gizlemeler */
+    .right-section,
+    .down-section,
+    .navbar-actions {
+        display: none;
+    }
+
+    /* Üst Kısım Düzenlemeleri */
     .up-section {
         display: flex;
         flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
     }
 
     .navbar-brand {
-        margin-left: 0px;
+        margin-left: 0;
     }
 
     .navbar-logo {
-        width: 70px;
-        height: 70px;
-    }
-
-    .search-bar input {
-        width: 200px;
-    }
-
-    .right-section,
-    .down-section {
-        display: none;
+        width: 60px;
+        height: 60px;
     }
 
     .search-bar input {
@@ -273,7 +272,8 @@ body {
 
     .hamburger-menu {
         display: block;
-        z-index: 101;
+        z-index: 1001;
+        cursor: pointer;
     }
 
     html,
@@ -282,55 +282,99 @@ body {
     }
 
     .navbar-links {
-        z-index: 100;
         position: fixed;
-        top: 0;
-        left: -100%;
-        width: 90%;
-        height: 70vh;
-        background-color: rgba(235, 203, 129, 0.9);
-        backdrop-filter: blur(3px);
+        margin-top: 0;
+        display: flex;
         flex-direction: column;
-        padding-top: 80px;
-        transition: left 0.3s ease-in-out;
-        box-shadow: -5px 0 15px rgba(0, 0, 0, 0.7);
+        align-items: center;
+        background: linear-gradient(180deg, #e2bb5e, #ebcb81, #f0f0f0);
+        z-index: 10001;
+        width: 100%;
     }
 
+    .close-menu-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 10002; /* overlay'den büyük */
+        background: none;
+        border: none;
+        color: white;
+        cursor: pointer;
+    }
+    
+
+    .navbar-links {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        height: 100%;
+        transition: right 0.3s ease;
+    }
+    
     .navbar-links.open {
-        left: 100px;
-        transition: left 0.3s ease-in-out;
+        right: 0;
     }
 
     .navbar-links li {
+        border-bottom: 1px solid #f4f4f4;
+        width: 280px;
         margin-left: 0;
-        margin-bottom: 5px;
+        margin-top: 15px;
     }
 
-    .responsive-link .nav-link {
-        color: #fff;
-    }
-
-    .responsive-link .nav-link svg {
-        margin-right: 5px;
-    }
-
-    .navbar-links .nav-link,
-    .mobile-only-action .cart-button {
-        padding: 15px 20px;
-        width: 100px;
+    .nav-link {
+        text-decoration: none;
+        font-size: 1.1rem;
         display: flex;
         align-items: center;
-
+        padding: 12px 6px;
+        gap: 10px;
+        margin-top: 30px;
     }
 
+    .nav-link svg {
+        color: #aa1f00;
+    }
+
+
+    /* Overlay (Arka Plan Karartma) */
+    .menu-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease;
+    }
+
+    .menu-overlay.show {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    /* Telefon Arama Butonu (Menü içi) */
     .responsive-call .call-button {
-        margin-top: 50px;
-        margin-left: 40px;
-        font-size: 18px;
+        margin-top: 40px;
+        margin-left: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 25px 40px ;
+        background-color: #aa1f00;
+        color: white;
+        border: none;
+        border-radius: 10px;
     }
 
-    .navbar-actions {
-        display: none;
+    .responsive-call .call-button p {
+        margin: 0;
+        font-size: 16px;
+        text-align: left;
     }
-
 }

@@ -246,29 +246,14 @@
 
 
 /* Mobil Uyum */
-@media (max-width: 768px) {
-    .menu-items-grid {
-        grid-template-columns: 1fr; /* Mobil cihazlarda tek sütun */
-    }
-    .category-filter-bar {
-        justify-content: flex-start;
-        padding: 10px;
-        overflow-x: auto; /* Yatay kaydırma çubuğu */
-        flex-wrap: nowrap;
-    }
-    .filter-btn {
-        flex-shrink: 0;
+@media (max-width: 1024px) {
+    .menu-page {
+        flex-direction: column;
+        padding: 15px;
+        gap: 20px;
     }
 }
 
-@media (max-width: 600px) {
-    .tag-filter-bar {
-      padding: 10px;
-      gap: 8px;
-    }
-  
-    .tag-btn {
-      font-size: 13px;
-      padding: 8px 14px;
-    }
-  }
+
+
+

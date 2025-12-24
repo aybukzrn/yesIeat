@@ -14,15 +14,15 @@ import { MdContactSupport } from "react-icons/md";
 
 const Navbar = ({ searchQuery = '', onSearchChange = null }) => {
     const [user, setUser] = useState(null);
-        const [accountTitle, setAccountTitle] = useState('Hesabım');
-        const location = useLocation();
-        const navigate = useNavigate();
-        const isMenuPage = location.pathname === '/menu';
+    const [accountTitle, setAccountTitle] = useState('Hesabım');
+    const location = useLocation();
+    const navigate = useNavigate();
+    const isMenuPage = location.pathname === '/menu';
 
- useEffect(() => {
+    useEffect(() => {
         // Session'dan giriş yapılmış mı diye bakıyoruz
         const isLoggedIn = sessionStorage.getItem('userLoggedIn');
-        
+
         if (isLoggedIn === 'true') {
             // localStorage'dan user bilgisini al
             const userData = localStorage.getItem('user');
@@ -34,11 +34,11 @@ const Navbar = ({ searchQuery = '', onSearchChange = null }) => {
                     console.error('User data parse hatası:', err);
                 }
             }
-            
+
             // SessionStorage'dan isim ve soyisim al
             const userName = sessionStorage.getItem('userName') || '';
             const userSurname = sessionStorage.getItem('userSurname') || '';
-            
+
             if (userName && userSurname) {
                 const lastInitial = userSurname.charAt(0).toUpperCase();
                 setAccountTitle(userName + ' ' + lastInitial + '.');
@@ -65,10 +65,10 @@ const Navbar = ({ searchQuery = '', onSearchChange = null }) => {
         setUser(null);
         setAccountTitle('Hesabım');
         // Ana sayfaya yönlendir ve sayfayı tazele
-        window.location.href = '/'; 
+        window.location.href = '/';
     };
 
-    
+
     // Eğer prop'tan gelmiyorsa, localStorage'dan oku veya boş string kullan
     const [localSearchQuery, setLocalSearchQuery] = useState(() => {
         if (onSearchChange) return searchQuery;
@@ -150,15 +150,15 @@ const Navbar = ({ searchQuery = '', onSearchChange = null }) => {
                 </div>
 
                 <div className="search-bar">
-                    <input 
-                        type="text" 
-                        placeholder="Ne Yemek İstersin?" 
+                    <input
+                        type="text"
+                        placeholder="Ne Yemek İstersin?"
                         value={activeSearchQuery}
                         onChange={(e) => handleSearchChange(e.target.value)}
                         onKeyPress={handleSearchKeyPress}
                     />
                 </div>
-                
+
 
 
 
@@ -196,6 +196,14 @@ const Navbar = ({ searchQuery = '', onSearchChange = null }) => {
 
                 </div>
 
+                <div
+                    className="hamburger-menu"
+                    onClick={() => setIsMenuOpen(true)}
+                >
+                    <MdMenu size={30} />
+                </div>
+
+
             </div>
 
             <div className="down-section">
@@ -231,10 +239,24 @@ const Navbar = ({ searchQuery = '', onSearchChange = null }) => {
 
 
             {/* Toggle Menu-Responsive */}
-
             <div className="responsive-link">
 
+                <div
+                    className={`menu-overlay ${isMenuOpen ? 'show' : ''}`}
+                    onClick={() => setIsMenuOpen(false)}
+                ></div>
+
                 <ul className={`navbar-links ${isMenuOpen ? 'open' : ''}`}>
+                    
+                        <button
+                            type="button"
+                            className="close-menu-btn"
+                            onClick={() => setIsMenuOpen(false)}
+                        >
+                            <MdClose size={30} />
+                        </button>
+                    
+
                     <li>
                         <Link to="/" className="nav-link" onClick={() => setIsMenuOpen(false)}>
                             <MdHome size={18} /> Anasayfa
@@ -261,17 +283,13 @@ const Navbar = ({ searchQuery = '', onSearchChange = null }) => {
                         </Link>
                     </li>
 
-
-                    {/* <li className="mobile-only-action">
-                        <button className="cart-button">Sepet (0)</button>
-                    </li> */}
-
                     <div className='responsive-call'>
-                        <button className="call-button"><TbPhoneCall /><p>Sipariş İçin Arayın <br />(0312) 318 05 83</p></button>
-                            
+                        <button className="call-button">
+                            <TbPhoneCall />
+                            <p>Sipariş İçin Arayın <br />(0312) 318 05 83</p>
+                        </button>
                     </div>
                 </ul>
-
             </div>
 
 
